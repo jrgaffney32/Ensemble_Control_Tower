@@ -5,8 +5,9 @@ import { StatusBadge } from "./StatusBadge";
 import { MilestoneTimeline } from "./MilestoneTimeline";
 import { FinancialChart } from "./FinancialChart";
 import { KPITrendChart } from "./KPITrendChart";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Gauge } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface ProjectCardProps {
   project: Project;
@@ -30,22 +31,29 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
           
           {/* Status Matrix - Top Right Summary */}
-          <div className="flex gap-6 bg-white px-4 py-2 rounded-lg border border-slate-100 shadow-sm">
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Cost</span>
-              <StatusBadge status={project.status.cost} size="md" showLabel={false} />
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Benefit</span>
-              <StatusBadge status={project.status.benefit} size="md" showLabel={false} />
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Time</span>
-              <StatusBadge status={project.status.timeline} size="md" showLabel={false} />
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Scope</span>
-              <StatusBadge status={project.status.scope} size="md" showLabel={false} />
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" className="h-9 text-xs font-medium bg-white hover:bg-slate-50 border-slate-200 shadow-sm gap-2 px-3">
+              <Gauge className="w-3.5 h-3.5 text-primary" />
+              Team Velocity
+            </Button>
+
+            <div className="flex gap-6 bg-white px-4 py-2 rounded-lg border border-slate-100 shadow-sm">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Cost</span>
+                <StatusBadge status={project.status.cost} size="md" showLabel={false} />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Benefit</span>
+                <StatusBadge status={project.status.benefit} size="md" showLabel={false} />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Time</span>
+                <StatusBadge status={project.status.timeline} size="md" showLabel={false} />
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Scope</span>
+                <StatusBadge status={project.status.scope} size="md" showLabel={false} />
+              </div>
             </div>
           </div>
         </div>

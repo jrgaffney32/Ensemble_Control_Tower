@@ -159,6 +159,8 @@ export default function Dashboard() {
               <h3 className="text-lg font-bold font-heading text-foreground">Active Initiatives</h3>
               <div className="flex gap-2">
                  <Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button>
+                 <Button variant="outline" size="sm" className="text-xs">Demand vs. Capacity</Button>
+                 <Button variant="outline" size="sm" className="text-xs">Roadmap View</Button>
                  <Button variant="outline" size="sm" className="text-xs">Demo Schedule</Button>
                  <Button variant="outline" size="sm" className="text-xs">Value Stream View</Button>
                  <Button size="sm" className="text-xs bg-primary text-primary-foreground">Export Report</Button>
