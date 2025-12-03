@@ -13,6 +13,7 @@ export interface KPI {
   value: string;
   trend: 'up' | 'down' | 'neutral';
   target: string;
+  history: { date: string; value: number }[];
 }
 
 export interface Financials {
@@ -57,8 +58,38 @@ export const mockProjects: Project[] = [
       scope: 'green'
     },
     kpis: [
-      { label: 'Autonomous Coding Rate', value: '42%', target: '60%', trend: 'up' },
-      { label: 'Coding Accuracy', value: '96.5%', target: '95.0%', trend: 'up' }
+      { 
+        label: 'Autonomous Coding Rate', 
+        value: '42%', 
+        target: '60%', 
+        trend: 'up',
+        history: [
+          { date: 'W1', value: 15 },
+          { date: 'W2', value: 18 },
+          { date: 'W3', value: 22 },
+          { date: 'W4', value: 25 },
+          { date: 'W5', value: 28 },
+          { date: 'W6', value: 32 },
+          { date: 'W7', value: 38 },
+          { date: 'W8', value: 42 }
+        ]
+      },
+      { 
+        label: 'Coding Accuracy', 
+        value: '96.5%', 
+        target: '95.0%', 
+        trend: 'up',
+        history: [
+          { date: 'W1', value: 88.0 },
+          { date: 'W2', value: 89.5 },
+          { date: 'W3', value: 91.0 },
+          { date: 'W4', value: 92.5 },
+          { date: 'W5', value: 94.0 },
+          { date: 'W6', value: 95.2 },
+          { date: 'W7', value: 96.0 },
+          { date: 'W8', value: 96.5 }
+        ]
+      }
     ],
     milestones: [
       { id: 'm1', title: 'Model Fine-Tuning (ICD-10)', plannedDate: '2024-01-15', actualDate: '2024-01-20', status: 'completed' },
@@ -88,8 +119,38 @@ export const mockProjects: Project[] = [
       scope: 'yellow'
     },
     kpis: [
-      { label: 'Touchless Auth Rate', value: '28%', target: '45%', trend: 'up' },
-      { label: 'Auth Turnaround', value: '4.5 hrs', target: '2.0 hrs', trend: 'down' }
+      { 
+        label: 'Touchless Auth Rate', 
+        value: '28%', 
+        target: '45%', 
+        trend: 'up',
+        history: [
+          { date: 'W1', value: 5 },
+          { date: 'W2', value: 8 },
+          { date: 'W3', value: 12 },
+          { date: 'W4', value: 15 },
+          { date: 'W5', value: 18 },
+          { date: 'W6', value: 22 },
+          { date: 'W7', value: 25 },
+          { date: 'W8', value: 28 }
+        ]
+      },
+      { 
+        label: 'Auth Turnaround (Hrs)', 
+        value: '4.5', 
+        target: '2.0', 
+        trend: 'down',
+        history: [
+          { date: 'W1', value: 24.0 },
+          { date: 'W2', value: 18.5 },
+          { date: 'W3', value: 12.0 },
+          { date: 'W4', value: 8.5 },
+          { date: 'W5', value: 6.0 },
+          { date: 'W6', value: 5.2 },
+          { date: 'W7', value: 4.8 },
+          { date: 'W8', value: 4.5 }
+        ]
+      }
     ],
     milestones: [
       { id: 'm1', title: 'Payer Policy Ingestion', plannedDate: '2024-02-01', actualDate: '2024-01-28', status: 'completed' },
@@ -119,8 +180,38 @@ export const mockProjects: Project[] = [
       scope: 'green'
     },
     kpis: [
-      { label: 'Appeal Success Rate', value: '64%', target: '55%', trend: 'up' },
-      { label: 'Recovery Yield', value: '$2.1M', target: '$3.5M', trend: 'neutral' }
+      { 
+        label: 'Appeal Success Rate', 
+        value: '64%', 
+        target: '55%', 
+        trend: 'up',
+        history: [
+          { date: 'W1', value: 45 },
+          { date: 'W2', value: 48 },
+          { date: 'W3', value: 52 },
+          { date: 'W4', value: 50 },
+          { date: 'W5', value: 55 },
+          { date: 'W6', value: 58 },
+          { date: 'W7', value: 61 },
+          { date: 'W8', value: 64 }
+        ]
+      },
+      { 
+        label: 'Recovery Yield ($M)', 
+        value: '2.1', 
+        target: '3.5', 
+        trend: 'neutral',
+        history: [
+          { date: 'W1', value: 0.5 },
+          { date: 'W2', value: 0.8 },
+          { date: 'W3', value: 1.1 },
+          { date: 'W4', value: 1.3 },
+          { date: 'W5', value: 1.5 },
+          { date: 'W6', value: 1.8 },
+          { date: 'W7', value: 1.9 },
+          { date: 'W8', value: 2.1 }
+        ]
+      }
     ],
     milestones: [
       { id: 'm1', title: 'Historical Data Analysis', plannedDate: '2024-03-01', actualDate: '2024-03-01', status: 'completed' },
@@ -149,8 +240,38 @@ export const mockProjects: Project[] = [
       scope: 'red'
     },
     kpis: [
-      { label: 'Call Deflection', value: '15%', target: '40%', trend: 'neutral' },
-      { label: 'Patient CSAT', value: '3.8/5', target: '4.5/5', trend: 'down' }
+      { 
+        label: 'Call Deflection', 
+        value: '15%', 
+        target: '40%', 
+        trend: 'neutral',
+        history: [
+          { date: 'W1', value: 5 },
+          { date: 'W2', value: 8 },
+          { date: 'W3', value: 12 },
+          { date: 'W4', value: 11 },
+          { date: 'W5', value: 13 },
+          { date: 'W6', value: 14 },
+          { date: 'W7', value: 15 },
+          { date: 'W8', value: 15 }
+        ]
+      },
+      { 
+        label: 'Patient CSAT', 
+        value: '3.8', 
+        target: '4.5', 
+        trend: 'down',
+        history: [
+          { date: 'W1', value: 4.2 },
+          { date: 'W2', value: 4.1 },
+          { date: 'W3', value: 4.0 },
+          { date: 'W4', value: 4.0 },
+          { date: 'W5', value: 3.9 },
+          { date: 'W6', value: 3.9 },
+          { date: 'W7', value: 3.8 },
+          { date: 'W8', value: 3.8 }
+        ]
+      }
     ],
     milestones: [
       { id: 'm1', title: 'Voice Synthesis Config', plannedDate: '2024-04-01', actualDate: '2024-04-15', status: 'completed' },

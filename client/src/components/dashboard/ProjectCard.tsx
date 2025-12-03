@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "./StatusBadge";
 import { MilestoneTimeline } from "./MilestoneTimeline";
 import { FinancialChart } from "./FinancialChart";
+import { KPITrendChart } from "./KPITrendChart";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -62,26 +63,41 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
 
           <div>
-            <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider mb-3">Operational KPIs</h4>
+            <h4 className="text-xs font-bold uppercase text-muted-foreground tracking-wider mb-3">Operational KPIs (8-Week Trend)</h4>
             <div className="grid grid-cols-2 gap-3">
-              {project.kpis.map((kpi, idx) => (
-                <div key={idx} className="bg-slate-50 p-3 rounded-md border border-slate-100">
-                  <p className="text-xs text-muted-foreground font-medium truncate mb-1" title={kpi.label}>{kpi.label}</p>
-                  <div className="flex items-end gap-2">
-                    <span className="text-lg font-bold text-foreground">{kpi.value}</span>
-                    <span className={cn(
-                      "text-xs mb-1 flex items-center",
-                      kpi.trend === 'up' ? "text-status-green" : 
-                      kpi.trend === 'down' ? "text-status-red" : "text-muted-foreground"
-                    )}>
-                      {kpi.trend === 'up' && <TrendingUp className="w-3 h-3 mr-0.5" />}
-                      {kpi.trend === 'down' && <TrendingDown className="w-3 h-3 mr-0.5" />}
-                      {kpi.trend === 'neutral' && <Minus className="w-3 h-3 mr-0.5" />}
-                    </span>
+              {project.kpis.map((kpi, idx) => {
+                const trendColor = kpi.trend === 'up' ? "hsl(var(--status-green))" : kpi.trend === 'down' ? "hsl(var(--status-red))" : "hsl(var(--muted-foreground))";
+                // Logic: If trend is up, use green. If down, use red. 
+                // NOTE: For some metrics like 'Auth Turnaround' or 'Stockout Rate', DOWN is actually GOOD. 
+                // But for simplicity here, let's assume green = good direction, red = bad. 
+                // The mock data has 'trend' field which usually implies visual direction.
+                // Let's stick to visual color mapping to the trend arrow for consistency.
+                
+                return (
+                  <div key={idx} className="bg-slate-50 p-3 rounded-md border border-slate-100">
+                    <div className="flex justify-between items-start mb-1">
+                       <p className="text-[11px] text-muted-foreground font-medium truncate pr-2" title={kpi.label}>{kpi.label}</p>
+                       <span className={cn(
+                        "text-[10px] flex items-center font-medium",
+                        kpi.trend === 'up' ? "text-status-green" : 
+                        kpi.trend === 'down' ? "text-status-red" : "text-muted-foreground"
+                      )}>
+                        {kpi.trend === 'up' && <TrendingUp className="w-3 h-3" />}
+                        {kpi.trend === 'down' && <TrendingDown className="w-3 h-3" />}
+                        {kpi.trend === 'neutral' && <Minus className="w-3 h-3" />}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className="text-lg font-bold text-foreground">{kpi.value}</span>
+                      <span className="text-[10px] text-muted-foreground">/ {kpi.target}</span>
+                    </div>
+
+                    {/* Trend Chart */}
+                    <KPITrendChart data={kpi.history} color={trendColor} />
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">Target: {kpi.target}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
