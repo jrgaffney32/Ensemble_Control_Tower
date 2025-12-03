@@ -59,7 +59,7 @@ export default function Dashboard() {
       <main className="flex-1 lg:ml-64">
         {/* Top Header */}
         <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
-          <h2 className="text-lg font-bold font-heading text-foreground">Portfolio Health</h2>
+          <h2 className="text-lg font-bold font-heading text-foreground">Ensemble Control Tower</h2>
           
           <div className="flex items-center gap-4">
             <div className="relative w-64">
@@ -143,6 +143,14 @@ export default function Dashboard() {
                 <span>Awaiting Review</span>
               </div>
             </div>
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Budget Requests</p>
+              <p className="text-2xl font-bold text-foreground font-mono">4</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <TrendingUp className="w-3 h-3" />
+                <span>Capacity Review</span>
+              </div>
+            </div>
           </div>
 
           {/* Project List */}
@@ -150,6 +158,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold font-heading text-foreground">Active Initiatives</h3>
               <div className="flex gap-2">
+                 <Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button>
                  <Button variant="outline" size="sm" className="text-xs">Demo Schedule</Button>
                  <Button variant="outline" size="sm" className="text-xs">Value Stream View</Button>
                  <Button size="sm" className="text-xs bg-primary text-primary-foreground">Export Report</Button>
