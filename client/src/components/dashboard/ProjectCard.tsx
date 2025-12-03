@@ -38,11 +38,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
                  </Badge>
                  <Badge variant="outline" className="gap-1.5 text-xs font-medium text-emerald-600 border-emerald-100 bg-emerald-50/50 shadow-sm">
                    <Target className="w-3 h-3" />
-                   82% Goal Impact
+                   82% total department goal
                  </Badge>
               </div>
             </div>
-            <p className="text-sm text-muted-foreground font-medium">Owner: {project.owner}</p>
+            <p className="text-sm text-muted-foreground font-medium">Clinical Value Stream</p>
           </div>
           
           {/* Status Matrix - Top Right Summary */}
