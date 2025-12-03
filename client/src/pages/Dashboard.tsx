@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { mockProjects } from "@/lib/mockData";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -117,6 +117,32 @@ export default function Dashboard() {
                 <span>Due this week</span>
               </div>
             </div>
+
+            {/* New Tiles */}
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalated Issues</p>
+              <p className="text-2xl font-bold text-status-red font-mono">3</p>
+              <div className="flex items-center gap-1 text-xs text-status-red mt-1">
+                <AlertTriangle className="w-3 h-3" />
+                <span>Need attention</span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pending Approvals</p>
+              <p className="text-2xl font-bold text-foreground font-mono">5</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <FileCheck className="w-3 h-3" />
+                <span>New changes</span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Stage Gates</p>
+              <p className="text-2xl font-bold text-foreground font-mono">2</p>
+              <div className="flex items-center gap-1 text-xs text-status-yellow mt-1">
+                <GitPullRequest className="w-3 h-3" />
+                <span>Awaiting Review</span>
+              </div>
+            </div>
           </div>
 
           {/* Project List */}
@@ -124,6 +150,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold font-heading text-foreground">Active Initiatives</h3>
               <div className="flex gap-2">
+                 <Button variant="outline" size="sm" className="text-xs">Demo Schedule</Button>
                  <Button variant="outline" size="sm" className="text-xs">Value Stream View</Button>
                  <Button size="sm" className="text-xs bg-primary text-primary-foreground">Export Report</Button>
               </div>
