@@ -5,7 +5,7 @@ import { StatusBadge } from "./StatusBadge";
 import { MilestoneTimeline } from "./MilestoneTimeline";
 import { FinancialChart } from "./FinancialChart";
 import { KPITrendChart } from "./KPITrendChart";
-import { TrendingUp, TrendingDown, Minus, Gauge } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Gauge, Users, Zap, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -26,6 +26,21 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <Badge variant="secondary" className="text-xs font-normal bg-slate-100 text-slate-600 hover:bg-slate-200">
                 {project.valueStream}
               </Badge>
+              
+              <div className="flex items-center gap-2 ml-2">
+                 <Badge variant="outline" className="gap-1.5 text-xs font-medium text-slate-600 border-slate-200 bg-white shadow-sm">
+                   <Users className="w-3 h-3 text-slate-500" />
+                   4,321
+                 </Badge>
+                 <Badge variant="outline" className="gap-1.5 text-xs font-medium text-indigo-600 border-indigo-100 bg-indigo-50/50 shadow-sm">
+                   <Zap className="w-3 h-3" />
+                   60% FTE Impact
+                 </Badge>
+                 <Badge variant="outline" className="gap-1.5 text-xs font-medium text-emerald-600 border-emerald-100 bg-emerald-50/50 shadow-sm">
+                   <Target className="w-3 h-3" />
+                   82% Goal Impact
+                 </Badge>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground font-medium">Owner: {project.owner}</p>
           </div>
