@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { mockProjects } from "@/lib/mockData";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,20 +20,38 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="w-64 bg-[#0F172A] text-slate-300 hidden lg:flex flex-col fixed h-full z-10">
         <div className="p-6">
-          <div className="flex items-center gap-3 text-white mb-8">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-lg">E</div>
-            <h1 className="font-heading font-bold text-xl tracking-tight">ENSEMBLE<br/><span className="text-xs font-normal opacity-70 tracking-widest">CONTROL TOWER</span></h1>
-          </div>
+          <Link href="/">
+            <div className="flex items-center gap-3 text-white mb-8 cursor-pointer hover:opacity-80">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-lg">E</div>
+              <h1 className="font-heading font-bold text-xl tracking-tight">ENSEMBLE<br/><span className="text-xs font-normal opacity-70 tracking-widest">CONTROL TOWER</span></h1>
+            </div>
+          </Link>
           
           <nav className="space-y-1">
-            <Button variant="ghost" className="w-full justify-start text-white bg-white/10 hover:bg-white/20 hover:text-white">
-              <LayoutDashboard className="w-4 h-4 mr-3" />
-              Portfolio Overview
-            </Button>
-            <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-              <PieChart className="w-4 h-4 mr-3" />
-              Financials
-            </Button>
+            <Link href="/">
+              <Button variant="ghost" className="w-full justify-start text-white bg-white/10 hover:bg-white/20 hover:text-white">
+                <LayoutDashboard className="w-4 h-4 mr-3" />
+                Portfolio Overview
+              </Button>
+            </Link>
+            <Link href="/requests">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <FileText className="w-4 h-4 mr-3" />
+                Project Requests
+              </Button>
+            </Link>
+            <Link href="/issues">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <AlertCircle className="w-4 h-4 mr-3" />
+                Issues
+              </Button>
+            </Link>
+            <Link href="/budget">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <PieChart className="w-4 h-4 mr-3" />
+                Budget Requests
+              </Button>
+            </Link>
             <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
               <Calendar className="w-4 h-4 mr-3" />
               Milestone Calendar
@@ -119,22 +138,26 @@ export default function Dashboard() {
             </div>
 
             {/* New Tiles */}
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalated Issues</p>
-              <p className="text-2xl font-bold text-status-red font-mono">3</p>
-              <div className="flex items-center gap-1 text-xs text-status-red mt-1">
-                <AlertTriangle className="w-3 h-3" />
-                <span>Need attention</span>
+            <Link href="/issues">
+              <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalated Issues</p>
+                <p className="text-2xl font-bold text-status-red font-mono">3</p>
+                <div className="flex items-center gap-1 text-xs text-status-red mt-1">
+                  <AlertTriangle className="w-3 h-3" />
+                  <span>Need attention</span>
+                </div>
               </div>
-            </div>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pending Approvals</p>
-              <p className="text-2xl font-bold text-foreground font-mono">5</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <FileCheck className="w-3 h-3" />
-                <span>New changes</span>
+            </Link>
+            <Link href="/requests">
+              <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pending Approvals</p>
+                <p className="text-2xl font-bold text-foreground font-mono">5</p>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                  <FileCheck className="w-3 h-3" />
+                  <span>New changes</span>
+                </div>
               </div>
-            </div>
+            </Link>
             <div className="bg-white p-4 rounded-xl border shadow-sm">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Stage Gates</p>
               <p className="text-2xl font-bold text-foreground font-mono">2</p>
@@ -143,14 +166,16 @@ export default function Dashboard() {
                 <span>Awaiting Review</span>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Budget Requests</p>
-              <p className="text-2xl font-bold text-foreground font-mono">4</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <TrendingUp className="w-3 h-3" />
-                <span>Capacity Review</span>
+            <Link href="/budget">
+              <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Budget Requests</p>
+                <p className="text-2xl font-bold text-foreground font-mono">4</p>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>Capacity Review</span>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Project List */}
