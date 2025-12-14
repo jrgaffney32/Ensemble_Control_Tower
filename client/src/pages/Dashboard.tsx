@@ -183,11 +183,11 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold font-heading text-foreground">Active Initiatives</h3>
               <div className="flex gap-2">
-                 <Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button>
-                 <Button variant="outline" size="sm" className="text-xs">Demand vs. Capacity</Button>
-                 <Button variant="outline" size="sm" className="text-xs">Roadmap View</Button>
+                 <Link href="/pod-velocity"><Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button></Link>
+                 <Link href="/demand-capacity"><Button variant="outline" size="sm" className="text-xs">Demand vs. Capacity</Button></Link>
+                 <Link href="/roadmap"><Button variant="outline" size="sm" className="text-xs">Roadmap View</Button></Link>
                  <Button variant="outline" size="sm" className="text-xs">Demo Schedule</Button>
-                 <Button variant="outline" size="sm" className="text-xs">Value Stream View</Button>
+                 <Link href="/projects"><Button variant="outline" size="sm" className="text-xs">All Projects</Button></Link>
                  <Button size="sm" className="text-xs bg-primary text-primary-foreground">Export Report</Button>
               </div>
             </div>
