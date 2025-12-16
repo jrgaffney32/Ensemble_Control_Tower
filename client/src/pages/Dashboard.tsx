@@ -342,7 +342,10 @@ export default function Dashboard() {
                               </div>
                               <div>
                                 <div className="font-medium text-sm">{init.name}</div>
-                                <div className="text-xs text-muted-foreground">{init.ids.join(', ')} {init.milestones.length > 0 && `• ${init.milestones.length} milestones`}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {init.costCenter || 'No cost center'}
+                                  {init.milestones.length > 0 && ` • ${init.milestones.length} ms`}
+                                </div>
                               </div>
                             </div>
                             <div className="flex items-center gap-4">

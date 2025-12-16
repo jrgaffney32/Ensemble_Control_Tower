@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useRoute, Link } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut, DollarSign, Target, TrendingUp } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut, DollarSign, Target, TrendingUp, BarChart3, Activity } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,27 @@ export default function ProjectDetail() {
     }
     return [];
   });
+
+  const [costStatus, setCostStatus] = useState<'green' | 'yellow' | 'red'>('green');
+  const [benefitStatus, setBenefitStatus] = useState<'green' | 'yellow' | 'red'>('green');
+  const [timelineStatus, setTimelineStatus] = useState<'green' | 'yellow' | 'red'>('green');
+  const [scopeStatus, setScopeStatus] = useState<'green' | 'yellow' | 'red'>('green');
+
+  const getStatusColor = (status: 'green' | 'yellow' | 'red') => {
+    switch (status) {
+      case 'green': return 'bg-green-500';
+      case 'yellow': return 'bg-yellow-500';
+      case 'red': return 'bg-red-500';
+    }
+  };
+
+  const getStatusBg = (status: 'green' | 'yellow' | 'red') => {
+    switch (status) {
+      case 'green': return 'bg-green-50';
+      case 'yellow': return 'bg-yellow-50';
+      case 'red': return 'bg-red-50';
+    }
+  };
   
   const getRoleBadge = () => {
     switch (role) {
@@ -196,55 +218,82 @@ export default function ProjectDetail() {
                   <Badge className={getPriorityColor(initiative.priorityCategory)}>{initiative.priorityCategory}</Badge>
                   <Badge variant="outline">{initiative.lGate}</Badge>
                 </div>
-                <p className="text-muted-foreground">{initiative.valueStream}</p>
-                <p className="text-sm text-muted-foreground mt-1">{initiative.ids.join(', ')} • {initiative.costCenter} • {initiative.milestones.length} milestones</p>
+                <p className="text-muted-foreground">{initiative.valueStream} • {initiative.costCenter}</p>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center gap-1 text-sm text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>0 Open Issues</span>
+                    <span className="text-[10px] text-amber-500">(placeholder)</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                    <FileText className="w-4 h-4" />
+                    <span>0 Pending Requests</span>
+                    <span className="text-[10px] text-amber-500">(placeholder)</span>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center gap-4 border rounded-lg p-3 bg-slate-50">
                 <div className="flex flex-col items-center gap-1">
-                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <div className={`w-4 h-4 rounded-full ${getStatusColor(costStatus)}`} />
                   <span className="text-[10px] text-muted-foreground">Cost</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <div className={`w-4 h-4 rounded-full ${getStatusColor(benefitStatus)}`} />
                   <span className="text-[10px] text-muted-foreground">Benefit</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <div className={`w-4 h-4 rounded-full ${getStatusColor(timelineStatus)}`} />
                   <span className="text-[10px] text-muted-foreground">Timeline</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
-                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <div className={`w-4 h-4 rounded-full ${getStatusColor(scopeStatus)}`} />
                   <span className="text-[10px] text-muted-foreground">Scope</span>
                 </div>
               </div>
             </div>
             
             {/* Summary Cards */}
-            <div className="grid grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-6 gap-4 mt-6">
               <div className="bg-slate-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 text-muted-foreground mb-1">
                   <DollarSign className="w-4 h-4" />
                   <span className="text-xs font-semibold uppercase">Budgeted Cost</span>
                 </div>
-                <p className="text-xl font-bold font-mono">
+                <p className="text-lg font-bold font-mono">
                   {initiative.budgetedCost > 0 ? formatCurrency(initiative.budgetedCost) : '-'}
                 </p>
+              </div>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                <div className="flex items-center gap-2 text-blue-600 mb-1">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase">Realized Cost</span>
+                </div>
+                <p className="text-lg font-bold font-mono text-blue-600">$0</p>
+                <p className="text-[10px] text-blue-500 mt-1">Placeholder</p>
               </div>
               <div className="bg-slate-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 text-muted-foreground mb-1">
                   <Target className="w-4 h-4" />
                   <span className="text-xs font-semibold uppercase">Targeted Benefit</span>
                 </div>
-                <p className="text-xl font-bold font-mono text-green-600">
+                <p className="text-lg font-bold font-mono text-green-600">
                   {initiative.targetedBenefit > 0 ? formatCurrency(initiative.targetedBenefit) : '-'}
                 </p>
               </div>
+              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                <div className="flex items-center gap-2 text-emerald-600 mb-1">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase">Realized Benefit</span>
+                </div>
+                <p className="text-lg font-bold font-mono text-emerald-600">$0</p>
+                <p className="text-[10px] text-emerald-500 mt-1">Placeholder</p>
+              </div>
               <div className="bg-slate-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <TrendingUp className="w-4 h-4" />
+                  <ListOrdered className="w-4 h-4" />
                   <span className="text-xs font-semibold uppercase">Priority Rank</span>
                 </div>
-                <p className="text-xl font-bold font-mono">
+                <p className="text-lg font-bold font-mono">
                   {initiative.priorityRank !== 999 ? `#${initiative.priorityRank}` : '-'}
                 </p>
               </div>
@@ -253,7 +302,7 @@ export default function ProjectDetail() {
                   <Calendar className="w-4 h-4" />
                   <span className="text-xs font-semibold uppercase">Milestones</span>
                 </div>
-                <p className="text-xl font-bold font-mono">{initiative.milestones.length}</p>
+                <p className="text-lg font-bold font-mono">{initiative.milestones.length}</p>
               </div>
             </div>
             
@@ -320,51 +369,124 @@ export default function ProjectDetail() {
                       <p className="text-xs font-semibold text-muted-foreground uppercase">Current L-Gate</p>
                       <p className="text-sm mt-1">{initiative.lGate}</p>
                     </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Project IDs</p>
+                      <p className="text-sm mt-1 font-mono text-muted-foreground">{initiative.ids.join(', ')}</p>
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Financials</CardTitle>
+                    <CardTitle className="text-base">Status Controls</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-slate-50 p-3 rounded-md">
-                        <p className="text-xs text-muted-foreground">Budgeted Cost</p>
-                        <p className="text-lg font-bold">
-                          {initiative.budgetedCost > 0 ? formatCurrency(initiative.budgetedCost) : '-'}
-                        </p>
+                      <div className={`p-3 rounded-md ${getStatusBg(costStatus)}`}>
+                        <p className="text-xs text-muted-foreground mb-2">Cost Status</p>
+                        <Select value={costStatus} onValueChange={(v) => setCostStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                          <SelectTrigger className="h-8" data-testid="select-cost-status">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="green"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /> On Track</div></SelectItem>
+                            <SelectItem value="yellow"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-yellow-500" /> At Risk</div></SelectItem>
+                            <SelectItem value="red"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Off Track</div></SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <div className="bg-slate-50 p-3 rounded-md">
-                        <p className="text-xs text-muted-foreground">Targeted Benefit</p>
-                        <p className="text-lg font-bold text-green-600">
-                          {initiative.targetedBenefit > 0 ? formatCurrency(initiative.targetedBenefit) : '-'}
-                        </p>
+                      <div className={`p-3 rounded-md ${getStatusBg(benefitStatus)}`}>
+                        <p className="text-xs text-muted-foreground mb-2">Benefit Status</p>
+                        <Select value={benefitStatus} onValueChange={(v) => setBenefitStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                          <SelectTrigger className="h-8" data-testid="select-benefit-status">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="green"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /> On Track</div></SelectItem>
+                            <SelectItem value="yellow"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-yellow-500" /> At Risk</div></SelectItem>
+                            <SelectItem value="red"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Off Track</div></SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className={`p-3 rounded-md ${getStatusBg(timelineStatus)}`}>
+                        <p className="text-xs text-muted-foreground mb-2">Timeline Status</p>
+                        <Select value={timelineStatus} onValueChange={(v) => setTimelineStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                          <SelectTrigger className="h-8" data-testid="select-timeline-status">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="green"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /> On Track</div></SelectItem>
+                            <SelectItem value="yellow"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-yellow-500" /> At Risk</div></SelectItem>
+                            <SelectItem value="red"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Off Track</div></SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className={`p-3 rounded-md ${getStatusBg(scopeStatus)}`}>
+                        <p className="text-xs text-muted-foreground mb-2">Scope Status</p>
+                        <Select value={scopeStatus} onValueChange={(v) => setScopeStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                          <SelectTrigger className="h-8" data-testid="select-scope-status">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="green"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /> On Track</div></SelectItem>
+                            <SelectItem value="yellow"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-yellow-500" /> At Risk</div></SelectItem>
+                            <SelectItem value="red"><div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /> Off Track</div></SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Status Indicators</p>
-                      <div className="grid grid-cols-4 gap-2">
-                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
-                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
-                          <span className="text-xs font-medium text-green-700">Cost</span>
-                        </div>
-                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
-                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
-                          <span className="text-xs font-medium text-green-700">Benefit</span>
-                        </div>
-                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
-                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
-                          <span className="text-xs font-medium text-green-700">Timeline</span>
-                        </div>
-                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
-                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
-                          <span className="text-xs font-medium text-green-700">Scope</span>
-                        </div>
-                      </div>
-                    </div>
+                    <p className="text-xs text-amber-600 text-center mt-2 bg-amber-50 px-2 py-1 rounded">
+                      Status changes are session-only (not persisted to database)
+                    </p>
+                    {!canEdit && (
+                      <p className="text-xs text-muted-foreground text-center">View-only access. Contact an admin to update statuses.</p>
+                    )}
                   </CardContent>
                 </Card>
               </div>
+              
+              {/* Operational KPI Placeholders */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4" />
+                    Operational KPIs
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="border rounded-lg p-4 bg-slate-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold">Automation Rate</span>
+                        <Activity className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <div className="h-24 bg-slate-100 rounded flex items-center justify-center text-muted-foreground text-sm">
+                        Chart Placeholder
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">Illustrative data pending</p>
+                    </div>
+                    <div className="border rounded-lg p-4 bg-slate-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold">Processing Time</span>
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <div className="h-24 bg-slate-100 rounded flex items-center justify-center text-muted-foreground text-sm">
+                        Chart Placeholder
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">Illustrative data pending</p>
+                    </div>
+                    <div className="border rounded-lg p-4 bg-slate-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold">Error Rate</span>
+                        <AlertCircle className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <div className="h-24 bg-slate-100 rounded flex items-center justify-center text-muted-foreground text-sm">
+                        Chart Placeholder
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">Illustrative data pending</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
             
             {/* Milestones Tab */}

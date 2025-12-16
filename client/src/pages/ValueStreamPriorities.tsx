@@ -239,8 +239,8 @@ export default function ValueStreamPriorities() {
                                   <h4 className="font-medium text-sm hover:text-blue-600 cursor-pointer">{init.name}</h4>
                                 </Link>
                                 <p className="text-xs text-muted-foreground">
-                                  {init.ids.join(', ')} • {init.costCenter || 'No cost center'}
-                                  {init.milestones.length > 0 && ` • ${init.milestones.length} milestones`}
+                                  {init.costCenter || 'No cost center'}
+                                  {init.milestones.length > 0 && ` • ${init.milestones.length} ms`}
                                 </p>
                               </div>
                             </div>

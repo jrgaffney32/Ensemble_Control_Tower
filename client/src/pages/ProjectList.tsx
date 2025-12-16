@@ -241,11 +241,11 @@ export default function ProjectList() {
                                   </Badge>
                                   <Badge variant="outline" className="text-xs">{init.lGate}</Badge>
                                   {init.milestones.length > 0 && (
-                                    <Badge variant="outline" className="text-xs text-purple-600">{init.milestones.length} milestones</Badge>
+                                    <span className="text-xs text-purple-600">{init.milestones.length} ms</span>
                                   )}
                                 </div>
                                 <div className="text-xs text-muted-foreground mt-1 ml-10">
-                                  {init.ids.join(', ')} • {init.costCenter || 'No cost center'}
+                                  {init.costCenter || 'No cost center'}
                                 </div>
                               </div>
                               <div className="flex items-center gap-6 text-sm">
