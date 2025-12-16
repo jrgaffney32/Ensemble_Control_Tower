@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { mockProjects } from "@/lib/mockData";
-import { ProjectCard } from "@/components/dashboard/ProjectCard";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users } from "lucide-react";
+import { useState, useMemo } from "react";
+import { initiatives, formatCurrency } from "@/lib/initiatives";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,11 +25,41 @@ export default function Dashboard() {
     }
   };
 
-  const filteredProjects = mockProjects.filter(p => 
-    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    p.valueStream.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const stats = useMemo(() => {
+    const totalBudget = initiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
+    const totalBenefit = initiatives.reduce((sum, i) => sum + i.targetedBenefit, 0);
+    const activeProjects = initiatives.filter(i => i.priorityCategory === 'Now').length;
+    const nextProjects = initiatives.filter(i => i.priorityCategory === 'Next').length;
+    const shippedProjects = initiatives.filter(i => i.priorityCategory === 'Shipped').length;
+    
+    const byValueStream: Record<string, number> = {};
+    const byLGate: Record<string, number> = {};
+    initiatives.forEach(i => {
+      byValueStream[i.valueStream] = (byValueStream[i.valueStream] || 0) + 1;
+      byLGate[i.lGate] = (byLGate[i.lGate] || 0) + 1;
+    });
+    
+    return { totalBudget, totalBenefit, activeProjects, nextProjects, shippedProjects, byValueStream, byLGate };
+  }, []);
+
+  const filteredInitiatives = useMemo(() => {
+    return initiatives.filter(i => 
+      i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      i.valueStream.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 20);
+  }, [searchTerm]);
+
+  const getPriorityColor = (cat: string) => {
+    switch (cat) {
+      case 'Shipped': return 'bg-green-100 text-green-700';
+      case 'Now': return 'bg-blue-100 text-blue-700';
+      case 'Next': return 'bg-amber-100 text-amber-700';
+      case 'Later': return 'bg-slate-100 text-slate-600';
+      case 'New': return 'bg-purple-100 text-purple-700';
+      case 'Kill': return 'bg-red-100 text-red-700';
+      default: return 'bg-slate-100 text-slate-600';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex font-sans">
@@ -127,13 +157,14 @@ export default function Dashboard() {
               </Button>
             </Link>
             <h2 className="text-lg font-bold font-heading text-foreground">Ensemble Control Tower</h2>
+            <Badge variant="outline" className="text-xs">Strategic Funding Lane</Badge>
           </div>
           
           <div className="flex items-center gap-4">
             <div className="relative w-64">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Search projects..." 
+                placeholder="Search initiatives..." 
                 className="pl-9 bg-slate-50 border-slate-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -155,41 +186,43 @@ export default function Dashboard() {
           {/* Executive Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Investment</p>
-              <p className="text-2xl font-bold text-foreground font-mono">$7.3M</p>
-              <div className="flex items-center gap-1 text-xs text-status-green mt-1">
-                <TrendingUp className="w-3 h-3" />
-                <span>On Budget</span>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Budgeted Cost</p>
+              <p className="text-2xl font-bold text-foreground font-mono">{formatCurrency(stats.totalBudget)}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <span>{initiatives.length} initiatives</span>
               </div>
             </div>
             <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Projected ROI</p>
-              <p className="text-2xl font-bold text-foreground font-mono">$19.5M</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Targeted Benefit</p>
+              <p className="text-2xl font-bold text-foreground font-mono">{formatCurrency(stats.totalBenefit)}</p>
               <div className="flex items-center gap-1 text-xs text-status-green mt-1">
                 <TrendingUp className="w-3 h-3" />
-                <span>+12% vs Target</span>
+                <span>Projected savings</span>
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Active Projects</p>
-              <p className="text-2xl font-bold text-foreground font-mono">12</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Now (Active)</p>
+              <p className="text-2xl font-bold text-blue-600 font-mono">{stats.activeProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <span>3 Critical Path</span>
+                <span>{stats.shippedProjects} shipped</span>
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Critical Milestones</p>
-              <p className="text-2xl font-bold text-foreground font-mono">8</p>
-              <div className="flex items-center gap-1 text-xs text-status-yellow mt-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Next (Pipeline)</p>
+              <p className="text-2xl font-bold text-amber-600 font-mono">{stats.nextProjects}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                 <Clock className="w-3 h-3" />
-                <span>Due this week</span>
+                <span>In queue</span>
               </div>
             </div>
 
             {/* New Tiles */}
             <Link href="/issues">
               <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Escalated Issues</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Escalated Issues</p>
+                  <Badge variant="outline" className="text-[10px]">Illustrative</Badge>
+                </div>
                 <p className="text-2xl font-bold text-status-red font-mono">3</p>
                 <div className="flex items-center gap-1 text-xs text-status-red mt-1">
                   <AlertTriangle className="w-3 h-3" />
@@ -199,53 +232,144 @@ export default function Dashboard() {
             </Link>
             <Link href="/requests">
               <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pending Approvals</p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending Approvals</p>
+                  <Badge variant="outline" className="text-[10px]">Illustrative</Badge>
+                </div>
                 <p className="text-2xl font-bold text-foreground font-mono">5</p>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                   <FileCheck className="w-3 h-3" />
-                  <span>New changes</span>
+                  <span>New requests</span>
                 </div>
               </div>
             </Link>
             <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Stage Gates</p>
-              <p className="text-2xl font-bold text-foreground font-mono">2</p>
-              <div className="flex items-center gap-1 text-xs text-status-yellow mt-1">
-                <GitPullRequest className="w-3 h-3" />
-                <span>Awaiting Review</span>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Intake Forms</p>
+              <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <FileText className="w-3 h-3" />
+                <span>No forms submitted</span>
               </div>
             </div>
-            <Link href="/budget">
-              <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Budget Requests</p>
-                <p className="text-2xl font-bold text-foreground font-mono">4</p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>Capacity Review</span>
-                </div>
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Stage Gates</p>
+              <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <GitPullRequest className="w-3 h-3" />
+                <span>No gates pending</span>
               </div>
-            </Link>
+            </div>
           </div>
 
-          {/* Project List */}
-          <div className="space-y-6">
+          {/* Value Stream Summary */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">By Value Stream</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {Object.entries(stats.byValueStream)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([stream, count]) => (
+                      <div key={stream} className="flex items-center justify-between py-1">
+                        <span className="text-sm text-muted-foreground">{stream}</span>
+                        <Badge variant="outline">{count}</Badge>
+                      </div>
+                    ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">By L-Gate Stage</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Rejected'].map(gate => {
+                    const count = stats.byLGate[gate] || 0;
+                    if (count === 0) return null;
+                    return (
+                      <div key={gate} className="flex items-center justify-between py-1">
+                        <span className="text-sm text-muted-foreground">{gate}</span>
+                        <Badge variant="outline">{count}</Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Initiative List */}
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold font-heading text-foreground">Active Initiatives</h3>
+              <h3 className="text-lg font-bold font-heading text-foreground">Strategic Initiatives</h3>
               <div className="flex gap-2">
                  <Link href="/pod-velocity"><Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button></Link>
                  <Link href="/demand-capacity"><Button variant="outline" size="sm" className="text-xs">Demand vs. Capacity</Button></Link>
                  <Link href="/roadmap"><Button variant="outline" size="sm" className="text-xs">Roadmap View</Button></Link>
-                 <Button variant="outline" size="sm" className="text-xs">Demo Schedule</Button>
-                 <Link href="/projects"><Button variant="outline" size="sm" className="text-xs">All Projects</Button></Link>
-                 <Button size="sm" className="text-xs bg-primary text-primary-foreground">Export Report</Button>
+                 <Link href="/priorities"><Button variant="outline" size="sm" className="text-xs">Priorities</Button></Link>
               </div>
             </div>
 
-            <div className="grid gap-6">
-              {filteredProjects.map(project => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
+            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b">
+                  <tr>
+                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Initiative</th>
+                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Value Stream</th>
+                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Priority</th>
+                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">L-Gate</th>
+                    <th className="text-right p-3 text-xs font-semibold text-muted-foreground uppercase">Budget</th>
+                    <th className="text-right p-3 text-xs font-semibold text-muted-foreground uppercase">Benefit</th>
+                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Forms</th>
+                    <th className="p-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredInitiatives.map((init, idx) => (
+                    <tr key={init.id} className="border-b last:border-b-0 hover:bg-slate-50" data-testid={`row-initiative-${init.id}`}>
+                      <td className="p-3">
+                        <div className="font-medium text-sm">{init.name}</div>
+                        <div className="text-xs text-muted-foreground">{init.id}</div>
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground">{init.valueStream}</td>
+                      <td className="p-3">
+                        <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
+                      </td>
+                      <td className="p-3">
+                        <Badge variant="outline">{init.lGate}</Badge>
+                      </td>
+                      <td className="p-3 text-right text-sm font-mono">
+                        {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
+                      </td>
+                      <td className="p-3 text-right text-sm font-mono text-green-600">
+                        {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
+                      </td>
+                      <td className="p-3">
+                        <span className="text-xs text-slate-400">No forms</span>
+                      </td>
+                      <td className="p-3">
+                        <Link href={`/project/${init.id}`}>
+                          <Button variant="ghost" size="sm" className="h-7 px-2">
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+            
+            {filteredInitiatives.length < initiatives.length && (
+              <div className="text-center">
+                <Link href="/priorities">
+                  <Button variant="outline" size="sm">View All {initiatives.length} Initiatives</Button>
+                </Link>
+              </div>
+            )}
           </div>
 
         </div>

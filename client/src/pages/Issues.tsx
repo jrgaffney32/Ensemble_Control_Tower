@@ -97,6 +97,8 @@ const mockIssues: Issue[] = [
 export default function Issues() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<'all' | 'open' | 'in_progress' | 'escalated' | 'resolved'>('all');
+  
+  const isIllustrative = true;
 
   const filteredIssues = mockIssues.filter(issue => {
     const matchesSearch = issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -206,6 +208,7 @@ export default function Issues() {
               </Button>
             </Link>
             <h2 className="text-lg font-bold font-heading text-foreground">Issues & Escalations</h2>
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Illustrative Data</Badge>
           </div>
           
           <div className="flex items-center gap-4">

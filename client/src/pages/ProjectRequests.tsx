@@ -90,6 +90,8 @@ export default function ProjectRequests() {
   const [filterType, setFilterType] = useState<'all' | 'new_project' | 'change_request'>('all');
   const [activeTab, setActiveTab] = useState<'projects' | 'priorities'>('projects');
   const { toast } = useToast();
+  
+  const isIllustrative = true;
 
   const filteredRequests = mockRequests.filter(req => {
     const matchesSearch = req.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -214,6 +216,7 @@ export default function ProjectRequests() {
               </Button>
             </Link>
             <h2 className="text-lg font-bold font-heading text-foreground">Project Requests & Changes</h2>
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Illustrative Data</Badge>
           </div>
           
           <div className="flex items-center gap-4">
