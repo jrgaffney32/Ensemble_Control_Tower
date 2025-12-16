@@ -1,36 +1,33 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRoute, Link } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut, DollarSign, Target, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { mockIntakeForms, mockLGateForms, mockProjectActions, lgateDefinitions, getFormStatusColor, getFormStatusLabel, LGate, LGateForm, FormStatus } from "@/lib/formData";
-import { mockProjects } from "@/lib/mockData";
 import { useUserRole } from "@/hooks/use-user-role";
 import { MilestoneEditor, type Milestone } from "@/components/dashboard/MilestoneEditor";
+import { initiatives, formatCurrency, getInitiativeById } from "@/lib/initiatives";
 
 export default function ProjectDetail() {
   const [, params] = useRoute("/project/:id");
-  const projectId = params?.id || 'ACA-001';
+  const projectId = params?.id || '';
   const { user, role, canEdit, isControlTower, isSTO } = useUserRole();
   
-  const project = mockProjects.find(p => p.id === projectId);
-  const intakeForm = mockIntakeForms.find(f => f.projectId === projectId);
-  const lgates = mockLGateForms[projectId] || [];
-  const actions = mockProjectActions.filter(a => a.projectId === projectId);
-
-  const completedGates = lgates.filter(g => g.status === 'approved').length;
-  const currentGate = lgates.find(g => g.status === 'in_review' || g.status === 'submitted');
-  const progressPercent = (completedGates / 7) * 100;
+  const initiative = useMemo(() => getInitiativeById(projectId), [projectId]);
   
-  const [milestones, setMilestones] = useState<Milestone[]>([
-    { id: 'ms-1', name: 'Requirements Complete', targetDate: '2024-02-15', status: 'green' },
-    { id: 'ms-2', name: 'Development Sprint 1', targetDate: '2024-03-01', status: 'green' },
-    { id: 'ms-3', name: 'UAT Start', targetDate: '2024-03-15', status: 'yellow' },
-    { id: 'ms-4', name: 'Production Deploy', targetDate: '2024-04-01', status: 'red' },
-  ]);
+  const [milestones, setMilestones] = useState<Milestone[]>(() => {
+    if (initiative?.milestones) {
+      return initiative.milestones.map((m, idx) => ({
+        id: `ms-${idx}`,
+        name: m.name,
+        targetDate: m.endDate || m.startDate || '',
+        status: 'green' as const
+      }));
+    }
+    return [];
+  });
   
   const getRoleBadge = () => {
     switch (role) {
@@ -45,16 +42,42 @@ export default function ProjectDetail() {
     }
   };
 
-  const getGateIcon = (status: FormStatus) => {
-    switch (status) {
-      case 'approved': return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case 'rejected': return <XCircle className="w-5 h-5 text-red-600" />;
-      case 'in_review': return <Clock className="w-5 h-5 text-blue-600" />;
-      case 'submitted': return <Clock className="w-5 h-5 text-purple-600" />;
-      case 'draft': return <Circle className="w-5 h-5 text-amber-500" />;
-      default: return <Circle className="w-5 h-5 text-slate-300" />;
+  const getPriorityColor = (cat: string) => {
+    switch (cat) {
+      case 'Shipped': return 'bg-green-100 text-green-700';
+      case 'Now': return 'bg-blue-100 text-blue-700';
+      case 'Next': return 'bg-amber-100 text-amber-700';
+      case 'Later': return 'bg-slate-100 text-slate-600';
+      case 'New': return 'bg-purple-100 text-purple-700';
+      case 'Kill': return 'bg-red-100 text-red-700';
+      default: return 'bg-slate-100 text-slate-600';
     }
   };
+
+  const getLGateProgress = (lgate: string) => {
+    const gates = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'];
+    const index = gates.indexOf(lgate);
+    return index >= 0 ? ((index + 1) / gates.length) * 100 : 0;
+  };
+
+  const getLGateNumber = (lgate: string) => {
+    const gates = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'];
+    return gates.indexOf(lgate) + 1;
+  };
+
+  if (!initiative) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Initiative Not Found</h1>
+          <p className="text-muted-foreground mb-4">The initiative "{projectId}" was not found.</p>
+          <Link href="/projects">
+            <Button>Back to All Projects</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex font-sans">
@@ -152,7 +175,7 @@ export default function ProjectDetail() {
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
             <Link href="/projects" className="text-muted-foreground hover:text-foreground">Projects</Link>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className="font-semibold text-foreground">{project?.name || projectId}</span>
+            <span className="font-semibold text-foreground">{initiative.name}</span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -168,233 +191,252 @@ export default function ProjectDetail() {
           <div className="bg-white p-6 rounded-xl border shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h1 className="text-2xl font-bold font-heading text-foreground">{project?.name || intakeForm?.projectName}</h1>
-                <p className="text-muted-foreground mt-1">{project?.valueStream || intakeForm?.singleThreadedOwner}</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-2xl font-bold font-heading text-foreground">{initiative.name}</h1>
+                  <Badge className={getPriorityColor(initiative.priorityCategory)}>{initiative.priorityCategory}</Badge>
+                  <Badge variant="outline">{initiative.lGate}</Badge>
+                </div>
+                <p className="text-muted-foreground">{initiative.valueStream}</p>
+                <p className="text-sm text-muted-foreground mt-1">{initiative.id} • {initiative.costCenter}</p>
               </div>
-              <Badge className={getFormStatusColor(intakeForm?.status || 'not_started')}>
-                Intake: {getFormStatusLabel(intakeForm?.status || 'not_started')}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500" />
+                <span className="text-sm font-medium text-green-700">Status: Green</span>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">{intakeForm?.problemStatement}</p>
+            
+            {/* Summary Cards */}
+            <div className="grid grid-cols-4 gap-4 mt-6">
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase">Budgeted Cost</span>
+                </div>
+                <p className="text-xl font-bold font-mono">
+                  {initiative.budgetedCost > 0 ? formatCurrency(initiative.budgetedCost) : '-'}
+                </p>
+              </div>
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                  <Target className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase">Targeted Benefit</span>
+                </div>
+                <p className="text-xl font-bold font-mono text-green-600">
+                  {initiative.targetedBenefit > 0 ? formatCurrency(initiative.targetedBenefit) : '-'}
+                </p>
+              </div>
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase">Priority Rank</span>
+                </div>
+                <p className="text-xl font-bold font-mono">
+                  {initiative.priorityRank !== 999 ? `#${initiative.priorityRank}` : '-'}
+                </p>
+              </div>
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-xs font-semibold uppercase">Milestones</span>
+                </div>
+                <p className="text-xl font-bold font-mono">{initiative.milestones.length}</p>
+              </div>
+            </div>
             
             {/* Gate Progress */}
             <div className="mt-6">
               <div className="flex justify-between text-sm mb-2">
-                <span className="font-semibold">Gate Progress</span>
-                <span className="text-muted-foreground">{completedGates} of 7 gates completed</span>
+                <span className="font-semibold">L-Gate Progress</span>
+                <span className="text-muted-foreground">{initiative.lGate} ({getLGateNumber(initiative.lGate)} of 7)</span>
               </div>
-              <Progress value={progressPercent} className="h-3" />
+              <Progress value={getLGateProgress(initiative.lGate)} className="h-3" />
               <div className="flex justify-between mt-3">
-                {lgates.map((gate, idx) => (
-                  <div key={gate.gate} className="flex flex-col items-center">
-                    {getGateIcon(gate.status)}
-                    <span className="text-xs mt-1 font-medium">{gate.gate}</span>
-                  </div>
-                ))}
+                {['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'].map((gate) => {
+                  const isCompleted = getLGateNumber(initiative.lGate) > getLGateNumber(gate);
+                  const isCurrent = gate === initiative.lGate;
+                  return (
+                    <div key={gate} className="flex flex-col items-center">
+                      {isCompleted ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      ) : isCurrent ? (
+                        <Clock className="w-5 h-5 text-blue-600" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-slate-300" />
+                      )}
+                      <span className="text-xs mt-1 font-medium">{gate}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <Tabs defaultValue="gates" className="space-y-4">
+          <Tabs defaultValue="overview" className="space-y-4">
             <TabsList>
-              <TabsTrigger value="gates">L-Gate Forms</TabsTrigger>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="milestones">Milestones</TabsTrigger>
-              <TabsTrigger value="intake">Intake Form</TabsTrigger>
-              <TabsTrigger value="documents">Documents</TabsTrigger>
-              <TabsTrigger value="history">Activity History</TabsTrigger>
+              <TabsTrigger value="forms">Forms</TabsTrigger>
+              <TabsTrigger value="issues">Issues</TabsTrigger>
+              <TabsTrigger value="requests">Requests</TabsTrigger>
+              <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
 
-            {/* L-Gate Forms Tab */}
-            <TabsContent value="gates" className="space-y-4">
-              {lgates.map((gate) => (
-                <Card key={gate.gate} className={gate.status === 'in_review' ? 'border-l-4 border-l-blue-500' : ''}>
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        {getGateIcon(gate.status)}
-                        <div>
-                          <CardTitle className="text-base">{gate.gate}: {gate.gateName}</CardTitle>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {gate.requirements.filter(r => r.completed).length} of {gate.requirements.length} requirements complete
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getFormStatusColor(gate.status)}>
-                          {getFormStatusLabel(gate.status)}
-                        </Badge>
-                        <Link href={`/project/${projectId}/gate/${gate.gate}`}>
-                          <Button size="sm" variant={gate.status === 'not_started' ? 'outline' : 'default'}>
-                            {gate.status === 'not_started' ? 'Start' : gate.status === 'approved' ? 'View' : 'Edit'}
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
+            {/* Overview Tab */}
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Initiative Details</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                      {gate.requirements.map((req) => (
-                        <div key={req.id} className="flex items-center gap-2 text-sm">
-                          {req.completed ? (
-                            <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                          ) : (
-                            <Circle className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                          )}
-                          <span className={req.completed ? 'text-foreground' : 'text-muted-foreground'}>
-                            {req.name}
-                          </span>
-                          {req.attachmentUrl && (
-                            <FileText className="w-3 h-3 text-blue-500" />
-                          )}
-                        </div>
-                      ))}
+                  <CardContent className="space-y-4">
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Value Stream</p>
+                      <p className="text-sm mt-1">{initiative.valueStream}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Cost Center</p>
+                      <p className="text-sm mt-1">{initiative.costCenter || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Priority Category</p>
+                      <p className="text-sm mt-1">{initiative.priorityCategory}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Current L-Gate</p>
+                      <p className="text-sm mt-1">{initiative.lGate}</p>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">Financials</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-3 rounded-md">
+                        <p className="text-xs text-muted-foreground">Budgeted Cost</p>
+                        <p className="text-lg font-bold">
+                          {initiative.budgetedCost > 0 ? formatCurrency(initiative.budgetedCost) : '-'}
+                        </p>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded-md">
+                        <p className="text-xs text-muted-foreground">Targeted Benefit</p>
+                        <p className="text-lg font-bold text-green-600">
+                          {initiative.targetedBenefit > 0 ? formatCurrency(initiative.targetedBenefit) : '-'}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">Status</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-2 h-2 rounded-full bg-green-500" />
+                        <span className="text-sm">All metrics green</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
             
             {/* Milestones Tab */}
             <TabsContent value="milestones">
-              <MilestoneEditor 
-                milestones={milestones} 
-                onUpdate={setMilestones} 
-                canEdit={canEdit}
-              />
-              {!canEdit && (
+              {milestones.length > 0 ? (
+                <MilestoneEditor 
+                  milestones={milestones} 
+                  onUpdate={setMilestones} 
+                  canEdit={canEdit}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="py-8 text-center text-muted-foreground">
+                    No milestones defined for this initiative.
+                  </CardContent>
+                </Card>
+              )}
+              {!canEdit && milestones.length > 0 && (
                 <p className="text-sm text-muted-foreground mt-4 text-center">
                   You have view-only access. Contact a Control Tower admin or STO to make changes.
                 </p>
               )}
             </TabsContent>
 
-            {/* Intake Form Tab */}
-            <TabsContent value="intake">
-              {intakeForm && (
+            {/* Forms Tab */}
+            <TabsContent value="forms">
+              <div className="space-y-4">
                 <Card>
                   <CardHeader>
                     <div className="flex justify-between items-center">
-                      <CardTitle>Project Intake Form</CardTitle>
-                      <div className="flex gap-2">
-                        <Badge className={getFormStatusColor(intakeForm.status)}>
-                          {getFormStatusLabel(intakeForm.status)}
-                        </Badge>
-                        <Link href={`/project/${projectId}/intake`}>
-                          <Button size="sm">Edit Form</Button>
-                        </Link>
-                      </div>
+                      <CardTitle className="text-base">Intake Form</CardTitle>
+                      <Badge variant="outline" className="text-slate-500">Not Started</Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Problem Statement</p>
-                          <p className="text-sm mt-1">{intakeForm.problemStatement}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Desired Outcome</p>
-                          <p className="text-sm mt-1">{intakeForm.desiredBusinessOutcome}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Success KPIs</p>
-                          <p className="text-sm mt-1">{intakeForm.successKPIs}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Timeline</p>
-                          <p className="text-sm mt-1">{intakeForm.timelinePeriod}</p>
-                        </div>
-                      </div>
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-slate-50 p-3 rounded-md">
-                            <p className="text-xs text-muted-foreground">Gross Benefit</p>
-                            <p className="text-lg font-bold text-green-600">${(intakeForm.grossBenefit / 1000000).toFixed(1)}M</p>
+                    <p className="text-sm text-muted-foreground">No intake form has been submitted for this initiative.</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-base">Stage Gate Forms</CardTitle>
+                      <Badge variant="outline" className="text-slate-500">Not Started</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'].map(gate => (
+                        <div key={gate} className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
+                          <div className="flex items-center gap-3">
+                            <Circle className="w-4 h-4 text-slate-300" />
+                            <span className="text-sm">{gate} Gate Review</span>
                           </div>
-                          <div className="bg-slate-50 p-3 rounded-md">
-                            <p className="text-xs text-muted-foreground">Net Benefit</p>
-                            <p className="text-lg font-bold text-green-600">${(intakeForm.netBenefit / 1000).toFixed(0)}K</p>
-                          </div>
+                          <Badge variant="outline" className="text-xs text-slate-400">Not Started</Badge>
                         </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Dependencies</p>
-                          <ul className="text-sm mt-1 space-y-1">
-                            {intakeForm.dependency1 && <li>• {intakeForm.dependency1}</li>}
-                            {intakeForm.dependency2 && <li>• {intakeForm.dependency2}</li>}
-                          </ul>
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Risk & Mitigation</p>
-                          <p className="text-sm mt-1"><strong>Risk:</strong> {intakeForm.risk}</p>
-                          <p className="text-sm"><strong>Mitigation:</strong> {intakeForm.mitigation}</p>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
-              )}
+              </div>
             </TabsContent>
 
-            {/* Documents Tab */}
-            <TabsContent value="documents">
+            {/* Issues Tab */}
+            <TabsContent value="issues">
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle>Project Documents</CardTitle>
-                    <Button size="sm"><Upload className="w-4 h-4 mr-2" /> Upload Document</Button>
+                    <CardTitle className="text-base">Issues & Escalations</CardTitle>
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Illustrative</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    {lgates.flatMap(gate => 
-                      gate.requirements.filter(r => r.completed).map(req => (
-                        <div key={req.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
-                          <div className="flex items-center gap-3">
-                            <FileUp className="w-5 h-5 text-blue-500" />
-                            <div>
-                              <p className="text-sm font-medium">{req.name}</p>
-                              <p className="text-xs text-muted-foreground">{gate.gate}: {gate.gateName}</p>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">View</Button>
-                        </div>
-                      ))
-                    )}
-                  </div>
+                  <p className="text-sm text-muted-foreground text-center py-4">No issues reported for this initiative.</p>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            {/* Activity History Tab */}
-            <TabsContent value="history">
+            {/* Requests Tab */}
+            <TabsContent value="requests">
               <Card>
                 <CardHeader>
-                  <CardTitle>Activity History</CardTitle>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">Change & Budget Requests</CardTitle>
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Illustrative</Badge>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {actions.map((action) => (
-                      <div key={action.id} className="flex gap-4 pb-4 border-b last:border-b-0">
-                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="w-5 h-5 text-slate-500" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm">{action.enteredBy}</span>
-                            <Badge variant="outline" className="text-xs">{action.actionType}</Badge>
-                            {action.decision && (
-                              <Badge className={action.decision === 'Approved' ? 'bg-green-100 text-green-700' : action.decision === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'}>
-                                {action.decision}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">{action.notes}</p>
-                          <p className="text-xs text-muted-foreground mt-2">{action.gate} • {action.date}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-sm text-muted-foreground text-center py-4">No requests submitted for this initiative.</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Activity Tab */}
+            <TabsContent value="activity">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Activity History</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground text-center py-4">No activity recorded for this initiative.</p>
                 </CardContent>
               </Card>
             </TabsContent>
