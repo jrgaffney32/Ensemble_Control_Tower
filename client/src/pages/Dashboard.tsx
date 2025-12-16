@@ -301,10 +301,10 @@ export default function Dashboard() {
             </Card>
           </div>
 
-          {/* Initiative List */}
+          {/* Initiative List by Value Stream */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold font-heading text-foreground">Strategic Initiatives</h3>
+              <h3 className="text-lg font-bold font-heading text-foreground">Initiatives by Value Stream</h3>
               <div className="flex gap-2">
                  <Link href="/pod-velocity"><Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button></Link>
                  <Link href="/demand-capacity"><Button variant="outline" size="sm" className="text-xs">Demand vs. Capacity</Button></Link>
@@ -313,63 +313,55 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-slate-50 border-b">
-                  <tr>
-                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Initiative</th>
-                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Value Stream</th>
-                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Priority</th>
-                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">L-Gate</th>
-                    <th className="text-right p-3 text-xs font-semibold text-muted-foreground uppercase">Budget</th>
-                    <th className="text-right p-3 text-xs font-semibold text-muted-foreground uppercase">Benefit</th>
-                    <th className="text-left p-3 text-xs font-semibold text-muted-foreground uppercase">Forms</th>
-                    <th className="p-3"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredInitiatives.map((init, idx) => (
-                    <tr key={init.id} className="border-b last:border-b-0 hover:bg-slate-50" data-testid={`row-initiative-${init.id}`}>
-                      <td className="p-3">
-                        <div className="font-medium text-sm">{init.name}</div>
-                        <div className="text-xs text-muted-foreground">{init.id}</div>
-                      </td>
-                      <td className="p-3 text-sm text-muted-foreground">{init.valueStream}</td>
-                      <td className="p-3">
-                        <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
-                      </td>
-                      <td className="p-3">
-                        <Badge variant="outline">{init.lGate}</Badge>
-                      </td>
-                      <td className="p-3 text-right text-sm font-mono">
-                        {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
-                      </td>
-                      <td className="p-3 text-right text-sm font-mono text-green-600">
-                        {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
-                      </td>
-                      <td className="p-3">
-                        <span className="text-xs text-slate-400">No forms</span>
-                      </td>
-                      <td className="p-3">
-                        <Link href={`/project/${init.id}`}>
-                          <Button variant="ghost" size="sm" className="h-7 px-2">
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
+            {Object.entries(stats.byValueStream)
+              .sort((a, b) => b[1] - a[1])
+              .map(([valueStream, count]) => {
+                const streamInits = filteredInitiatives.filter(i => i.valueStream === valueStream).slice(0, 5);
+                if (streamInits.length === 0) return null;
+                return (
+                  <div key={valueStream} className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                    <div className="p-4 bg-slate-50 border-b flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <h4 className="font-semibold text-foreground">{valueStream}</h4>
+                        <Badge variant="outline">{count} initiatives</Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Budget: {formatCurrency(initiatives.filter(i => i.valueStream === valueStream).reduce((s, i) => s + i.budgetedCost, 0))}
+                      </div>
+                    </div>
+                    <div className="divide-y">
+                      {streamInits.map(init => (
+                        <Link key={init.id} href={`/project/${init.id}`}>
+                          <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.id}`}>
+                            <div className="flex items-center gap-3">
+                              <div className="w-2 h-2 rounded-full bg-green-500" />
+                              <div>
+                                <div className="font-medium text-sm">{init.name}</div>
+                                <div className="text-xs text-muted-foreground">{init.id}</div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
+                              <Badge variant="outline">{init.lGate}</Badge>
+                              <span className="text-sm font-mono w-20 text-right">
+                                {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
+                              </span>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          </div>
                         </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {filteredInitiatives.length < initiatives.length && (
-              <div className="text-center">
-                <Link href="/priorities">
-                  <Button variant="outline" size="sm">View All {initiatives.length} Initiatives</Button>
-                </Link>
-              </div>
-            )}
+                      ))}
+                    </div>
+                    {count > 5 && (
+                      <div className="p-2 text-center border-t">
+                        <Link href="/projects">
+                          <Button variant="ghost" size="sm" className="text-xs">View all {count} in {valueStream}</Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
 
         </div>

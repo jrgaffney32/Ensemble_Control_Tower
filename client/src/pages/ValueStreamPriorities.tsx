@@ -1,39 +1,72 @@
-import { useState } from "react";
-import { LayoutDashboard, PieChart, Calendar, Settings, FileText, AlertCircle, ArrowUpDown, Flag, Trash2, Send, X, ListOrdered } from "lucide-react";
+import { useState, useMemo } from "react";
+import { LayoutDashboard, PieChart, Calendar, Settings, FileText, AlertCircle, ArrowUpDown, Flag, Trash2, Send, X, ListOrdered, ChevronDown, ChevronRight, Home, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { mockPriorityItems, PriorityItem, PriorityCategory, getCategoryColor, getCategoryLabel } from "@/lib/priorityData";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { initiatives, getValueStreams, formatCurrency, type Initiative } from "@/lib/initiatives";
 import { useToast } from "@/hooks/use-toast";
+
+type PriorityCategory = 'Shipped' | 'Now' | 'Next' | 'Later' | 'New' | 'Kill';
 
 export default function ValueStreamPriorities() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<'reprioritize' | 'kill'>('reprioritize');
-  const [selectedItem, setSelectedItem] = useState<PriorityItem | null>(null);
-  const [targetCategory, setTargetCategory] = useState<'next' | 'later'>('next');
+  const [selectedItem, setSelectedItem] = useState<Initiative | null>(null);
+  const [targetCategory, setTargetCategory] = useState<'Next' | 'Later'>('Next');
   const [targetRank, setTargetRank] = useState('1');
   const [justification, setJustification] = useState('');
+  const [expandedStreams, setExpandedStreams] = useState<Set<string>>(new Set(getValueStreams()));
   const { toast } = useToast();
 
-  const categories: PriorityCategory[] = ['shipped', 'now', 'next', 'later'];
+  const valueStreams = useMemo(() => getValueStreams(), []);
 
-  const openReprioritizeDialog = (item: PriorityItem) => {
+  const groupedByValueStream = useMemo(() => {
+    const groups: Record<string, Initiative[]> = {};
+    initiatives.forEach(init => {
+      if (!groups[init.valueStream]) {
+        groups[init.valueStream] = [];
+      }
+      groups[init.valueStream].push(init);
+    });
+    Object.keys(groups).forEach(key => {
+      groups[key].sort((a, b) => {
+        const priorityOrder = { 'Shipped': 0, 'Now': 1, 'Next': 2, 'Later': 3, 'New': 4, 'Kill': 5 };
+        const aOrder = priorityOrder[a.priorityCategory as keyof typeof priorityOrder] ?? 4;
+        const bOrder = priorityOrder[b.priorityCategory as keyof typeof priorityOrder] ?? 4;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        return a.priorityRank - b.priorityRank;
+      });
+    });
+    return groups;
+  }, []);
+
+  const toggleStream = (stream: string) => {
+    const newExpanded = new Set(expandedStreams);
+    if (newExpanded.has(stream)) {
+      newExpanded.delete(stream);
+    } else {
+      newExpanded.add(stream);
+    }
+    setExpandedStreams(newExpanded);
+  };
+
+  const openReprioritizeDialog = (item: Initiative) => {
     setSelectedItem(item);
     setDialogType('reprioritize');
-    setTargetCategory(item.priorityCategory === 'later' ? 'next' : 'later');
+    setTargetCategory(item.priorityCategory === 'Later' ? 'Next' : 'Later');
     setTargetRank('1');
     setJustification('');
     setDialogOpen(true);
   };
 
-  const openKillDialog = (item: PriorityItem) => {
+  const openKillDialog = (item: Initiative) => {
     setSelectedItem(item);
     setDialogType('kill');
     setJustification('');
@@ -57,10 +90,16 @@ export default function ValueStreamPriorities() {
     setDialogOpen(false);
   };
 
-  const getItemsByCategory = (category: PriorityCategory) => {
-    return mockPriorityItems
-      .filter(item => item.priorityCategory === category)
-      .sort((a, b) => a.rankWithinCategory - b.rankWithinCategory);
+  const getPriorityColor = (cat: string) => {
+    switch (cat) {
+      case 'Shipped': return 'bg-green-100 text-green-700';
+      case 'Now': return 'bg-blue-100 text-blue-700';
+      case 'Next': return 'bg-amber-100 text-amber-700';
+      case 'Later': return 'bg-slate-100 text-slate-600';
+      case 'New': return 'bg-purple-100 text-purple-700';
+      case 'Kill': return 'bg-red-100 text-red-700';
+      default: return 'bg-slate-100 text-slate-600';
+    }
   };
 
   return (
@@ -118,97 +157,123 @@ export default function ValueStreamPriorities() {
 
       {/* Main Content */}
       <main className="flex-1 lg:ml-64">
-        <PageHeader 
-          title="Value Stream Priorities"
-          breadcrumbs={[
-            { label: 'Portfolio', href: '/' },
-            { label: 'Value Stream Priorities' }
-          ]}
-        />
+        <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="hover:bg-slate-100" data-testid="button-home">
+                <Home className="h-5 w-5 text-slate-600" />
+              </Button>
+            </Link>
+            <h2 className="text-lg font-bold font-heading text-foreground">Value Stream Priorities</h2>
+            <Badge variant="outline" className="text-xs">Strategic Funding Lane</Badge>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" className="border-slate-200 relative">
+              <Bell className="h-4 w-4 text-slate-600" />
+            </Button>
+          </div>
+        </header>
 
         <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
           
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold font-heading">Value Stream Priorities</h1>
-              <p className="text-muted-foreground mt-1">Priority rankings for all initiatives and capabilities across value streams</p>
-            </div>
-          </div>
-
-          {/* Priority Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map(category => {
-              const items = getItemsByCategory(category);
+          {/* Summary */}
+          <div className="grid grid-cols-6 gap-4">
+            {(['Shipped', 'Now', 'Next', 'Later', 'New', 'Kill'] as PriorityCategory[]).map(cat => {
+              const count = initiatives.filter(i => i.priorityCategory === cat).length;
               return (
-                <div key={category} className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Badge className={getCategoryColor(category)}>
-                      {getCategoryLabel(category)}
-                    </Badge>
-                    <span className="text-sm text-muted-foreground">({items.length})</span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {items.map((item, idx) => (
-                      <Card key={item.id} className="hover:shadow-md transition-shadow" data-testid={`card-priority-${item.id}`}>
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-muted-foreground">#{item.rankWithinCategory}</span>
-                              <Badge variant="outline" className="text-xs">
-                                {item.type === 'initiative' ? 'Initiative' : 'Capability'}
-                              </Badge>
-                            </div>
-                            <Badge variant="secondary" className="text-xs">{item.stageGate}</Badge>
-                          </div>
-                          
-                          <h3 className="font-semibold text-sm mb-1">{item.name}</h3>
-                          <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{item.description}</p>
-                          
-                          <div className="text-xs text-muted-foreground mb-3">
-                            <span className="font-medium">{item.valueStream}</span>
-                            {item.targetDate && (
-                              <span className="ml-2">• Target: {item.targetDate}</span>
-                            )}
-                          </div>
-                          
-                          {category !== 'shipped' && (
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="flex-1 text-xs h-7"
-                                onClick={() => openReprioritizeDialog(item)}
-                                data-testid={`button-reprioritize-${item.id}`}
-                              >
-                                <ArrowUpDown className="w-3 h-3 mr-1" />
-                                Reprioritize
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="text-xs h-7 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                onClick={() => openKillDialog(item)}
-                                data-testid={`button-kill-${item.id}`}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
-                    
-                    {items.length === 0 && (
-                      <div className="text-center py-8 text-sm text-muted-foreground bg-white rounded-lg border border-dashed">
-                        No items in this category
-                      </div>
-                    )}
-                  </div>
+                <div key={cat} className="bg-white p-3 rounded-xl border shadow-sm text-center">
+                  <Badge className={getPriorityColor(cat)}>{cat}</Badge>
+                  <p className="text-2xl font-bold font-mono mt-2">{count}</p>
                 </div>
               );
             })}
+          </div>
+
+          {/* Value Stream Groups */}
+          <div className="space-y-4">
+            {Object.entries(groupedByValueStream)
+              .sort((a, b) => b[1].length - a[1].length)
+              .map(([valueStream, inits]) => (
+                <Card key={valueStream} className="overflow-hidden">
+                  <Collapsible open={expandedStreams.has(valueStream)} onOpenChange={() => toggleStream(valueStream)}>
+                    <CollapsibleTrigger asChild>
+                      <div className="p-4 bg-slate-50 border-b flex items-center justify-between cursor-pointer hover:bg-slate-100">
+                        <div className="flex items-center gap-3">
+                          {expandedStreams.has(valueStream) ? (
+                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                          ) : (
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          )}
+                          <h3 className="font-semibold text-foreground">{valueStream}</h3>
+                          <Badge variant="outline">{inits.length} initiatives</Badge>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm">
+                          {(['Now', 'Next', 'Later'] as PriorityCategory[]).map(cat => {
+                            const count = inits.filter(i => i.priorityCategory === cat).length;
+                            if (count === 0) return null;
+                            return (
+                              <Badge key={cat} className={getPriorityColor(cat)}>{cat}: {count}</Badge>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="divide-y">
+                        {inits.map((init, idx) => (
+                          <div key={init.id} className="p-4 hover:bg-slate-50 flex items-center justify-between" data-testid={`card-priority-${init.id}`}>
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className="w-8 text-center">
+                                <span className="text-xs font-bold text-muted-foreground">
+                                  {init.priorityRank !== 999 ? `#${init.priorityRank}` : '-'}
+                                </span>
+                              </div>
+                              <div className="w-2 h-2 rounded-full bg-green-500" />
+                              <div className="flex-1 min-w-0">
+                                <Link href={`/project/${init.id}`}>
+                                  <h4 className="font-medium text-sm hover:text-blue-600 cursor-pointer">{init.name}</h4>
+                                </Link>
+                                <p className="text-xs text-muted-foreground">{init.id} • {init.costCenter || 'No cost center'}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
+                              <Badge variant="outline">{init.lGate}</Badge>
+                              <div className="w-24 text-right">
+                                <span className="text-sm font-mono">
+                                  {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
+                                </span>
+                              </div>
+                              {init.priorityCategory !== 'Shipped' && init.priorityCategory !== 'Kill' && (
+                                <div className="flex gap-1">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-7 px-2"
+                                    onClick={() => openReprioritizeDialog(init)}
+                                    data-testid={`button-reprioritize-${init.id}`}
+                                  >
+                                    <ArrowUpDown className="w-3 h-3" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-7 px-2 text-red-600 hover:bg-red-50"
+                                    onClick={() => openKillDialog(init)}
+                                    data-testid={`button-kill-${init.id}`}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </Card>
+              ))}
           </div>
         </div>
       </main>
@@ -233,13 +298,13 @@ export default function ValueStreamPriorities() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="targetCategory">Move to Category</Label>
-                  <Select value={targetCategory} onValueChange={(v: 'next' | 'later') => setTargetCategory(v)}>
+                  <Select value={targetCategory} onValueChange={(v: 'Next' | 'Later') => setTargetCategory(v)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="next">Next</SelectItem>
-                      <SelectItem value="later">Later</SelectItem>
+                      <SelectItem value="Next">Next</SelectItem>
+                      <SelectItem value="Later">Later</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -267,7 +332,7 @@ export default function ValueStreamPriorities() {
                 value={justification}
                 onChange={(e) => setJustification(e.target.value)}
                 placeholder={dialogType === 'kill' 
-                  ? "Explain why this initiative/capability should be removed from the roadmap..."
+                  ? "Explain why this initiative should be removed from the roadmap..."
                   : "Explain why this change in priority is needed..."
                 }
                 data-testid="input-justification"
