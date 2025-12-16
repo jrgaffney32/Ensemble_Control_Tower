@@ -3,11 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { useState, useMemo } from "react";
-import { initiatives, type Initiative } from "@/lib/initiatives";
+import { groupedInitiatives, type GroupedInitiative } from "@/lib/initiatives";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface RoadmapMilestone {
+  month: number;
+  label: string;
+  productId: string;
+}
 
 interface RoadmapItem {
   id: string;
+  slugId: string;
+  ids: string[];
   name: string;
   valueStream: string;
   lGate: string;
@@ -15,12 +23,12 @@ interface RoadmapItem {
   startMonth: number;
   duration: number;
   status: 'completed' | 'in-progress' | 'planned' | 'at-risk';
-  milestones: { month: number; label: string }[];
+  milestones: RoadmapMilestone[];
   budgetedCost: number;
   targetedBenefit: number;
 }
 
-function parseInitiativesToRoadmap(inits: Initiative[]): RoadmapItem[] {
+function parseGroupedInitiativesToRoadmap(inits: GroupedInitiative[]): RoadmapItem[] {
   const baseDate = new Date(2024, 0, 1);
   
   return inits
@@ -60,12 +68,17 @@ function parseInitiativesToRoadmap(inits: Initiative[]): RoadmapItem[] {
         const mMonth = (mDate.getFullYear() - baseDate.getFullYear()) * 12 + mDate.getMonth();
         return {
           month: mMonth,
-          label: m.name
+          label: m.name,
+          productId: m.sourceId || init.ids[0]
         };
       });
+
+      const slugId = `${init.valueStream.replace(/\s+/g, '-').toLowerCase()}::${init.name.replace(/\s+/g, '-').toLowerCase()}`;
       
       return {
-        id: init.id,
+        id: init.ids[0],
+        slugId,
+        ids: init.ids,
         name: init.name,
         valueStream: init.valueStream,
         lGate: init.lGate,
@@ -89,15 +102,15 @@ export default function RoadmapView() {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const visibleMonths = 12;
 
-  const roadmapData = useMemo(() => parseInitiativesToRoadmap(initiatives), []);
+  const roadmapData = useMemo(() => parseGroupedInitiativesToRoadmap(groupedInitiatives), []);
   
   const valueStreams = useMemo(() => {
-    const streams = new Set(roadmapData.map(i => i.valueStream));
+    const streams = new Set(roadmapData.map((i: RoadmapItem) => i.valueStream));
     return ['all', ...Array.from(streams).sort()];
   }, [roadmapData]);
 
   const filteredData = useMemo(() => {
-    return roadmapData.filter(item => {
+    return roadmapData.filter((item: RoadmapItem) => {
       if (valueStreamFilter !== 'all' && item.valueStream !== valueStreamFilter) return false;
       if (priorityFilter !== 'all' && item.priorityCategory !== priorityFilter) return false;
       return true;
@@ -282,13 +295,23 @@ export default function RoadmapView() {
                 No initiatives with milestone dates found for the selected filters.
               </div>
             ) : (
-              filteredData.map((item) => (
+              filteredData.map((item: RoadmapItem) => (
                 <Link key={item.id} href={`/project/${item.id}`}>
-                  <div className="flex border-b last:border-b-0 hover:bg-slate-50/50 cursor-pointer">
+                  <div className="flex border-b last:border-b-0 hover:bg-slate-50/50 cursor-pointer" data-testid={`roadmap-item-${item.id}`}>
                     <div className="w-72 flex-shrink-0 p-4 border-r">
-                      <div className="font-semibold text-sm text-foreground">{item.name}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">{item.valueStream}</div>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex gap-0.5">
+                          <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
+                          <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
+                          <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
+                          <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
+                        </div>
+                        <div className="font-semibold text-sm text-foreground truncate">{item.name}</div>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-0.5 ml-5">
+                        {item.valueStream} • {item.milestones.length} ms
+                      </div>
+                      <div className="flex items-center gap-2 mt-1 ml-5">
                         {getStatusBadge(item.status)}
                         <Badge variant="outline" className="text-xs">{item.lGate}</Badge>
                       </div>
@@ -307,7 +330,7 @@ export default function RoadmapView() {
                         />
                       )}
                       {/* Milestones */}
-                      {item.milestones.map((ms, idx) => {
+                      {item.milestones.map((ms: RoadmapMilestone, idx: number) => {
                         const position = ((ms.month - startOffset) / visibleMonths) * 100;
                         if (position < 0 || position > 100) return null;
                         return (
@@ -322,8 +345,9 @@ export default function RoadmapView() {
                           >
                             <div className="w-3 h-3 rounded-full bg-amber-500 ring-2 ring-white shadow-sm cursor-pointer" />
                             <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                              <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap max-w-48 truncate">
-                                {ms.label}
+                              <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                                <div className="font-semibold max-w-48 truncate">{ms.label}</div>
+                                <div className="text-[10px] text-slate-400 font-mono">{ms.productId}</div>
                               </div>
                             </div>
                           </div>

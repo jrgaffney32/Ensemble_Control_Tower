@@ -5,6 +5,7 @@ export interface Milestone {
   startDate: string | null;
   endDate: string | null;
   status: 'green' | 'yellow' | 'red';
+  sourceId?: string;
 }
 
 export interface Initiative {
@@ -79,6 +80,7 @@ export const getGroupedInitiatives = (): GroupedInitiative[] => {
   
   initiatives.forEach(init => {
     const key = `${init.name}__${init.valueStream}`;
+    const milestonesWithSource = init.milestones.map(m => ({ ...m, sourceId: init.id }));
     if (!grouped[key]) {
       grouped[key] = {
         name: init.name,
@@ -90,14 +92,14 @@ export const getGroupedInitiatives = (): GroupedInitiative[] => {
         budgetedCost: init.budgetedCost,
         targetedBenefit: init.targetedBenefit,
         costCenter: init.costCenter,
-        milestones: [...init.milestones],
+        milestones: [...milestonesWithSource],
         subInitiatives: [init]
       };
     } else {
       grouped[key].ids.push(init.id);
       grouped[key].budgetedCost += init.budgetedCost;
       grouped[key].targetedBenefit += init.targetedBenefit;
-      grouped[key].milestones.push(...init.milestones);
+      grouped[key].milestones.push(...milestonesWithSource);
       grouped[key].subInitiatives.push(init);
       if (init.priorityRank < grouped[key].priorityRank) {
         grouped[key].priorityRank = init.priorityRank;
