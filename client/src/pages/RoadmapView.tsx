@@ -99,7 +99,6 @@ const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 export default function RoadmapView() {
   const [startOffset, setStartOffset] = useState(0);
   const [valueStreamFilter, setValueStreamFilter] = useState<string>('all');
-  const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const visibleMonths = 12;
 
   const roadmapData = useMemo(() => parseGroupedInitiativesToRoadmap(groupedInitiatives), []);
@@ -112,10 +111,9 @@ export default function RoadmapView() {
   const filteredData = useMemo(() => {
     return roadmapData.filter((item: RoadmapItem) => {
       if (valueStreamFilter !== 'all' && item.valueStream !== valueStreamFilter) return false;
-      if (priorityFilter !== 'all' && item.priorityCategory !== priorityFilter) return false;
       return true;
     }).slice(0, 30);
-  }, [roadmapData, valueStreamFilter, priorityFilter]);
+  }, [roadmapData, valueStreamFilter]);
 
   const getStatusColor = (status: RoadmapItem['status']) => {
     switch (status) {
@@ -227,19 +225,6 @@ export default function RoadmapView() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-              <SelectTrigger className="w-32" data-testid="select-priority">
-                <SelectValue placeholder="Priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="Shipped">Shipped</SelectItem>
-                <SelectItem value="Now">Now</SelectItem>
-                <SelectItem value="Next">Next</SelectItem>
-                <SelectItem value="Later">Later</SelectItem>
-                <SelectItem value="New">New</SelectItem>
-              </SelectContent>
-            </Select>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" onClick={() => setStartOffset(Math.max(0, startOffset - 3))}>
                 <ChevronLeft className="h-4 w-4" />
@@ -263,8 +248,8 @@ export default function RoadmapView() {
           <div className="flex items-center gap-6 bg-white p-4 rounded-xl border shadow-sm">
             <span className="text-sm font-semibold text-muted-foreground">Legend:</span>
             <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm">Shipped</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm">In Progress (Now)</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-slate-300" /><span className="text-sm">Planned (Next/Later)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm">In Progress</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-slate-300" /><span className="text-sm">Planned</span></div>
             <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-200" /><span className="text-sm">Milestone</span></div>
           </div>
 
