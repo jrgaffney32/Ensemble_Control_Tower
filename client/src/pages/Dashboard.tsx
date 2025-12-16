@@ -49,17 +49,6 @@ export default function Dashboard() {
     ).slice(0, 20);
   }, [searchTerm]);
 
-  const getPriorityColor = (cat: string) => {
-    switch (cat) {
-      case 'Shipped': return 'bg-green-100 text-green-700';
-      case 'Now': return 'bg-blue-100 text-blue-700';
-      case 'Next': return 'bg-amber-100 text-amber-700';
-      case 'Later': return 'bg-slate-100 text-slate-600';
-      case 'New': return 'bg-purple-100 text-purple-700';
-      case 'Kill': return 'bg-red-100 text-red-700';
-      default: return 'bg-slate-100 text-slate-600';
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex font-sans">
@@ -201,14 +190,14 @@ export default function Dashboard() {
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Now (Active)</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Active Projects</p>
               <p className="text-2xl font-bold text-blue-600 font-mono">{stats.activeProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                 <span>{stats.shippedProjects} shipped</span>
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Next (Pipeline)</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pipeline</p>
               <p className="text-2xl font-bold text-amber-600 font-mono">{stats.nextProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                 <Clock className="w-3 h-3" />
@@ -349,7 +338,6 @@ export default function Dashboard() {
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
-                              <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
                               <Badge variant="outline">{init.lGate}</Badge>
                               <div className="text-right w-24">
                                 <div className="text-xs text-muted-foreground">Cost</div>
