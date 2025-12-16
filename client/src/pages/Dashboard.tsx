@@ -80,10 +80,14 @@ export default function Dashboard() {
                 Value Stream Priorities
               </Button>
             </Link>
-            <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-              <Settings className="w-4 h-4 mr-3" />
-              Configuration
-            </Button>
+            {isControlTower && (
+              <Link href="/admin">
+                <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                  <Users className="w-4 h-4 mr-3" />
+                  Admin Panel
+                </Button>
+              </Link>
+            )}
           </nav>
         </div>
         

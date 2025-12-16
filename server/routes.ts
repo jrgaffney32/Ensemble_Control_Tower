@@ -47,9 +47,12 @@ export async function registerRoutes(
       let userRole = await storage.getUserRole(userId);
       
       if (!userRole) {
+        const userCount = await storage.countUserRoles();
+        const isFirstUser = userCount === 0;
+        
         userRole = await storage.upsertUserRole({
           userId,
-          role: 'slt',
+          role: isFirstUser ? 'control_tower' : 'slt',
           valueStream: null,
         });
       }
@@ -86,6 +89,33 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating user role:", error);
       res.status(500).json({ message: "Failed to update user role" });
+    }
+  });
+  
+  app.get("/api/admin/users", isAuthenticated, requireRole('control_tower'), async (req, res) => {
+    try {
+      const allRoles = await storage.getAllUserRoles();
+      
+      const usersWithRoles = await Promise.all(
+        allRoles.map(async (roleRecord) => {
+          const user = await authStorage.getUser(roleRecord.userId);
+          return {
+            id: roleRecord.id,
+            odisId: roleRecord.userId,
+            email: user?.email || 'Unknown',
+            firstName: user?.firstName || null,
+            lastName: user?.lastName || null,
+            profileImageUrl: user?.profileImageUrl || null,
+            role: roleRecord.role,
+            valueStream: roleRecord.valueStream,
+          };
+        })
+      );
+      
+      res.json(usersWithRoles);
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 

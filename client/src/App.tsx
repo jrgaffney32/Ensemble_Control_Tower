@@ -18,6 +18,7 @@ import ProjectDetail from "@/pages/ProjectDetail";
 import IntakeFormPage from "@/pages/IntakeFormPage";
 import LGateFormPage from "@/pages/LGateFormPage";
 import ValueStreamPriorities from "@/pages/ValueStreamPriorities";
+import AdminPanel from "@/pages/AdminPanel";
 
 function AuthenticatedRoutes() {
   return (
@@ -34,6 +35,7 @@ function AuthenticatedRoutes() {
       <Route path="/requests" component={ProjectRequests} />
       <Route path="/issues" component={Issues} />
       <Route path="/budget" component={BudgetRequests} />
+      <Route path="/admin" component={AdminPanel} />
       <Route component={NotFound} />
     </Switch>
   );

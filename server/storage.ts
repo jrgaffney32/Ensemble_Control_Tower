@@ -1,10 +1,12 @@
 import { userRoles, type UserRole, type UserRoleRecord } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUserRole(userId: string): Promise<UserRoleRecord | undefined>;
   upsertUserRole(data: { userId: string; role: UserRole; valueStream: string | null }): Promise<UserRoleRecord>;
+  getAllUserRoles(): Promise<UserRoleRecord[]>;
+  countUserRoles(): Promise<number>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -31,6 +33,15 @@ class DatabaseStorage implements IStorage {
       })
       .returning();
     return role;
+  }
+  
+  async getAllUserRoles(): Promise<UserRoleRecord[]> {
+    return await db.select().from(userRoles);
+  }
+  
+  async countUserRoles(): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` }).from(userRoles);
+    return Number(result[0]?.count || 0);
   }
 }
 
