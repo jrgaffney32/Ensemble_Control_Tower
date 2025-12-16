@@ -100,7 +100,6 @@ export async function registerRoutes(
         allRoles.map(async (roleRecord) => {
           const user = await authStorage.getUser(roleRecord.userId);
           return {
-            id: roleRecord.id,
             odisId: roleRecord.userId,
             email: user?.email || 'Unknown',
             firstName: user?.firstName || null,
@@ -116,6 +115,54 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching admin users:", error);
       res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/initiatives/:initiativeId/status", isAuthenticated, async (req, res) => {
+    try {
+      const { initiativeId } = req.params;
+      const status = await storage.getInitiativeStatus(initiativeId);
+      
+      if (!status) {
+        return res.json({
+          initiativeId,
+          costStatus: 'green',
+          benefitStatus: 'green',
+          timelineStatus: 'green',
+          scopeStatus: 'green',
+        });
+      }
+      
+      res.json(status);
+    } catch (error) {
+      console.error("Error fetching initiative status:", error);
+      res.status(500).json({ message: "Failed to fetch initiative status" });
+    }
+  });
+
+  app.put("/api/initiatives/:initiativeId/status", isAuthenticated, requireRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { initiativeId } = req.params;
+      const { costStatus, benefitStatus, timelineStatus, scopeStatus } = req.body;
+      
+      const validStatuses = ['green', 'yellow', 'red'];
+      if (!validStatuses.includes(costStatus) || !validStatuses.includes(benefitStatus) ||
+          !validStatuses.includes(timelineStatus) || !validStatuses.includes(scopeStatus)) {
+        return res.status(400).json({ message: "Invalid status value" });
+      }
+      
+      const status = await storage.upsertInitiativeStatus({
+        initiativeId,
+        costStatus,
+        benefitStatus,
+        timelineStatus,
+        scopeStatus,
+      });
+      
+      res.json(status);
+    } catch (error) {
+      console.error("Error updating initiative status:", error);
+      res.status(500).json({ message: "Failed to update initiative status" });
     }
   });
 

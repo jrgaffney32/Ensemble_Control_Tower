@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link } from "wouter";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut, DollarSign, Target, TrendingUp, BarChart3, Activity } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -11,10 +12,21 @@ import { useUserRole } from "@/hooks/use-user-role";
 import { MilestoneEditor, type Milestone } from "@/components/dashboard/MilestoneEditor";
 import { formatCurrency, getGroupedInitiativeById, type GroupedInitiative } from "@/lib/initiatives";
 
+type StatusValue = 'green' | 'yellow' | 'red';
+
+interface InitiativeStatus {
+  initiativeId: string;
+  costStatus: StatusValue;
+  benefitStatus: StatusValue;
+  timelineStatus: StatusValue;
+  scopeStatus: StatusValue;
+}
+
 export default function ProjectDetail() {
   const [, params] = useRoute("/project/:id");
   const projectId = params?.id || '';
   const { user, role, canEdit, isControlTower, isSTO } = useUserRole();
+  const queryClient = useQueryClient();
   
   const initiative = useMemo(() => getGroupedInitiativeById(projectId), [projectId]);
   
@@ -30,10 +42,67 @@ export default function ProjectDetail() {
     return [];
   });
 
-  const [costStatus, setCostStatus] = useState<'green' | 'yellow' | 'red'>('green');
-  const [benefitStatus, setBenefitStatus] = useState<'green' | 'yellow' | 'red'>('green');
-  const [timelineStatus, setTimelineStatus] = useState<'green' | 'yellow' | 'red'>('green');
-  const [scopeStatus, setScopeStatus] = useState<'green' | 'yellow' | 'red'>('green');
+  const { data: statusData, isLoading: isStatusLoading } = useQuery<InitiativeStatus>({
+    queryKey: ['/api/initiatives', projectId, 'status'],
+    queryFn: async () => {
+      const res = await fetch(`/api/initiatives/${projectId}/status`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch status');
+      return res.json();
+    },
+    enabled: !!projectId,
+  });
+
+  const [costStatus, setCostStatus] = useState<StatusValue>('green');
+  const [benefitStatus, setBenefitStatus] = useState<StatusValue>('green');
+  const [timelineStatus, setTimelineStatus] = useState<StatusValue>('green');
+  const [scopeStatus, setScopeStatus] = useState<StatusValue>('green');
+  const [statusInitialized, setStatusInitialized] = useState(false);
+
+  useEffect(() => {
+    if (statusData) {
+      setCostStatus(statusData.costStatus);
+      setBenefitStatus(statusData.benefitStatus);
+      setTimelineStatus(statusData.timelineStatus);
+      setScopeStatus(statusData.scopeStatus);
+      setStatusInitialized(true);
+    }
+  }, [statusData]);
+
+  const canEditStatus = canEdit && statusInitialized && !isStatusLoading;
+
+  const updateStatusMutation = useMutation({
+    mutationFn: async (data: Omit<InitiativeStatus, 'initiativeId'>) => {
+      const res = await fetch(`/api/initiatives/${projectId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error('Failed to update status');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/initiatives', projectId, 'status'] });
+    },
+  });
+
+  const handleStatusChange = (field: keyof Omit<InitiativeStatus, 'initiativeId'>, value: StatusValue) => {
+    const setters: Record<string, (v: StatusValue) => void> = {
+      costStatus: setCostStatus,
+      benefitStatus: setBenefitStatus,
+      timelineStatus: setTimelineStatus,
+      scopeStatus: setScopeStatus,
+    };
+    setters[field](value);
+    
+    const newStatus = {
+      costStatus: field === 'costStatus' ? value : costStatus,
+      benefitStatus: field === 'benefitStatus' ? value : benefitStatus,
+      timelineStatus: field === 'timelineStatus' ? value : timelineStatus,
+      scopeStatus: field === 'scopeStatus' ? value : scopeStatus,
+    };
+    updateStatusMutation.mutate(newStatus);
+  };
 
   const getStatusColor = (status: 'green' | 'yellow' | 'red') => {
     switch (status) {
@@ -64,17 +133,6 @@ export default function ProjectDetail() {
     }
   };
 
-  const getPriorityColor = (cat: string) => {
-    switch (cat) {
-      case 'Shipped': return 'bg-green-100 text-green-700';
-      case 'Now': return 'bg-blue-100 text-blue-700';
-      case 'Next': return 'bg-amber-100 text-amber-700';
-      case 'Later': return 'bg-slate-100 text-slate-600';
-      case 'New': return 'bg-purple-100 text-purple-700';
-      case 'Kill': return 'bg-red-100 text-red-700';
-      default: return 'bg-slate-100 text-slate-600';
-    }
-  };
 
   const getLGateProgress = (lgate: string) => {
     const gates = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'];
@@ -215,7 +273,6 @@ export default function ProjectDetail() {
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-2xl font-bold font-heading text-foreground">{initiative.name}</h1>
-                  <Badge className={getPriorityColor(initiative.priorityCategory)}>{initiative.priorityCategory}</Badge>
                   <Badge variant="outline">{initiative.lGate}</Badge>
                 </div>
                 <p className="text-muted-foreground">{initiative.valueStream} • {initiative.costCenter}</p>
@@ -362,10 +419,6 @@ export default function ProjectDetail() {
                       <p className="text-sm mt-1">{initiative.costCenter || 'Not specified'}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase">Priority Category</p>
-                      <p className="text-sm mt-1">{initiative.priorityCategory}</p>
-                    </div>
-                    <div>
                       <p className="text-xs font-semibold text-muted-foreground uppercase">Current L-Gate</p>
                       <p className="text-sm mt-1">{initiative.lGate}</p>
                     </div>
@@ -383,7 +436,7 @@ export default function ProjectDetail() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className={`p-3 rounded-md ${getStatusBg(costStatus)}`}>
                         <p className="text-xs text-muted-foreground mb-2">Cost Status</p>
-                        <Select value={costStatus} onValueChange={(v) => setCostStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                        <Select value={costStatus} onValueChange={(v) => handleStatusChange('costStatus', v as StatusValue)} disabled={!canEditStatus}>
                           <SelectTrigger className="h-8" data-testid="select-cost-status">
                             <SelectValue />
                           </SelectTrigger>
@@ -396,7 +449,7 @@ export default function ProjectDetail() {
                       </div>
                       <div className={`p-3 rounded-md ${getStatusBg(benefitStatus)}`}>
                         <p className="text-xs text-muted-foreground mb-2">Benefit Status</p>
-                        <Select value={benefitStatus} onValueChange={(v) => setBenefitStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                        <Select value={benefitStatus} onValueChange={(v) => handleStatusChange('benefitStatus', v as StatusValue)} disabled={!canEditStatus}>
                           <SelectTrigger className="h-8" data-testid="select-benefit-status">
                             <SelectValue />
                           </SelectTrigger>
@@ -409,7 +462,7 @@ export default function ProjectDetail() {
                       </div>
                       <div className={`p-3 rounded-md ${getStatusBg(timelineStatus)}`}>
                         <p className="text-xs text-muted-foreground mb-2">Timeline Status</p>
-                        <Select value={timelineStatus} onValueChange={(v) => setTimelineStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                        <Select value={timelineStatus} onValueChange={(v) => handleStatusChange('timelineStatus', v as StatusValue)} disabled={!canEditStatus}>
                           <SelectTrigger className="h-8" data-testid="select-timeline-status">
                             <SelectValue />
                           </SelectTrigger>
@@ -422,7 +475,7 @@ export default function ProjectDetail() {
                       </div>
                       <div className={`p-3 rounded-md ${getStatusBg(scopeStatus)}`}>
                         <p className="text-xs text-muted-foreground mb-2">Scope Status</p>
-                        <Select value={scopeStatus} onValueChange={(v) => setScopeStatus(v as 'green' | 'yellow' | 'red')} disabled={!canEdit}>
+                        <Select value={scopeStatus} onValueChange={(v) => handleStatusChange('scopeStatus', v as StatusValue)} disabled={!canEditStatus}>
                           <SelectTrigger className="h-8" data-testid="select-scope-status">
                             <SelectValue />
                           </SelectTrigger>
@@ -434,10 +487,13 @@ export default function ProjectDetail() {
                         </Select>
                       </div>
                     </div>
-                    <p className="text-xs text-amber-600 text-center mt-2 bg-amber-50 px-2 py-1 rounded">
-                      Status changes are session-only (not persisted to database)
-                    </p>
-                    {!canEdit && (
+                    {isStatusLoading && (
+                      <p className="text-xs text-muted-foreground text-center mt-2">Loading status...</p>
+                    )}
+                    {updateStatusMutation.isPending && (
+                      <p className="text-xs text-blue-600 text-center mt-2 bg-blue-50 px-2 py-1 rounded">Saving...</p>
+                    )}
+                    {!canEdit && statusInitialized && (
                       <p className="text-xs text-muted-foreground text-center">View-only access. Contact an admin to update statuses.</p>
                     )}
                   </CardContent>
