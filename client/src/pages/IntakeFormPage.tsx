@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, Save, Send, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, Save, Send, ArrowLeft, Home, ListOrdered } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -104,14 +104,18 @@ export default function IntakeFormPage() {
                 Budget Requests
               </Button>
             </Link>
-            <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-              <Calendar className="w-4 h-4 mr-3" />
-              Milestone Calendar
-            </Button>
-            <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-              <Settings className="w-4 h-4 mr-3" />
-              Configuration
-            </Button>
+            <Link href="/roadmap">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <Calendar className="w-4 h-4 mr-3" />
+                Roadmap
+              </Button>
+            </Link>
+            <Link href="/priorities">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <ListOrdered className="w-4 h-4 mr-3" />
+                Value Stream Priorities
+              </Button>
+            </Link>
           </nav>
         </div>
       </aside>
@@ -120,6 +124,11 @@ export default function IntakeFormPage() {
       <main className="flex-1 lg:ml-64">
         <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="hover:bg-slate-100" data-testid="button-home">
+                <Home className="h-5 w-5 text-slate-600" />
+              </Button>
+            </Link>
             <Link href={`/project/${projectId}`} className="text-muted-foreground hover:text-foreground flex items-center gap-1">
               <ArrowLeft className="w-4 h-4" /> Back to Project
             </Link>

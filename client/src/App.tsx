@@ -15,6 +15,7 @@ import PodVelocity from "@/pages/PodVelocity";
 import ProjectDetail from "@/pages/ProjectDetail";
 import IntakeFormPage from "@/pages/IntakeFormPage";
 import LGateFormPage from "@/pages/LGateFormPage";
+import ValueStreamPriorities from "@/pages/ValueStreamPriorities";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/project/:id/intake" component={IntakeFormPage} />
       <Route path="/project/:id/gate/:gate" component={LGateFormPage} />
       <Route path="/roadmap" component={RoadmapView} />
+      <Route path="/priorities" component={ValueStreamPriorities} />
       <Route path="/demand-capacity" component={DemandCapacity} />
       <Route path="/pod-velocity" component={PodVelocity} />
       <Route path="/requests" component={ProjectRequests} />

@@ -1,4 +1,4 @@
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronLeft, ChevronRight, ListOrdered, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
@@ -150,6 +150,12 @@ export default function RoadmapView() {
                 Roadmap View
               </Button>
             </Link>
+            <Link href="/priorities">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <ListOrdered className="w-4 h-4 mr-3" />
+                Value Stream Priorities
+              </Button>
+            </Link>
             <Link href="/requests">
               <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
                 <FileText className="w-4 h-4 mr-3" />
@@ -189,9 +195,22 @@ export default function RoadmapView() {
       {/* Main Content */}
       <main className="flex-1 lg:ml-64">
         <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
-          <h2 className="text-lg font-bold font-heading text-foreground">Roadmap View</h2>
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="hover:bg-slate-100" data-testid="button-home">
+                <Home className="h-5 w-5 text-slate-600" />
+              </Button>
+            </Link>
+            <h2 className="text-lg font-bold font-heading text-foreground">Roadmap View</h2>
+          </div>
           
           <div className="flex items-center gap-4">
+            <Link href="/priorities">
+              <Button variant="outline" className="gap-2" data-testid="button-priorities">
+                <ListOrdered className="h-4 w-4" />
+                Value Stream Priorities
+              </Button>
+            </Link>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" onClick={() => setStartOffset(Math.max(0, startOffset - 3))}>
                 <ChevronLeft className="h-4 w-4" />

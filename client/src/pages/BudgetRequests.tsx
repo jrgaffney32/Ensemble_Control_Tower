@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, DollarSign, Users, TrendingUp, Clock, CheckCircle2, AlertCircle, FileText } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, DollarSign, Users, TrendingUp, Clock, CheckCircle2, AlertCircle, FileText, Home, ListOrdered } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -193,14 +193,18 @@ export default function BudgetRequests() {
                 Budget Requests
               </Button>
             </Link>
-            <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-              <Calendar className="w-4 h-4 mr-3" />
-              Milestone Calendar
-            </Button>
-            <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-              <Settings className="w-4 h-4 mr-3" />
-              Configuration
-            </Button>
+            <Link href="/roadmap">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <Calendar className="w-4 h-4 mr-3" />
+                Roadmap
+              </Button>
+            </Link>
+            <Link href="/priorities">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <ListOrdered className="w-4 h-4 mr-3" />
+                Value Stream Priorities
+              </Button>
+            </Link>
           </nav>
         </div>
         
@@ -219,7 +223,14 @@ export default function BudgetRequests() {
       <main className="flex-1 lg:ml-64">
         {/* Top Header */}
         <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
-          <h2 className="text-lg font-bold font-heading text-foreground">Budget & Allocation Requests</h2>
+          <div className="flex items-center gap-4">
+            <Link href="/">
+              <Button variant="ghost" size="icon" className="hover:bg-slate-100" data-testid="button-home">
+                <Home className="h-5 w-5 text-slate-600" />
+              </Button>
+            </Link>
+            <h2 className="text-lg font-bold font-heading text-foreground">Budget & Allocation Requests</h2>
+          </div>
           
           <div className="flex items-center gap-4">
             <div className="relative w-64">
