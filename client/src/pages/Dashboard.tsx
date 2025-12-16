@@ -334,7 +334,12 @@ export default function Dashboard() {
                         <Link key={init.id} href={`/project/${init.id}`}>
                           <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.id}`}>
                             <div className="flex items-center gap-3">
-                              <div className="w-2 h-2 rounded-full bg-green-500" />
+                              <div className="flex gap-1">
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
+                              </div>
                               <div>
                                 <div className="font-medium text-sm">{init.name}</div>
                                 <div className="text-xs text-muted-foreground">{init.id}</div>
@@ -343,9 +348,18 @@ export default function Dashboard() {
                             <div className="flex items-center gap-4">
                               <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
                               <Badge variant="outline">{init.lGate}</Badge>
-                              <span className="text-sm font-mono w-20 text-right">
-                                {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
-                              </span>
+                              <div className="text-right w-24">
+                                <div className="text-xs text-muted-foreground">Cost</div>
+                                <span className="text-sm font-mono">
+                                  {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
+                                </span>
+                              </div>
+                              <div className="text-right w-24">
+                                <div className="text-xs text-muted-foreground">Benefit</div>
+                                <span className="text-sm font-mono text-green-600">
+                                  {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
+                                </span>
+                              </div>
                               <ChevronRight className="h-4 w-4 text-muted-foreground" />
                             </div>
                           </div>

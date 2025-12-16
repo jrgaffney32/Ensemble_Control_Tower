@@ -199,9 +199,23 @@ export default function ProjectDetail() {
                 <p className="text-muted-foreground">{initiative.valueStream}</p>
                 <p className="text-sm text-muted-foreground mt-1">{initiative.id} • {initiative.costCenter}</p>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="text-sm font-medium text-green-700">Status: Green</span>
+              <div className="flex items-center gap-4 border rounded-lg p-3 bg-slate-50">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <span className="text-[10px] text-muted-foreground">Cost</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <span className="text-[10px] text-muted-foreground">Benefit</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <span className="text-[10px] text-muted-foreground">Timeline</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-4 h-4 rounded-full bg-green-500" />
+                  <span className="text-[10px] text-muted-foreground">Scope</span>
+                </div>
               </div>
             </div>
             
@@ -328,10 +342,24 @@ export default function ProjectDetail() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase">Status</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="w-2 h-2 rounded-full bg-green-500" />
-                        <span className="text-sm">All metrics green</span>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Status Indicators</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
+                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
+                          <span className="text-xs font-medium text-green-700">Cost</span>
+                        </div>
+                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
+                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
+                          <span className="text-xs font-medium text-green-700">Benefit</span>
+                        </div>
+                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
+                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
+                          <span className="text-xs font-medium text-green-700">Timeline</span>
+                        </div>
+                        <div className="flex flex-col items-center p-2 bg-green-50 rounded-md">
+                          <div className="w-4 h-4 rounded-full bg-green-500 mb-1" />
+                          <span className="text-xs font-medium text-green-700">Scope</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

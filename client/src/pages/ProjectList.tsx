@@ -229,30 +229,43 @@ export default function ProjectList() {
                             <div className="p-4 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.id}`}>
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
-                                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                  <div className="flex gap-1">
+                                    <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
+                                    <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
+                                    <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
+                                    <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
+                                  </div>
                                   <span className="font-medium text-sm">{init.name}</span>
                                   <Badge className={getPriorityColor(init.priorityCategory)} variant="secondary">
                                     {init.priorityCategory}
                                   </Badge>
                                   <Badge variant="outline" className="text-xs">{init.lGate}</Badge>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1 ml-7">
+                                <div className="text-xs text-muted-foreground mt-1 ml-10">
                                   {init.id} • {init.costCenter || 'No cost center'}
                                 </div>
                               </div>
                               <div className="flex items-center gap-6 text-sm">
                                 <div className="text-right">
-                                  <div className="text-xs text-muted-foreground">Budget</div>
+                                  <div className="text-xs text-muted-foreground">Cost</div>
                                   <div className="font-mono">{init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}</div>
                                 </div>
                                 <div className="text-right">
                                   <div className="text-xs text-muted-foreground">Benefit</div>
                                   <div className="font-mono text-green-600">{init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}</div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Status: Green" />
-                                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                <div className="flex flex-col items-center gap-1 border-l pl-4">
+                                  <div className="flex gap-1">
+                                    <div className="w-3 h-3 rounded-full bg-green-500" title="Cost" />
+                                    <div className="w-3 h-3 rounded-full bg-green-500" title="Benefit" />
+                                    <div className="w-3 h-3 rounded-full bg-green-500" title="Timeline" />
+                                    <div className="w-3 h-3 rounded-full bg-green-500" title="Scope" />
+                                  </div>
+                                  <div className="text-[9px] text-muted-foreground flex gap-1">
+                                    <span>C</span><span>B</span><span>T</span><span>S</span>
+                                  </div>
                                 </div>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
                           </Link>

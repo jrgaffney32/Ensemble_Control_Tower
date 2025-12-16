@@ -228,7 +228,12 @@ export default function ValueStreamPriorities() {
                                   {init.priorityRank !== 999 ? `#${init.priorityRank}` : '-'}
                                 </span>
                               </div>
-                              <div className="w-2 h-2 rounded-full bg-green-500" />
+                              <div className="flex gap-1">
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
+                                <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
+                              </div>
                               <div className="flex-1 min-w-0">
                                 <Link href={`/project/${init.id}`}>
                                   <h4 className="font-medium text-sm hover:text-blue-600 cursor-pointer">{init.name}</h4>
@@ -239,9 +244,16 @@ export default function ValueStreamPriorities() {
                             <div className="flex items-center gap-4">
                               <Badge className={getPriorityColor(init.priorityCategory)}>{init.priorityCategory}</Badge>
                               <Badge variant="outline">{init.lGate}</Badge>
-                              <div className="w-24 text-right">
+                              <div className="text-right w-24">
+                                <div className="text-xs text-muted-foreground">Cost</div>
                                 <span className="text-sm font-mono">
                                   {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
+                                </span>
+                              </div>
+                              <div className="text-right w-24">
+                                <div className="text-xs text-muted-foreground">Benefit</div>
+                                <span className="text-sm font-mono text-green-600">
+                                  {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
                                 </span>
                               </div>
                               {init.priorityCategory !== 'Shipped' && init.priorityCategory !== 'Kill' && (
