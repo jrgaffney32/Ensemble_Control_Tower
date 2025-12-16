@@ -277,7 +277,7 @@ export default function AdminPanel() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          {u.odisId === (user as any)?.id ? (
+                          {u.odisId === user?.id ? (
                             <Badge className={roleDescriptions[u.role].color}>
                               {roleDescriptions[u.role].name} (You)
                             </Badge>
