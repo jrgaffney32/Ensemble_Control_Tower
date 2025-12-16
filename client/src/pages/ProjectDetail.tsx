@@ -8,14 +8,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { useUserRole } from "@/hooks/use-user-role";
 import { MilestoneEditor, type Milestone } from "@/components/dashboard/MilestoneEditor";
-import { initiatives, formatCurrency, getInitiativeById } from "@/lib/initiatives";
+import { formatCurrency, getGroupedInitiativeById, type GroupedInitiative } from "@/lib/initiatives";
 
 export default function ProjectDetail() {
   const [, params] = useRoute("/project/:id");
   const projectId = params?.id || '';
   const { user, role, canEdit, isControlTower, isSTO } = useUserRole();
   
-  const initiative = useMemo(() => getInitiativeById(projectId), [projectId]);
+  const initiative = useMemo(() => getGroupedInitiativeById(projectId), [projectId]);
   
   const [milestones, setMilestones] = useState<Milestone[]>(() => {
     if (initiative?.milestones) {
@@ -197,7 +197,7 @@ export default function ProjectDetail() {
                   <Badge variant="outline">{initiative.lGate}</Badge>
                 </div>
                 <p className="text-muted-foreground">{initiative.valueStream}</p>
-                <p className="text-sm text-muted-foreground mt-1">{initiative.id} • {initiative.costCenter}</p>
+                <p className="text-sm text-muted-foreground mt-1">{initiative.ids.join(', ')} • {initiative.costCenter} • {initiative.milestones.length} milestones</p>
               </div>
               <div className="flex items-center gap-4 border rounded-lg p-3 bg-slate-50">
                 <div className="flex flex-col items-center gap-1">

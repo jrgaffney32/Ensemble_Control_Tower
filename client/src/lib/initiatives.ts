@@ -59,3 +59,63 @@ export const getLGateProgress = (lgate: string) => {
   const index = gates.indexOf(lgate);
   return index >= 0 ? ((index + 1) / gates.length) * 100 : 0;
 };
+
+export interface GroupedInitiative {
+  name: string;
+  ids: string[];
+  valueStream: string;
+  lGate: string;
+  priorityCategory: Initiative['priorityCategory'];
+  priorityRank: number;
+  budgetedCost: number;
+  targetedBenefit: number;
+  costCenter: string;
+  milestones: Milestone[];
+  subInitiatives: Initiative[];
+}
+
+export const getGroupedInitiatives = (): GroupedInitiative[] => {
+  const grouped: Record<string, GroupedInitiative> = {};
+  
+  initiatives.forEach(init => {
+    const key = `${init.name}__${init.valueStream}`;
+    if (!grouped[key]) {
+      grouped[key] = {
+        name: init.name,
+        ids: [init.id],
+        valueStream: init.valueStream,
+        lGate: init.lGate,
+        priorityCategory: init.priorityCategory,
+        priorityRank: init.priorityRank,
+        budgetedCost: init.budgetedCost,
+        targetedBenefit: init.targetedBenefit,
+        costCenter: init.costCenter,
+        milestones: [...init.milestones],
+        subInitiatives: [init]
+      };
+    } else {
+      grouped[key].ids.push(init.id);
+      grouped[key].budgetedCost += init.budgetedCost;
+      grouped[key].targetedBenefit += init.targetedBenefit;
+      grouped[key].milestones.push(...init.milestones);
+      grouped[key].subInitiatives.push(init);
+      if (init.priorityRank < grouped[key].priorityRank) {
+        grouped[key].priorityRank = init.priorityRank;
+        grouped[key].priorityCategory = init.priorityCategory;
+        grouped[key].lGate = init.lGate;
+      }
+    }
+  });
+  
+  return Object.values(grouped).sort((a, b) => a.priorityRank - b.priorityRank);
+};
+
+export const groupedInitiatives: GroupedInitiative[] = getGroupedInitiatives();
+
+export const getGroupedInitiativeByName = (name: string, valueStream: string) => {
+  return groupedInitiatives.find(g => g.name === name && g.valueStream === valueStream);
+};
+
+export const getGroupedInitiativeById = (id: string) => {
+  return groupedInitiatives.find(g => g.ids.includes(id));
+};

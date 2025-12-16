@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { initiatives, getValueStreams, formatCurrency, type Initiative } from "@/lib/initiatives";
+import { groupedInitiatives, getValueStreams, formatCurrency, type GroupedInitiative } from "@/lib/initiatives";
 import { useToast } from "@/hooks/use-toast";
 
 type PriorityCategory = 'Shipped' | 'Now' | 'Next' | 'Later' | 'New' | 'Kill';
@@ -18,7 +18,7 @@ type PriorityCategory = 'Shipped' | 'Now' | 'Next' | 'Later' | 'New' | 'Kill';
 export default function ValueStreamPriorities() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<'reprioritize' | 'kill'>('reprioritize');
-  const [selectedItem, setSelectedItem] = useState<Initiative | null>(null);
+  const [selectedItem, setSelectedItem] = useState<GroupedInitiative | null>(null);
   const [targetCategory, setTargetCategory] = useState<'Next' | 'Later'>('Next');
   const [targetRank, setTargetRank] = useState('1');
   const [justification, setJustification] = useState('');
@@ -28,8 +28,8 @@ export default function ValueStreamPriorities() {
   const valueStreams = useMemo(() => getValueStreams(), []);
 
   const groupedByValueStream = useMemo(() => {
-    const groups: Record<string, Initiative[]> = {};
-    initiatives.forEach(init => {
+    const groups: Record<string, GroupedInitiative[]> = {};
+    groupedInitiatives.forEach(init => {
       if (!groups[init.valueStream]) {
         groups[init.valueStream] = [];
       }
@@ -57,7 +57,7 @@ export default function ValueStreamPriorities() {
     setExpandedStreams(newExpanded);
   };
 
-  const openReprioritizeDialog = (item: Initiative) => {
+  const openReprioritizeDialog = (item: GroupedInitiative) => {
     setSelectedItem(item);
     setDialogType('reprioritize');
     setTargetCategory(item.priorityCategory === 'Later' ? 'Next' : 'Later');
@@ -66,7 +66,7 @@ export default function ValueStreamPriorities() {
     setDialogOpen(true);
   };
 
-  const openKillDialog = (item: Initiative) => {
+  const openKillDialog = (item: GroupedInitiative) => {
     setSelectedItem(item);
     setDialogType('kill');
     setJustification('');
@@ -179,7 +179,7 @@ export default function ValueStreamPriorities() {
           {/* Summary */}
           <div className="grid grid-cols-6 gap-4">
             {(['Shipped', 'Now', 'Next', 'Later', 'New', 'Kill'] as PriorityCategory[]).map(cat => {
-              const count = initiatives.filter(i => i.priorityCategory === cat).length;
+              const count = groupedInitiatives.filter(i => i.priorityCategory === cat).length;
               return (
                 <div key={cat} className="bg-white p-3 rounded-xl border shadow-sm text-center">
                   <Badge className={getPriorityColor(cat)}>{cat}</Badge>
@@ -221,7 +221,7 @@ export default function ValueStreamPriorities() {
                     <CollapsibleContent>
                       <div className="divide-y">
                         {inits.map((init, idx) => (
-                          <div key={init.id} className="p-4 hover:bg-slate-50 flex items-center justify-between" data-testid={`card-priority-${init.id}`}>
+                          <div key={init.ids[0]} className="p-4 hover:bg-slate-50 flex items-center justify-between" data-testid={`card-priority-${init.ids[0]}`}>
                             <div className="flex items-center gap-4 flex-1">
                               <div className="w-8 text-center">
                                 <span className="text-xs font-bold text-muted-foreground">
@@ -235,10 +235,13 @@ export default function ValueStreamPriorities() {
                                 <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <Link href={`/project/${init.id}`}>
+                                <Link href={`/project/${init.ids[0]}`}>
                                   <h4 className="font-medium text-sm hover:text-blue-600 cursor-pointer">{init.name}</h4>
                                 </Link>
-                                <p className="text-xs text-muted-foreground">{init.id} • {init.costCenter || 'No cost center'}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {init.ids.join(', ')} • {init.costCenter || 'No cost center'}
+                                  {init.milestones.length > 0 && ` • ${init.milestones.length} milestones`}
+                                </p>
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
@@ -263,7 +266,7 @@ export default function ValueStreamPriorities() {
                                     size="sm" 
                                     className="h-7 px-2"
                                     onClick={() => openReprioritizeDialog(init)}
-                                    data-testid={`button-reprioritize-${init.id}`}
+                                    data-testid={`button-reprioritize-${init.ids[0]}`}
                                   >
                                     <ArrowUpDown className="w-3 h-3" />
                                   </Button>
@@ -272,7 +275,7 @@ export default function ValueStreamPriorities() {
                                     size="sm" 
                                     className="h-7 px-2 text-red-600 hover:bg-red-50"
                                     onClick={() => openKillDialog(init)}
-                                    data-testid={`button-kill-${init.id}`}
+                                    data-testid={`button-kill-${init.ids[0]}`}
                                   >
                                     <Trash2 className="w-3 h-3" />
                                   </Button>

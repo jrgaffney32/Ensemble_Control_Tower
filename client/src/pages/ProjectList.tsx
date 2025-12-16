@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { initiatives, formatCurrency, getValueStreams } from "@/lib/initiatives";
+import { groupedInitiatives, formatCurrency, getValueStreams, type GroupedInitiative } from "@/lib/initiatives";
 import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, FileText, AlertCircle, ChevronDown, ChevronUp, ChevronRight, Home, ListOrdered, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,17 +17,17 @@ export default function ProjectList() {
   const valueStreams = useMemo(() => getValueStreams(), []);
 
   const filteredInitiatives = useMemo(() => {
-    return initiatives.filter(i => {
+    return groupedInitiatives.filter(i => {
       const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         i.valueStream.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        i.id.toLowerCase().includes(searchTerm.toLowerCase());
+        i.ids.some(id => id.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesValueStream = valueStreamFilter === 'all' || i.valueStream === valueStreamFilter;
       return matchesSearch && matchesValueStream;
     });
   }, [searchTerm, valueStreamFilter]);
 
   const groupedByValueStream = useMemo(() => {
-    const groups: Record<string, typeof initiatives> = {};
+    const groups: Record<string, GroupedInitiative[]> = {};
     filteredInitiatives.forEach(init => {
       if (!groups[init.valueStream]) {
         groups[init.valueStream] = [];
@@ -38,9 +38,9 @@ export default function ProjectList() {
   }, [filteredInitiatives]);
 
   const stats = useMemo(() => ({
-    total: initiatives.length,
-    totalBudget: initiatives.reduce((sum, i) => sum + i.budgetedCost, 0),
-    totalBenefit: initiatives.reduce((sum, i) => sum + i.targetedBenefit, 0),
+    total: groupedInitiatives.length,
+    totalBudget: groupedInitiatives.reduce((sum, i) => sum + i.budgetedCost, 0),
+    totalBenefit: groupedInitiatives.reduce((sum, i) => sum + i.targetedBenefit, 0),
     valueStreams: valueStreams.length
   }), [valueStreams]);
 
@@ -225,8 +225,8 @@ export default function ProjectList() {
                     <CollapsibleContent>
                       <div className="divide-y">
                         {inits.map(init => (
-                          <Link key={init.id} href={`/project/${init.id}`}>
-                            <div className="p-4 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.id}`}>
+                          <Link key={init.ids[0]} href={`/project/${init.ids[0]}`}>
+                            <div className="p-4 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.ids[0]}`}>
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
                                   <div className="flex gap-1">
@@ -240,9 +240,12 @@ export default function ProjectList() {
                                     {init.priorityCategory}
                                   </Badge>
                                   <Badge variant="outline" className="text-xs">{init.lGate}</Badge>
+                                  {init.milestones.length > 0 && (
+                                    <Badge variant="outline" className="text-xs text-purple-600">{init.milestones.length} milestones</Badge>
+                                  )}
                                 </div>
                                 <div className="text-xs text-muted-foreground mt-1 ml-10">
-                                  {init.id} • {init.costCenter || 'No cost center'}
+                                  {init.ids.join(', ')} • {init.costCenter || 'No cost center'}
                                 </div>
                               </div>
                               <div className="flex items-center gap-6 text-sm">

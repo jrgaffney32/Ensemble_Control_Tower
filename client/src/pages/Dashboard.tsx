@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { initiatives, formatCurrency } from "@/lib/initiatives";
+import { groupedInitiatives, formatCurrency, type GroupedInitiative } from "@/lib/initiatives";
 import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,15 +26,15 @@ export default function Dashboard() {
   };
 
   const stats = useMemo(() => {
-    const totalBudget = initiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
-    const totalBenefit = initiatives.reduce((sum, i) => sum + i.targetedBenefit, 0);
-    const activeProjects = initiatives.filter(i => i.priorityCategory === 'Now').length;
-    const nextProjects = initiatives.filter(i => i.priorityCategory === 'Next').length;
-    const shippedProjects = initiatives.filter(i => i.priorityCategory === 'Shipped').length;
+    const totalBudget = groupedInitiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
+    const totalBenefit = groupedInitiatives.reduce((sum, i) => sum + i.targetedBenefit, 0);
+    const activeProjects = groupedInitiatives.filter(i => i.priorityCategory === 'Now').length;
+    const nextProjects = groupedInitiatives.filter(i => i.priorityCategory === 'Next').length;
+    const shippedProjects = groupedInitiatives.filter(i => i.priorityCategory === 'Shipped').length;
     
     const byValueStream: Record<string, number> = {};
     const byLGate: Record<string, number> = {};
-    initiatives.forEach(i => {
+    groupedInitiatives.forEach(i => {
       byValueStream[i.valueStream] = (byValueStream[i.valueStream] || 0) + 1;
       byLGate[i.lGate] = (byLGate[i.lGate] || 0) + 1;
     });
@@ -43,7 +43,7 @@ export default function Dashboard() {
   }, []);
 
   const filteredInitiatives = useMemo(() => {
-    return initiatives.filter(i => 
+    return groupedInitiatives.filter(i => 
       i.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.valueStream.toLowerCase().includes(searchTerm.toLowerCase())
     ).slice(0, 20);
@@ -189,7 +189,7 @@ export default function Dashboard() {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Budgeted Cost</p>
               <p className="text-2xl font-bold text-foreground font-mono">{formatCurrency(stats.totalBudget)}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <span>{initiatives.length} initiatives</span>
+                <span>{groupedInitiatives.length} initiatives</span>
               </div>
             </div>
             <div className="bg-white p-4 rounded-xl border shadow-sm">
@@ -326,13 +326,13 @@ export default function Dashboard() {
                         <Badge variant="outline">{count} initiatives</Badge>
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Budget: {formatCurrency(initiatives.filter(i => i.valueStream === valueStream).reduce((s, i) => s + i.budgetedCost, 0))}
+                        Budget: {formatCurrency(groupedInitiatives.filter(i => i.valueStream === valueStream).reduce((s, i) => s + i.budgetedCost, 0))}
                       </div>
                     </div>
                     <div className="divide-y">
                       {streamInits.map(init => (
-                        <Link key={init.id} href={`/project/${init.id}`}>
-                          <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.id}`}>
+                        <Link key={init.ids[0]} href={`/project/${init.ids[0]}`}>
+                          <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.ids[0]}`}>
                             <div className="flex items-center gap-3">
                               <div className="flex gap-1">
                                 <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
@@ -342,7 +342,7 @@ export default function Dashboard() {
                               </div>
                               <div>
                                 <div className="font-medium text-sm">{init.name}</div>
-                                <div className="text-xs text-muted-foreground">{init.id}</div>
+                                <div className="text-xs text-muted-foreground">{init.ids.join(', ')} {init.milestones.length > 0 && `• ${init.milestones.length} milestones`}</div>
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
