@@ -8,7 +8,7 @@ export default function LandingPage() {
       <div className="max-w-4xl w-full">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center font-bold text-3xl text-white shadow-lg">E</div>
+            <img src="/attached_assets/ensemblehp_logo2_1765915775273.jpeg" alt="Ensemble" className="w-16 h-16 rounded-xl shadow-lg" />
             <div className="text-left">
               <h1 className="text-4xl font-bold text-white tracking-tight font-heading">ENSEMBLE</h1>
               <p className="text-lg text-slate-400 tracking-widest">CONTROL TOWER</p>

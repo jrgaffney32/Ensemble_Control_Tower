@@ -147,7 +147,7 @@ export default function ProjectRequests() {
         <div className="p-6">
           <Link href="/">
             <div className="flex items-center gap-3 text-white mb-8 cursor-pointer hover:opacity-80">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-lg">E</div>
+              <img src="/attached_assets/ensemblehp_logo2_1765915775273.jpeg" alt="Ensemble" className="w-8 h-8 rounded-lg" />
               <h1 className="font-heading font-bold text-xl tracking-tight">ENSEMBLE<br/><span className="text-xs font-normal opacity-70 tracking-widest">CONTROL TOWER</span></h1>
             </div>
           </Link>
