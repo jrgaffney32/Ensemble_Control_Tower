@@ -1,111 +1,108 @@
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronLeft, ChevronRight, ListOrdered, Home } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronLeft, ChevronRight, ListOrdered, Home, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { initiatives, type Initiative } from "@/lib/initiatives";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface RoadmapItem {
   id: string;
   name: string;
   valueStream: string;
+  lGate: string;
+  priorityCategory: string;
   startMonth: number;
   duration: number;
   status: 'completed' | 'in-progress' | 'planned' | 'at-risk';
   milestones: { month: number; label: string }[];
+  budgetedCost: number;
+  targetedBenefit: number;
 }
 
-const roadmapData: RoadmapItem[] = [
-  {
-    id: '1',
-    name: 'Autonomous Coding Agent',
-    valueStream: 'Mid-Cycle / Coding',
-    startMonth: 0,
-    duration: 10,
-    status: 'in-progress',
-    milestones: [
-      { month: 1, label: 'Model Training' },
-      { month: 3, label: 'EMR Integration' },
-      { month: 5, label: 'Shadow Mode' },
-      { month: 7, label: 'Radiology Go-Live' },
-      { month: 10, label: 'ED Go-Live' }
-    ]
-  },
-  {
-    id: '2',
-    name: 'Prior Auth "Concierge" Bot',
-    valueStream: 'Pre-Service / Access',
-    startMonth: 1,
-    duration: 11,
-    status: 'at-risk',
-    milestones: [
-      { month: 2, label: 'Policy Ingestion' },
-      { month: 4, label: 'Portal Agents' },
-      { month: 6, label: 'Clinical NLP' },
-      { month: 9, label: 'Oncology Pilot' },
-      { month: 12, label: 'Full Rollout' }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Denial Defense Swarm',
-    valueStream: 'Back-Office / Claims',
-    startMonth: 2,
-    duration: 8,
-    status: 'in-progress',
-    milestones: [
-      { month: 3, label: 'Data Analysis' },
-      { month: 5, label: 'Appeal Gen' },
-      { month: 7, label: 'Payer API' },
-      { month: 10, label: 'Auto Resubmit' }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Patient Financial Guide',
-    valueStream: 'Patient Experience',
-    startMonth: 3,
-    duration: 8,
-    status: 'at-risk',
-    milestones: [
-      { month: 4, label: 'Voice Config' },
-      { month: 6, label: 'Knowledge Base' },
-      { month: 8, label: 'Sentiment' },
-      { month: 11, label: 'Beta Launch' }
-    ]
-  },
-  {
-    id: '5',
-    name: 'Claims Reconciliation Agent',
-    valueStream: 'Revenue Integrity',
-    startMonth: 6,
-    duration: 6,
-    status: 'planned',
-    milestones: [
-      { month: 7, label: 'Requirements' },
-      { month: 9, label: 'Development' },
-      { month: 12, label: 'Go-Live' }
-    ]
-  },
-  {
-    id: '6',
-    name: 'Eligibility Verification Bot',
-    valueStream: 'Patient Access',
-    startMonth: 8,
-    duration: 6,
-    status: 'planned',
-    milestones: [
-      { month: 9, label: 'Design' },
-      { month: 11, label: 'Build' },
-      { month: 14, label: 'Launch' }
-    ]
-  }
-];
+function parseInitiativesToRoadmap(inits: Initiative[]): RoadmapItem[] {
+  const baseDate = new Date(2024, 0, 1);
+  
+  return inits
+    .filter(init => init.milestones.length > 0 && init.priorityCategory !== 'Kill')
+    .map(init => {
+      const validMilestones = init.milestones.filter(m => m.startDate || m.endDate);
+      if (validMilestones.length === 0) {
+        return null;
+      }
+      
+      const dates = validMilestones
+        .flatMap(m => [m.startDate, m.endDate])
+        .filter(Boolean)
+        .map(d => new Date(d!))
+        .filter(d => !isNaN(d.getTime()));
+      
+      if (dates.length === 0) return null;
+      
+      const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
+      const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
+      
+      const startMonth = Math.max(0, (minDate.getFullYear() - baseDate.getFullYear()) * 12 + (minDate.getMonth() - baseDate.getMonth()));
+      const endMonth = Math.max(startMonth + 1, (maxDate.getFullYear() - baseDate.getFullYear()) * 12 + (maxDate.getMonth() - baseDate.getMonth()));
+      const duration = Math.max(1, endMonth - startMonth + 1);
+      
+      let status: RoadmapItem['status'] = 'planned';
+      if (init.priorityCategory === 'Shipped') {
+        status = 'completed';
+      } else if (init.priorityCategory === 'Now') {
+        status = 'in-progress';
+      } else if (init.lGate === 'L0' || init.lGate === 'L1') {
+        status = 'planned';
+      }
+      
+      const milestones = validMilestones.map(m => {
+        const mDate = new Date(m.endDate || m.startDate!);
+        const mMonth = (mDate.getFullYear() - baseDate.getFullYear()) * 12 + mDate.getMonth();
+        return {
+          month: mMonth,
+          label: m.name
+        };
+      });
+      
+      return {
+        id: init.id,
+        name: init.name,
+        valueStream: init.valueStream,
+        lGate: init.lGate,
+        priorityCategory: init.priorityCategory,
+        startMonth,
+        duration,
+        status,
+        milestones,
+        budgetedCost: init.budgetedCost,
+        targetedBenefit: init.targetedBenefit
+      };
+    })
+    .filter(Boolean) as RoadmapItem[];
+}
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export default function RoadmapView() {
   const [startOffset, setStartOffset] = useState(0);
+  const [valueStreamFilter, setValueStreamFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const visibleMonths = 12;
+
+  const roadmapData = useMemo(() => parseInitiativesToRoadmap(initiatives), []);
+  
+  const valueStreams = useMemo(() => {
+    const streams = new Set(roadmapData.map(i => i.valueStream));
+    return ['all', ...Array.from(streams).sort()];
+  }, [roadmapData]);
+
+  const filteredData = useMemo(() => {
+    return roadmapData.filter(item => {
+      if (valueStreamFilter !== 'all' && item.valueStream !== valueStreamFilter) return false;
+      if (priorityFilter !== 'all' && item.priorityCategory !== priorityFilter) return false;
+      return true;
+    }).slice(0, 30);
+  }, [roadmapData, valueStreamFilter, priorityFilter]);
 
   const getStatusColor = (status: RoadmapItem['status']) => {
     switch (status) {
@@ -202,20 +199,41 @@ export default function RoadmapView() {
               </Button>
             </Link>
             <h2 className="text-lg font-bold font-heading text-foreground">Roadmap View</h2>
+            <Badge variant="outline" className="ml-2">{filteredData.length} initiatives</Badge>
           </div>
           
           <div className="flex items-center gap-4">
-            <Link href="/priorities">
-              <Button variant="outline" className="gap-2" data-testid="button-priorities">
-                <ListOrdered className="h-4 w-4" />
-                Value Stream Priorities
-              </Button>
-            </Link>
+            <Select value={valueStreamFilter} onValueChange={setValueStreamFilter}>
+              <SelectTrigger className="w-48" data-testid="select-value-stream">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Value Stream" />
+              </SelectTrigger>
+              <SelectContent>
+                {valueStreams.map(vs => (
+                  <SelectItem key={vs} value={vs}>{vs === 'all' ? 'All Value Streams' : vs}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-32" data-testid="select-priority">
+                <SelectValue placeholder="Priority" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="Shipped">Shipped</SelectItem>
+                <SelectItem value="Now">Now</SelectItem>
+                <SelectItem value="Next">Next</SelectItem>
+                <SelectItem value="Later">Later</SelectItem>
+                <SelectItem value="New">New</SelectItem>
+              </SelectContent>
+            </Select>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" onClick={() => setStartOffset(Math.max(0, startOffset - 3))}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm text-muted-foreground">2024-2025</span>
+              <span className="text-sm text-muted-foreground">
+                {2024 + Math.floor(startOffset / 12)}
+              </span>
               <Button variant="outline" size="icon" onClick={() => setStartOffset(startOffset + 3)}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
@@ -231,10 +249,9 @@ export default function RoadmapView() {
           {/* Legend */}
           <div className="flex items-center gap-6 bg-white p-4 rounded-xl border shadow-sm">
             <span className="text-sm font-semibold text-muted-foreground">Legend:</span>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm">Completed</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm">In Progress</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-red-500" /><span className="text-sm">At Risk</span></div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-slate-300" /><span className="text-sm">Planned</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm">Shipped</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-blue-500" /><span className="text-sm">In Progress (Now)</span></div>
+            <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-slate-300" /><span className="text-sm">Planned (Next/Later)</span></div>
             <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500 ring-2 ring-amber-200" /><span className="text-sm">Milestone</span></div>
           </div>
 
@@ -242,8 +259,8 @@ export default function RoadmapView() {
           <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
             {/* Month Headers */}
             <div className="flex border-b">
-              <div className="w-64 flex-shrink-0 p-4 border-r bg-slate-50">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Project</span>
+              <div className="w-72 flex-shrink-0 p-4 border-r bg-slate-50">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Initiative</span>
               </div>
               <div className="flex-1 flex">
                 {Array.from({ length: visibleMonths }, (_, i) => {
@@ -260,50 +277,63 @@ export default function RoadmapView() {
             </div>
 
             {/* Project Rows */}
-            {roadmapData.map((item) => (
-              <div key={item.id} className="flex border-b last:border-b-0 hover:bg-slate-50/50">
-                <div className="w-64 flex-shrink-0 p-4 border-r">
-                  <div className="font-semibold text-sm text-foreground">{item.name}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{item.valueStream}</div>
-                  <div className="mt-2">{getStatusBadge(item.status)}</div>
-                </div>
-                <div className="flex-1 flex relative py-4">
-                  {/* Timeline Bar */}
-                  <div 
-                    className={`absolute h-6 rounded-full ${getStatusColor(item.status)} opacity-80`}
-                    style={{
-                      left: `${((item.startMonth - startOffset) / visibleMonths) * 100}%`,
-                      width: `${(item.duration / visibleMonths) * 100}%`,
-                      top: '50%',
-                      transform: 'translateY(-50%)'
-                    }}
-                  />
-                  {/* Milestones */}
-                  {item.milestones.map((ms, idx) => {
-                    const position = ((ms.month - startOffset) / visibleMonths) * 100;
-                    if (position < 0 || position > 100) return null;
-                    return (
-                      <div 
-                        key={idx}
-                        className="absolute z-10 group"
-                        style={{
-                          left: `${position}%`,
-                          top: '50%',
-                          transform: 'translate(-50%, -50%)'
-                        }}
-                      >
-                        <div className="w-3 h-3 rounded-full bg-amber-500 ring-2 ring-white shadow-sm cursor-pointer" />
-                        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
-                          <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                            {ms.label}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+            {filteredData.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                No initiatives with milestone dates found for the selected filters.
               </div>
-            ))}
+            ) : (
+              filteredData.map((item) => (
+                <Link key={item.id} href={`/project/${item.id}`}>
+                  <div className="flex border-b last:border-b-0 hover:bg-slate-50/50 cursor-pointer">
+                    <div className="w-72 flex-shrink-0 p-4 border-r">
+                      <div className="font-semibold text-sm text-foreground">{item.name}</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">{item.valueStream}</div>
+                      <div className="flex items-center gap-2 mt-2">
+                        {getStatusBadge(item.status)}
+                        <Badge variant="outline" className="text-xs">{item.lGate}</Badge>
+                      </div>
+                    </div>
+                    <div className="flex-1 flex relative py-4">
+                      {/* Timeline Bar */}
+                      {item.startMonth <= startOffset + visibleMonths && item.startMonth + item.duration >= startOffset && (
+                        <div 
+                          className={`absolute h-6 rounded-full ${getStatusColor(item.status)} opacity-80`}
+                          style={{
+                            left: `${Math.max(0, ((item.startMonth - startOffset) / visibleMonths) * 100)}%`,
+                            width: `${Math.min(100, (item.duration / visibleMonths) * 100)}%`,
+                            top: '50%',
+                            transform: 'translateY(-50%)'
+                          }}
+                        />
+                      )}
+                      {/* Milestones */}
+                      {item.milestones.map((ms, idx) => {
+                        const position = ((ms.month - startOffset) / visibleMonths) * 100;
+                        if (position < 0 || position > 100) return null;
+                        return (
+                          <div 
+                            key={idx}
+                            className="absolute z-10 group"
+                            style={{
+                              left: `${position}%`,
+                              top: '50%',
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                          >
+                            <div className="w-3 h-3 rounded-full bg-amber-500 ring-2 ring-white shadow-sm cursor-pointer" />
+                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block z-20">
+                              <div className="bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap max-w-48 truncate">
+                                {ms.label}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
 
         </div>

@@ -1,0 +1,3856 @@
+[
+  {
+    "id": "INSOVER-E-75",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 4445083.0,
+    "targetedBenefit": 1346688.6903645352,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "GenAI  Appeal Letter Generation",
+        "startDate": "2024-09-23",
+        "endDate": "2025-01-24",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-77",
+    "name": "Data Integration",
+    "valueStream": "Data Platform",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4104 Customer Service",
+    "milestones": [
+      {
+        "name": "Artiva / Finvi Integration POC",
+        "startDate": "2025-08-01",
+        "endDate": "2025-10-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQENFORCE-E-31",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 85661.55555555556,
+    "targetedBenefit": 202222.22222222222,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Patient Statements & Digital Payments] Enterprise Vendor Audit 2025",
+        "startDate": "2025-01-01",
+        "endDate": "2025-03-21",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-82",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 85661.55555555556,
+    "targetedBenefit": 202222.22222222222,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Bad Debt] Enterprise Vendors Audit 2025",
+        "startDate": "2025-01-27",
+        "endDate": "2025-03-28",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-154",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 3690000.0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Client-Facing Reporting",
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-175",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 840000.0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Lift Calculation Automation (6 of 12)",
+        "startDate": "2024-08-27",
+        "endDate": "2025-07-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-196",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 5820792.0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Data platform (AOP 2024)",
+        "startDate": "2024-09-30",
+        "endDate": "2024-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-197",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 1028000.0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Ensemble Platform (AOP 2024)",
+        "startDate": "2024-09-30",
+        "endDate": "2024-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-187",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 850000.0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Claim Status (Acute)",
+        "startDate": "2024-08-09",
+        "endDate": "2025-07-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-192, MIDRCM-E-193, MIDRCM-E-194",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L5",
+    "priorityCategory": "Shipped",
+    "priorityRank": 999,
+    "budgetedCost": 2000000.0,
+    "targetedBenefit": 2175660.0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Enable offshore Epic work",
+        "startDate": "2024-01-01",
+        "endDate": "2024-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-847",
+    "name": "Autonomous Coding",
+    "valueStream": "Clinical",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 353750.0,
+    "targetedBenefit": 15640506.135502387,
+    "costCenter": "CC_3104 Professional Coding",
+    "milestones": [
+      {
+        "name": "PB CAC",
+        "startDate": "2025-06-01",
+        "endDate": "2026-06-19",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQENFORCE-E-33",
+    "name": "Autonomous Coding",
+    "valueStream": "Clinical",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 176875.0,
+    "targetedBenefit": 8257804.25,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "HB Autonomous Outpatient",
+        "startDate": "2025-06-01",
+        "endDate": "2026-06-05",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-166",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Clinical AI Engine Redesign \u2013 POC and Implementation",
+        "startDate": "2025-12-01",
+        "endDate": "2026-03-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQENFORCE-E-36",
+    "name": "HIM",
+    "valueStream": "Clinical",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 4108910.0,
+    "targetedBenefit": 6484608.0,
+    "costCenter": "CC_3102 HIM Operations",
+    "milestones": [
+      {
+        "name": "Solarity | All Client Implementations",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQENFORCE-E-29",
+    "name": "Data Integration",
+    "valueStream": "Data Platform",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4110 Credit Balances",
+    "milestones": [
+      {
+        "name": "Credits adjustments automation",
+        "startDate": "2025-06-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-92",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 85661.55555555556,
+    "targetedBenefit": 202222.22222222222,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Coverage Discovery] Enterprise Vendor Audit 2025",
+        "startDate": "2025-01-27",
+        "endDate": "2025-04-27",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-171",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 85661.55555555556,
+    "targetedBenefit": 202222.22222222222,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Global] Enterprise Middle RCM Vendors Audit 2025",
+        "startDate": "2025-01-27",
+        "endDate": "2025-07-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQENFORCE-E-34",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 740722.0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Self Pay Epic Artiva - Scale migrate clients to pull from the lake",
+        "startDate": "2025-06-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-91",
+    "name": "Enterprise CoPilot",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "#N/A",
+        "startDate": "2025-07-01",
+        "endDate": "2025-10-29",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-99",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Coding - DDS Solventum Historical and Comparative Coding",
+        "startDate": "2025-11-01",
+        "endDate": "2026-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-648",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Clinical (Flat) and Clinical (FHIR)",
+        "startDate": "2025-11-01",
+        "endDate": "2026-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-839",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Vendor implementations (onboarding legacy vendors for all new clients)",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-997",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 192738.42,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Cerner/Nordic integration (put on hold for a few months - refining scope)",
+        "startDate": "2025-09-30",
+        "endDate": "2026-03-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-829",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "New client onboarding (very little bandwidth or BDD)",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-825",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 192738.42,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Link missing Epic Referrals",
+        "startDate": "2025-11-01",
+        "endDate": "2025-12-17",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "IT-N-167",
+    "name": "Charity and Eligibility",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 5084068.247455198,
+    "costCenter": "CC_4105 Eligibility/Charity",
+    "milestones": [
+      {
+        "name": "Bluemark Insurance Discovery Day 1",
+        "startDate": "2025-03-31",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Bluemark IP Auth BIA Workflow",
+        "startDate": "2025-03-31",
+        "endDate": "2026-03-31",
+        "status": "green"
+      },
+      {
+        "name": "P2P / PARO Waystar intergration",
+        "startDate": "2024-03-31",
+        "endDate": "2025-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-762",
+    "name": "Epic Diamonds",
+    "valueStream": "Patient Engagement",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 899376.5156543619,
+    "costCenter": "CC_2203 Registration",
+    "milestones": [
+      {
+        "name": "ED Self Registration",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQENFORCE-E-27",
+    "name": "Epic Diamonds",
+    "valueStream": "Patient Engagement",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 899376.5156543619,
+    "costCenter": "CC_2203 Registration",
+    "milestones": [
+      {
+        "name": "eCheck-In with Integrated Payment Plans",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Nordic / BSMH - Ticket scheduling (CT/MRI) - ticketing logic, Epic reporting integration",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-198",
+    "name": "Epic Diamonds",
+    "valueStream": "Patient Engagement",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 899376.5156543619,
+    "costCenter": "CC_2203 Registration",
+    "milestones": [
+      {
+        "name": "Hello World - Direct/open scheduling (General)",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "Letters - BACKRCM-E-647 & Adjustments - BACKRCM-E-664",
+    "name": "Scheduling",
+    "valueStream": "Patient Engagement",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2102 Scheduling",
+    "milestones": [
+      {
+        "name": "Nordic / BSMH - Mammography scheduling - screening template config, departmental scope, mychart scheduling",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-96",
+    "name": "Artiva",
+    "valueStream": "Patient Engagement",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 776555.7230166253,
+    "costCenter": "CC_4107 Mail/Scanning",
+    "milestones": [
+      {
+        "name": "Automating delivery of itemized bills for patients",
+        "startDate": "2025-03-24",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-199",
+    "name": "Virtual Agent",
+    "valueStream": "Patient Engagement",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 1000000.0,
+    "targetedBenefit": 1500000.0,
+    "costCenter": "CC_4104 Customer Service",
+    "milestones": [
+      {
+        "name": "Balance Inquiry - Provide balance with Account Number as input",
+        "startDate": "2025-03-24",
+        "endDate": "2025-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-776",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Automate Creation of Appeal Record and Autopopulate",
+        "startDate": "2025-06-21",
+        "endDate": "2025-12-13",
+        "status": "green"
+      },
+      {
+        "name": "Max allowable adjustment",
+        "startDate": "2025-07-31",
+        "endDate": "2025-10-17",
+        "status": "green"
+      },
+      {
+        "name": "DDS Reporting",
+        "startDate": "2025-03-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-97",
+    "name": "Billing Inventory",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 760069.4271973319,
+    "costCenter": "CC_4100 Patient Billing",
+    "milestones": [
+      {
+        "name": "Reduce non-value touches by Epic billers",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-98",
+    "name": "Appeal Process Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 95833.33333333333,
+    "targetedBenefit": 783030.6828345429,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Recover unsubmitted ED downgrades revenue",
+        "startDate": "2025-05-22",
+        "endDate": "2025-12-17",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-93",
+    "name": "Cash Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 1076400.0,
+    "targetedBenefit": 1304070.8,
+    "costCenter": "CC_4101 Cash Posting",
+    "milestones": [
+      {
+        "name": "Automated retrieval of missing remit",
+        "startDate": "2025-06-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-94",
+    "name": "Cash Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 256984.66666666666,
+    "targetedBenefit": 440589.0,
+    "costCenter": "CC_4101 Cash Posting",
+    "milestones": [
+      {
+        "name": "Cash recon performance enhancements",
+        "startDate": "2025-05-22",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-95",
+    "name": "Cash Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 691472.0,
+    "targetedBenefit": 1321767.0,
+    "costCenter": "CC_4101 Cash Posting",
+    "milestones": [
+      {
+        "name": "Automation for daily cash reconciliation",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-808",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Appeal strength calculator",
+        "startDate": "2025-07-31",
+        "endDate": "2025-11-15",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-760",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Underpayments/CM rules engine optimization",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-766",
+    "name": "EIQ Integrity",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3105 DRG Validation",
+    "milestones": [
+      {
+        "name": "Platform modernization for DRG-V",
+        "startDate": "2025-09-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-588",
+    "name": "EIQ Integrity",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 716476.85,
+    "targetedBenefit": 62420050.0,
+    "costCenter": "CC_3105 DRG Validation",
+    "milestones": [
+      {
+        "name": "Integrate with Solventum for DRG-V Point Solution",
+        "startDate": "2025-05-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-844",
+    "name": "PRC",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 408648.46153846156,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4112 Insurance Follow-up - PRC",
+    "milestones": [
+      {
+        "name": "Resolve denied PRC accounts",
+        "startDate": "2026-07-01",
+        "endDate": "2027-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-S-36",
+    "name": "PRC",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 408648.46153846156,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4112 Insurance Follow-up - PRC",
+    "milestones": [
+      {
+        "name": "Resolve aged, no response - PRC",
+        "startDate": "2026-01-01",
+        "endDate": "2026-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-S-20",
+    "name": "PRC",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 408648.46153846156,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4112 Insurance Follow-up - PRC",
+    "milestones": [
+      {
+        "name": "Resolve insurance paid, no denials",
+        "startDate": "2026-01-01",
+        "endDate": "2026-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-821",
+    "name": "Billing Inventory",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 128492.33333333333,
+    "targetedBenefit": 122839.5033854274,
+    "costCenter": "CC_4100 Patient Billing",
+    "milestones": [
+      {
+        "name": "Billing Inventory Management",
+        "startDate": "2025-05-01",
+        "endDate": "2025-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-78",
+    "name": "EIQ Integrity",
+    "valueStream": "Revenue Protection",
+    "lGate": "L4",
+    "priorityCategory": "Now",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 829435.7061982397,
+    "costCenter": "CC_3201 Revenue Integrity",
+    "milestones": [
+      {
+        "name": "Define Enterprise-wide standardization of claim edits and account activities",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-140",
+    "name": "VUR / UM Agent",
+    "valueStream": "Clinical",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 1,
+    "budgetedCost": 1140744.49,
+    "targetedBenefit": 3843290.432366641,
+    "costCenter": "CC_2301 VUR - Nursing",
+    "milestones": [
+      {
+        "name": "Improve clinical notes through denial reason insights",
+        "startDate": "2025-12-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-127",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 1,
+    "budgetedCost": 471138.40555555554,
+    "targetedBenefit": 202222.22222222222,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Enterprise] Expansion of vendors and grouping of vendors",
+        "startDate": "2026-01-01",
+        "endDate": "2026-09-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-150",
+    "name": "Enterprise CoPilot",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 1,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "#N/A",
+        "startDate": "2025-10-30",
+        "endDate": "2026-02-27",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-797",
+    "name": "Host Interfaces",
+    "valueStream": "Host Interfaces",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 1,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Obtain Epic medical records via Epic ADR",
+        "startDate": "2026-01-01",
+        "endDate": "2026-06-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-208",
+    "name": "Appeal Process Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 1,
+    "budgetedCost": 1179602.1515384614,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "EOB submission to secondary payer",
+        "startDate": "2025-10-08",
+        "endDate": "2025-12-17",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-209",
+    "name": "AR Agent",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 1,
+    "budgetedCost": 408648.46153846156,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Resolve aged, no response - Acute",
+        "startDate": "2026-04-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQCLEAR-E-68",
+    "name": "VUR / UM Agent",
+    "valueStream": "Clinical",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 2,
+    "budgetedCost": 1140744.49,
+    "targetedBenefit": 1494612.9459203605,
+    "costCenter": "CC_2301 VUR - Nursing",
+    "milestones": [
+      {
+        "name": "Present  clinical notes for Physician Advisory P2P",
+        "startDate": "2026-05-01",
+        "endDate": "2026-11-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-155",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 2,
+    "budgetedCost": 471138.40555555554,
+    "targetedBenefit": 202222.22222222222,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Claim Status] Enterprise Vendor Audit 2025",
+        "startDate": "2026-01-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-154",
+    "name": "Compliance",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 2,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "ERM Payment Card Data",
+        "startDate": "2025-11-30",
+        "endDate": "2026-02-28",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-186",
+    "name": "Denial Prediction",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 2,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 713691.7600121847,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Coding denial reasoning",
+        "startDate": "2026-03-01",
+        "endDate": "2026-10-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-156",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 3,
+    "budgetedCost": 1234426.85,
+    "targetedBenefit": 3641848.0202740068,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Expanded denials - denied days, experimental, missed notification, no authoritization, and readmission",
+        "startDate": "2026-07-01",
+        "endDate": "2026-10-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-153",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 3,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[AP Automation] Enterprise Audit Data Automation & Results Delivery 2026",
+        "startDate": "2026-06-01",
+        "endDate": "2027-05-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-125",
+    "name": "Enterprise CoPilot",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 3,
+    "budgetedCost": 192738.42,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "#N/A",
+        "startDate": "2025-09-30",
+        "endDate": "2025-11-14",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-726",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 3,
+    "budgetedCost": 192738.42,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Note wizard to Auto clear Epic encounters",
+        "startDate": "2025-12-18",
+        "endDate": "2026-02-11",
+        "status": "green"
+      },
+      {
+        "name": "Visual of estimate status for worklist indicator (auto created vs auto finalized)",
+        "startDate": "2026-05-07",
+        "endDate": "2026-09-09",
+        "status": "green"
+      },
+      {
+        "name": "NSA/Self Pay Inventory Assignment Rules",
+        "startDate": "2026-05-07",
+        "endDate": "2026-09-09",
+        "status": "green"
+      },
+      {
+        "name": "COB",
+        "startDate": "2025-09-01",
+        "endDate": "2026-01-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-142",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 4,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Coverage Discovery] Enterprise Vendor Audit 2026 Expansion",
+        "startDate": "2026-07-01",
+        "endDate": "2026-08-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-139",
+    "name": "Enterprise CoPilot",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 4,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "#N/A",
+        "startDate": "2025-10-30",
+        "endDate": "2026-02-27",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-824",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 4,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Retrieve audit request and create audit record",
+        "startDate": "2026-04-01",
+        "endDate": "2026-09-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-827",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 4,
+    "budgetedCost": 1541907.39,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "PRC Underpayment WF Tool",
+        "startDate": "2026-07-01",
+        "endDate": "2027-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-174",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 5,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Software Coding] Enterprise Vendor Audit 2026",
+        "startDate": "2026-07-01",
+        "endDate": "2026-12-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-138",
+    "name": "Enterprise CoPilot",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 5,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "#N/A",
+        "startDate": "2025-11-29",
+        "endDate": "2026-02-27",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-834",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 5,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Enhanced pre-auth - Authorization Service Line Expansion (fill encounter type data set)",
+        "startDate": "2026-02-26",
+        "endDate": "2026-07-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-828",
+    "name": "AR Agent",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 5,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 1899747.346440891,
+    "costCenter": "CC_4205 Underpayments",
+    "milestones": [
+      {
+        "name": "Underpayments - streamline research of accounts that need follow-up",
+        "startDate": "2027-10-01",
+        "endDate": "2028-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-158",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 6,
+    "budgetedCost": 192738.42,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Global Vendors] Enterprise Middle RCM Vendors Audit 2026 Expansion",
+        "startDate": "2026-09-01",
+        "endDate": "2026-10-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-197",
+    "name": "Enterprise CoPilot",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 6,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "#N/A",
+        "startDate": "2026-01-01",
+        "endDate": "2026-04-15",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-185",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 6,
+    "budgetedCost": 192738.42,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Assignment disposition reason tracking",
+        "startDate": "2026-02-26",
+        "endDate": "2026-07-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "INSOVER-E-100",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 6,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Automate Confirmation Audit was received",
+        "startDate": "2027-01-08",
+        "endDate": "2027-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-765",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 7,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2100 Financial Clearance",
+    "milestones": [
+      {
+        "name": "Pre-registration Module",
+        "startDate": "2026-02-26",
+        "endDate": "2027-01-27",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-782",
+    "name": "Virtual Agent",
+    "valueStream": "Patient Engagement",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 7,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 2524565.657977156,
+    "costCenter": "CC_2203 Registration",
+    "milestones": [
+      {
+        "name": "Patient Access - Auto scheduling",
+        "startDate": "2027-06-01",
+        "endDate": "2028-02-29",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-850",
+    "name": "Appeal Process Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 7,
+    "budgetedCost": 1179602.1515384614,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Automate the Identification and Closure of Appeals with No Payment for Over 90 Days",
+        "startDate": "2026-10-01",
+        "endDate": "2026-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-841",
+    "name": "Appeal Process Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 8,
+    "budgetedCost": 1179602.1515384614,
+    "targetedBenefit": 1923076.923076923,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Auto Update Appeal Status for Availity Payors",
+        "startDate": "2027-01-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-849",
+    "name": "EIQ Integrity",
+    "valueStream": "Revenue Protection",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 8,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3105 DRG Validation",
+    "milestones": [
+      {
+        "name": "Outpatient Integrity Functionality",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-667",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Frictionless - OR Logs Sample Data and RTE Sample Data",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-666",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Payor / Claim Status for Availity ID and Waystar ID",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-575",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "L3",
+    "priorityCategory": "Next",
+    "priorityRank": 999,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Lift Calculation Automation: Point of Service (POS) Collections as % of Total Patient Cash Collections",
+        "startDate": "2026-03-31",
+        "endDate": "2026-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "RPA-S-14",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 1,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 973358.7442244497,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Productivity Tool - Insurance Authorization",
+        "startDate": "2027-01-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-243",
+    "name": "Pricing Optimization",
+    "valueStream": "Revenue Generation",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 1,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 2366666.6666666665,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Modeling the revenue impact from CDM pricing changes",
+        "startDate": "2027-01-01",
+        "endDate": "2027-04-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-256",
+    "name": "PRC",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 1,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4120 Credit Balances - PRC",
+    "milestones": [
+      {
+        "name": "Automated credit adjustments to income",
+        "startDate": "2028-04-01",
+        "endDate": "2028-07-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "NA",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 2,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 1119982.1435554964,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Productivity Tool - Insurance Follow-up",
+        "startDate": "2027-04-01",
+        "endDate": "2027-06-30",
+        "status": "green"
+      },
+      {
+        "name": "Productivity Tool - Underpayments",
+        "startDate": "2027-10-01",
+        "endDate": "2027-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Productivity Tool - Revenue Integrity",
+        "startDate": "2028-01-01",
+        "endDate": "2028-03-31",
+        "status": "green"
+      },
+      {
+        "name": "[Global Vendors] Enterprise Front RCM Vendors Audit 2026 Expansion",
+        "startDate": "2027-01-01",
+        "endDate": "2027-05-01",
+        "status": "green"
+      },
+      {
+        "name": "[Software Telephony] Enterprise Vendor Audit 2027",
+        "startDate": "2027-01-01",
+        "endDate": "2027-04-01",
+        "status": "green"
+      },
+      {
+        "name": "[Enterprise] Connect to upstream Account reconcilliation Back RCM",
+        "startDate": "2027-01-01",
+        "endDate": "2027-12-30",
+        "status": "green"
+      },
+      {
+        "name": "[Enterprise] Invoice evaluation at receipt",
+        "startDate": "2027-04-01",
+        "endDate": "2027-10-01",
+        "status": "green"
+      },
+      {
+        "name": "[AMN/Aquity] [Ardent] Legacy Vendor Audit 2027",
+        "startDate": "2027-04-01",
+        "endDate": "2027-07-31",
+        "status": "green"
+      },
+      {
+        "name": "[Software Microsoft] Enterprise Vendor Audit 2027",
+        "startDate": "2027-07-01",
+        "endDate": "2027-12-30",
+        "status": "green"
+      },
+      {
+        "name": "Vendor Recon - Bad Debt andother Recon",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Other Vendor Audits",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Q2 Spec 2026 - Expansion of Referrals, Registration and Work Queue",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Industry Standard Data for Medicare / CMS / etc.",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Expand HL7 to Lake - SIU / ORM / MDM / REF",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Coding - Comparative coding",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Inpatient Med Nec Denials",
+        "startDate": "2026-11-01",
+        "endDate": "2027-04-30",
+        "status": "green"
+      },
+      {
+        "name": "Policy changes",
+        "startDate": "2027-05-01",
+        "endDate": "2027-10-31",
+        "status": "green"
+      },
+      {
+        "name": "CPT analysis",
+        "startDate": "2027-11-01",
+        "endDate": "2028-01-30",
+        "status": "green"
+      },
+      {
+        "name": "Clear action log of cancelled Auth",
+        "startDate": "2026-09-24",
+        "endDate": "2026-11-18",
+        "status": "green"
+      },
+      {
+        "name": "Post notes to benefits tab back to host",
+        "startDate": "2026-09-24",
+        "endDate": "2026-11-18",
+        "status": "green"
+      },
+      {
+        "name": "Standardized PreRegistration Inventory Assignment Rules",
+        "startDate": "2026-09-24",
+        "endDate": "2027-01-27",
+        "status": "green"
+      },
+      {
+        "name": "QA Automation (Reg QA)",
+        "startDate": "2026-12-03",
+        "endDate": "2027-07-01",
+        "status": "green"
+      },
+      {
+        "name": "Inpatient in-house authorization",
+        "startDate": "2027-04-22",
+        "endDate": "2027-09-09",
+        "status": "green"
+      },
+      {
+        "name": "Scenario modeling",
+        "startDate": "2027-05-01",
+        "endDate": "2027-08-31",
+        "status": "green"
+      },
+      {
+        "name": "Ability to recreate cost report worksheets",
+        "startDate": "2028-09-01",
+        "endDate": "2028-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Ability to create scenarios for cost report worksheets",
+        "startDate": "2029-05-01",
+        "endDate": "2029-08-31",
+        "status": "green"
+      },
+      {
+        "name": "Ability to create scenarios for cost report worksheets",
+        "startDate": "2030-01-01",
+        "endDate": "2030-04-30",
+        "status": "green"
+      },
+      {
+        "name": "Automated credit overpayment letters",
+        "startDate": "2028-07-01",
+        "endDate": "2028-10-01",
+        "status": "green"
+      },
+      {
+        "name": "Insurance Verification for Accident Claims",
+        "startDate": "2028-10-01",
+        "endDate": "2029-04-01",
+        "status": "green"
+      },
+      {
+        "name": "Agent for payer portals to maintain ERA/EFT setups and 835 Enrollment (CommerceBank)",
+        "startDate": "2029-08-01",
+        "endDate": "2030-01-31",
+        "status": "green"
+      },
+      {
+        "name": "Reduce Host Pod actions through Epic integration: Coverage changes, adjustments, insurance card, and move balance",
+        "startDate": "2029-04-01",
+        "endDate": "2029-10-01",
+        "status": "green"
+      },
+      {
+        "name": "Create a CDM module as a part of EIQ Integrity that contains synced copies of client CDMs",
+        "startDate": "2026-11-01",
+        "endDate": "2027-07-31",
+        "status": "green"
+      },
+      {
+        "name": "Zelis workflow automation",
+        "startDate": "2027-12-01",
+        "endDate": "2028-05-31",
+        "status": "green"
+      },
+      {
+        "name": "Agent for QA to select top 20 accounts per biller and perform QA",
+        "startDate": "2028-07-01",
+        "endDate": "2028-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Lockbox OCR enrollment automation agent  (CommerceBank)",
+        "startDate": "2028-11-01",
+        "endDate": "2029-04-30",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - Tricare OPPS",
+        "startDate": "2027-01-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Modeling the revenue impact from CDM pricing changes",
+        "startDate": "2027-04-01",
+        "endDate": "2027-09-30",
+        "status": "green"
+      },
+      {
+        "name": "EIQ Collect",
+        "startDate": "2030-04-01",
+        "endDate": "2031-04-01",
+        "status": "green"
+      },
+      {
+        "name": "Automate creation of action logs for accounts that need documentation via payer portal (PWK)",
+        "startDate": "2031-04-02",
+        "endDate": "2031-07-31",
+        "status": "green"
+      },
+      {
+        "name": "Cash Recon Zero Pay reconciliation",
+        "startDate": "2031-08-01",
+        "endDate": "2032-01-31",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - MCR SNF",
+        "startDate": "2027-04-01",
+        "endDate": "2027-06-30",
+        "status": "green"
+      },
+      {
+        "name": "CDM updates to be pushed from EIQ Integrity to client EMRs",
+        "startDate": "2029-01-01",
+        "endDate": "2029-06-30",
+        "status": "green"
+      },
+      {
+        "name": "EIQ Collect (PRO)",
+        "startDate": "2031-04-01",
+        "endDate": "2032-04-01",
+        "status": "green"
+      },
+      {
+        "name": "Automate creation of action logs on accounts that qualify for conditional billing",
+        "startDate": "2032-04-02",
+        "endDate": "2032-07-31",
+        "status": "green"
+      },
+      {
+        "name": "Virtual credit card workflow automation (CommerceBank)",
+        "startDate": "2032-08-01",
+        "endDate": "2033-01-31",
+        "status": "green"
+      },
+      {
+        "name": "Lift Calculation Automation: Initial Denials and Medicaid Third Party Conversion",
+        "startDate": "2026-09-30",
+        "endDate": "2027-03-29",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - MCRIRF",
+        "startDate": "2027-07-01",
+        "endDate": "2027-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Appeal Automation into PRC",
+        "startDate": "2030-04-01",
+        "endDate": "2030-10-01",
+        "status": "green"
+      },
+      {
+        "name": "Automate creation of action logs on accounts that qualify for interim billing",
+        "startDate": "2030-10-02",
+        "endDate": "2031-01-31",
+        "status": "green"
+      },
+      {
+        "name": "Self-Service Configuration for Operations",
+        "startDate": "2027-01-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - State MCD EAPG OP",
+        "startDate": "2027-10-01",
+        "endDate": "2028-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Automated rebill for non-epic sites with RPA",
+        "startDate": "2029-04-01",
+        "endDate": "2029-07-31",
+        "status": "green"
+      },
+      {
+        "name": "Automate Insights for Self-Pay Account Management",
+        "startDate": "2027-10-01",
+        "endDate": "2027-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Prioritization",
+        "startDate": "2029-04-01",
+        "endDate": "2029-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Automate Bad Debt Account Reconciliation",
+        "startDate": "2028-01-01",
+        "endDate": "2028-06-30",
+        "status": "green"
+      },
+      {
+        "name": "AI Contract Loading",
+        "startDate": "2028-07-01",
+        "endDate": "2028-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Auto-Documentation Create Rules for Document Requests Only",
+        "startDate": "2028-07-01",
+        "endDate": "2028-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Use the reasoning model to compare payments against contractual and policy terms",
+        "startDate": "2031-04-01",
+        "endDate": "2031-06-30",
+        "status": "green"
+      },
+      {
+        "name": "Make available clinical information - Underpayments",
+        "startDate": "2031-10-01",
+        "endDate": "2032-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Allow clinical records to be queried for certain data elements - Underpayments",
+        "startDate": "2032-04-01",
+        "endDate": "2032-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Auto-generate appeal letters - Underpayments",
+        "startDate": "2032-10-01",
+        "endDate": "2032-12-31",
+        "status": "green"
+      },
+      {
+        "name": "CDI Prioritization Worklist Module for EIQ Integrity",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Artiva / Finvi Integration - Production",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "SVC Compliance Coding Audit",
+        "startDate": "2026-06-01",
+        "endDate": "2026-09-30",
+        "status": "green"
+      },
+      {
+        "name": "CMS Prior Auth API",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Compliance Data Analytics",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Unified Data Layer of De-ID Clinical and Admin Data for GenAI Use Cases",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Modernize Client Assessment",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Add modifiers for claim and DOS/POS Corrections",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      },
+      {
+        "name": "Upload to host documentation",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      },
+      {
+        "name": "Demographic updates (Finvi)",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      },
+      {
+        "name": "Environment Setup for Legacy Data Migration and Testing",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Standardize Status Code Tables",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Store previously pulled clinical data in a central location accessible via EIQ vs. current shared file or DB today.",
+        "startDate": "2026-10-01",
+        "endDate": "2027-01-01",
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": "2025-09-30",
+        "endDate": "2025-11-29",
+        "status": "green"
+      },
+      {
+        "name": "[Global Vendors] Enterprise Back RCM Vendors Audit 2026 Expansion",
+        "startDate": "2026-11-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      },
+      {
+        "name": "[Insurance Authorization] Enterprise Vendor Audit 2026",
+        "startDate": "2027-06-01",
+        "endDate": "2027-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Expansion beyond MVP (to be refined)",
+        "startDate": "2025-12-17",
+        "endDate": "2026-03-01",
+        "status": "green"
+      },
+      {
+        "name": "CDI Query Copilot",
+        "startDate": "2026-03-02",
+        "endDate": "2026-08-31",
+        "status": "green"
+      },
+      {
+        "name": "Outpatient Med Nec Denials",
+        "startDate": "2026-04-01",
+        "endDate": "2026-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Meditech Integration pilot",
+        "startDate": "2026-02-26",
+        "endDate": "2026-07-01",
+        "status": "green"
+      },
+      {
+        "name": "eMPA Compatibility",
+        "startDate": "2025-12-18",
+        "endDate": "2026-02-11",
+        "status": "green"
+      },
+      {
+        "name": "Clinical Data FHIR MAR, flowsheets",
+        "startDate": "2026-04-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      },
+      {
+        "name": "PB notes integration",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      },
+      {
+        "name": "Balance Inquiry - Improve Patient ID success by adding prompts for better accuracy",
+        "startDate": "2025-12-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Balance Inquiry - Balance inquiry user experience improvements",
+        "startDate": "2025-12-01",
+        "endDate": "2026-01-15",
+        "status": "green"
+      },
+      {
+        "name": "Payor agent hold with Infinitus",
+        "startDate": "2026-01-15",
+        "endDate": "2026-04-30",
+        "status": "green"
+      },
+      {
+        "name": "Patient Access -Medicaid/charity eligibility screening - calls only",
+        "startDate": "2026-04-01",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Patient Access - Insurance Verification",
+        "startDate": "2027-01-01",
+        "endDate": "2027-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Patient Access - Demographics Verification",
+        "startDate": "2027-01-01",
+        "endDate": "2027-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Patient engagement for Non-Epic",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Identify and correct remittance errors using charge file",
+        "startDate": "2026-01-01",
+        "endDate": "2026-10-01",
+        "status": "green"
+      },
+      {
+        "name": "Contract Management Tool Enhancements",
+        "startDate": "2026-01-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      },
+      {
+        "name": "Automate client CDM updates",
+        "startDate": "2025-11-01",
+        "endDate": "2026-01-31",
+        "status": "green"
+      },
+      {
+        "name": "AR Agent Implementation",
+        "startDate": "2026-01-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      },
+      {
+        "name": "Billing Inventory Management Dashboard - Unbilled, ADR, RTP, Rejections, Inventory",
+        "startDate": "2026-01-01",
+        "endDate": "2026-04-30",
+        "status": "green"
+      },
+      {
+        "name": "Automatically Submit Medical Records Received from Epic ADR to Payers",
+        "startDate": "2026-05-01",
+        "endDate": "2026-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Submit RFI requested documentation based on denial prediction",
+        "startDate": "2026-07-01",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Auto match credit card payments",
+        "startDate": "2026-07-01",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Automate Next level provider appeal and show appeal history",
+        "startDate": "2026-01-01",
+        "endDate": "2026-04-01",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - CAH",
+        "startDate": "2026-01-01",
+        "endDate": "2026-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Identify missing CC/MCC using LLM",
+        "startDate": "2026-01-01",
+        "endDate": "2026-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Billing Inventory Management - Automated EDI Balancing",
+        "startDate": "2026-10-01",
+        "endDate": "2027-01-31",
+        "status": "green"
+      },
+      {
+        "name": "Replace Datavant Action Log with New API and Update Reporting",
+        "startDate": "2026-10-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      },
+      {
+        "name": "Resolve technical denials",
+        "startDate": "2026-07-01",
+        "endDate": "2027-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Document acquistion for appeal packets",
+        "startDate": "2026-01-01",
+        "endDate": "2026-07-01",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - State MCD APR-DRG IP",
+        "startDate": "2026-04-01",
+        "endDate": "2026-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Lift Calculation Automation: CDI Validation, Code Change Impact (PRC), and Coding Validation (PRC)",
+        "startDate": "2026-02-01",
+        "endDate": "2026-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Automatically Identify & Update Denial Adjustments at Gross Charges for Epic Clients",
+        "startDate": "2026-07-01",
+        "endDate": "2026-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Payor agent hold - underpayments",
+        "startDate": "2027-01-01",
+        "endDate": "2027-09-28",
+        "status": "green"
+      },
+      {
+        "name": "Auto Adjust Balance if no Additional Payment After Appeal",
+        "startDate": "2026-07-01",
+        "endDate": "2026-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Auto-Adjust Remaining Balance on Accounts with Appeals Filed",
+        "startDate": "2026-10-01",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Appeal Audits when upheld",
+        "startDate": "2026-07-01",
+        "endDate": "2027-01-01",
+        "status": "green"
+      },
+      {
+        "name": "360 Encompass Foundational",
+        "startDate": "2025-06-01",
+        "endDate": "2026-04-01",
+        "status": "green"
+      },
+      {
+        "name": "PB Autonomous",
+        "startDate": "2025-06-01",
+        "endDate": "2026-06-19",
+        "status": "green"
+      },
+      {
+        "name": "360 Encompass/Cloud/HB CAC",
+        "startDate": "2025-06-01",
+        "endDate": "2026-04-01",
+        "status": "green"
+      },
+      {
+        "name": "Utilize data lake clinical information",
+        "startDate": "2025-07-01",
+        "endDate": "2026-01-01",
+        "status": "green"
+      },
+      {
+        "name": "Clinical summarization",
+        "startDate": "2025-07-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Clinical Guidelines",
+        "startDate": "2025-07-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Worklist mgmt and nurse assignment",
+        "startDate": "2025-07-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "[AP Automation] Enterprise Audit Data Automation & Result",
+        "startDate": "2024-10-07",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "[Global] Enterprise Back RCM Vendors Audit 2025",
+        "startDate": "2025-04-27",
+        "endDate": "2025-10-29",
+        "status": "green"
+      },
+      {
+        "name": "[Global] Enterprise Front RCM Vendors Audit 2025",
+        "startDate": "2026-01-01",
+        "endDate": "2026-09-01",
+        "status": "green"
+      },
+      {
+        "name": "835 Remit Data/Denial",
+        "startDate": "2025-04-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      },
+      {
+        "name": "Physician Leakage Reporting",
+        "startDate": "2025-04-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      },
+      {
+        "name": "Clinical Data Acquisition",
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      },
+      {
+        "name": "Enterprise - Standardized Payer Plan",
+        "startDate": "2025-03-01",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": "2025-08-01",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": "2025-09-01",
+        "endDate": "2025-11-30",
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": "2025-09-15",
+        "endDate": "2025-10-30",
+        "status": "green"
+      },
+      {
+        "name": "Billing Other Clearing House",
+        "startDate": "2025-11-01",
+        "endDate": "2025-11-30",
+        "status": "green"
+      },
+      {
+        "name": "Undistributed amounts, Guarantor Notes, Patient Contact and Comms, Third Party Liability, Payment Plans",
+        "startDate": "2025-11-01",
+        "endDate": "2026-02-28",
+        "status": "green"
+      },
+      {
+        "name": "Master Specs (Data Mastering) - Q4 2025 Spec Release and Spec Rollout",
+        "startDate": "2025-11-01",
+        "endDate": "2026-06-30",
+        "status": "green"
+      },
+      {
+        "name": "Payor Status - PRC response",
+        "startDate": "2025-11-01",
+        "endDate": "2025-11-30",
+        "status": "green"
+      },
+      {
+        "name": "Visit / Encounter - ADT (HL7) to Lake",
+        "startDate": "2025-11-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Vendor Audit - Patient Access (Access Health) and Coding (contingent vendor AGS)",
+        "startDate": "2025-11-01",
+        "endDate": "2025-11-30",
+        "status": "green"
+      },
+      {
+        "name": "Financial / Transaction - Pre-Ensemble ATB",
+        "startDate": "2025-11-01",
+        "endDate": "2026-01-01",
+        "status": "green"
+      },
+      {
+        "name": "AR Agent MVP for Get Claim Status, Get Eligibility Status, Get Remits, Get Medical Records, Get Coverage Data, Upload Itemized Bills",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-17",
+        "status": "green"
+      },
+      {
+        "name": "EDI processing migration to Azure",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "New client implementation of FHIR APIs as clients onboard",
+        "startDate": "2025-09-30",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Add remove reorder insurance. Submit Insurance FHIR API for coverage change criteria validation",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "New client onboarding",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Assessments Service for 835/837 analysis (ad hoc)",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": "2025-09-30",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Coverage discovery integration - Waystar",
+        "startDate": "2025-12-31",
+        "endDate": "2026-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Auth risk scoring",
+        "startDate": "2025-06-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      },
+      {
+        "name": "DRG",
+        "startDate": "2025-06-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "DRG - Additional improvements",
+        "startDate": "2025-11-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Ensuite productivity dashboard",
+        "startDate": "2025-09-01",
+        "endDate": "2025-11-30",
+        "status": "green"
+      },
+      {
+        "name": "Cerner Integration pilot with Nicklaus",
+        "startDate": "2024-10-01",
+        "endDate": "2025-12-01",
+        "status": "green"
+      },
+      {
+        "name": "Clinical Data FHIR documents and Lab Connections",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Surgical pathology clinical viewer",
+        "startDate": "2025-07-01",
+        "endDate": "2025-11-01",
+        "status": "green"
+      },
+      {
+        "name": "Welcome Kiosk",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Hello Patient Mobile Arrivals",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Dialer / Text Campaign",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Direct/open scheduling (Mammography)",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Ticket scheduling (Ultrasound, CT/MRI)",
+        "startDate": "2025-01-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Vyne - Enterprise Faxing",
+        "startDate": "2024-12-31",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Nordic / BSMH - Direct/open scheduling, visit type standardization, SMS reminders",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Balance Inquiry - Provide balance with Date of Service as input",
+        "startDate": "2025-05-22",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Balance Inquiry - Provide balance with Denial Information",
+        "startDate": "2025-05-14",
+        "endDate": "2025-11-30",
+        "status": "green"
+      },
+      {
+        "name": "Define Enterprise-wide Epic standardization of claim edits and account activities",
+        "startDate": "2025-03-31",
+        "endDate": "2026-12-31",
+        "status": "green"
+      },
+      {
+        "name": "RFI/ ED Downgrade analytics",
+        "startDate": "2025-07-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Automated submission of RFI data",
+        "startDate": "2025-07-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Automated appeal for ED downgrade",
+        "startDate": "2025-07-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Automated appeal low balance clinical denials",
+        "startDate": "2025-08-05",
+        "endDate": "2025-10-08",
+        "status": "green"
+      },
+      {
+        "name": "Resolve insurance paid, no denials",
+        "startDate": "2025-10-01",
+        "endDate": "2025-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Offsetting transaction resolution",
+        "startDate": "2025-09-01",
+        "endDate": "2025-10-30",
+        "status": "green"
+      },
+      {
+        "name": "Automate cash posting processing errors",
+        "startDate": "2025-05-22",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Cash posting error reason and recommendation",
+        "startDate": "2025-05-22",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Cash posting error reports",
+        "startDate": "2025-05-22",
+        "endDate": "2025-10-15",
+        "status": "green"
+      },
+      {
+        "name": "Clearing account and non-patient cash reporting",
+        "startDate": "2025-03-01",
+        "endDate": "2025-10-31",
+        "status": "green"
+      },
+      {
+        "name": "Lockbox Lift | 835 Conversion | Vendor Implementation (CommerceBank)",
+        "startDate": "2024-09-25",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Acute credit overpayment letter notification",
+        "startDate": "2025-06-01",
+        "endDate": "2025-10-10",
+        "status": "green"
+      },
+      {
+        "name": "EIQ Collect: Claim Status (PRC)",
+        "startDate": "2025-05-15",
+        "endDate": "2025-10-01",
+        "status": "green"
+      },
+      {
+        "name": "Operation Management System (OMS)",
+        "startDate": "2024-09-30",
+        "endDate": "2024-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Vendor Ingestion Hub",
+        "startDate": "2024-03-31",
+        "endDate": "2024-12-31",
+        "status": "green"
+      },
+      {
+        "name": "#N/A",
+        "startDate": "2025-08-01",
+        "endDate": "2025-08-30",
+        "status": "green"
+      },
+      {
+        "name": "Assignment reassessment change rules values",
+        "startDate": "2025-06-14",
+        "endDate": "2025-09-12",
+        "status": "green"
+      },
+      {
+        "name": "Assign action logs to Epic",
+        "startDate": "2024-04-01",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Connect standardized rules",
+        "startDate": "2024-04-01",
+        "endDate": "2025-09-30",
+        "status": "green"
+      },
+      {
+        "name": "Enhanced Auth/Cert surgery referrals",
+        "startDate": "2024-09-30",
+        "endDate": "2024-12-31",
+        "status": "green"
+      },
+      {
+        "name": "Patient ID for all CSR and Scheduling",
+        "startDate": "2024-09-22",
+        "endDate": "2025-06-08",
+        "status": "green"
+      },
+      {
+        "name": "Deploy Five9 Agent Assist to Auto\u2011Generate Call Summaries",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Develop additional integrity functionality",
+        "startDate": "2024-03-31",
+        "endDate": "2024-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "UMPA-E-19",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 3,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 244169.42371082274,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Productivity Tool - Denials & Appeals",
+        "startDate": "2027-07-01",
+        "endDate": "2027-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-257",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 3,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "EIQ Data to Lake",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-245",
+    "name": "Office of the CFO",
+    "valueStream": "Revenue Generation",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 3,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "",
+    "milestones": [
+      {
+        "name": "Important and analyze statistical data from hospital systems",
+        "startDate": "2028-01-01",
+        "endDate": "2028-04-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-252",
+    "name": "Cash Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 3,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4101 Cash Posting",
+    "milestones": [
+      {
+        "name": "Improve PLB workflow and automation",
+        "startDate": "2026-10-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-260",
+    "name": "Billing Inventory",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 3,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4100 Patient Billing",
+    "milestones": [
+      {
+        "name": "Agent for payer portals to maintain ERA/EFT setups",
+        "startDate": "2029-04-02",
+        "endDate": "2029-07-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-251",
+    "name": "Government reimbursement",
+    "valueStream": "Revenue Generation",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 4,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "",
+    "milestones": [
+      {
+        "name": "Import and analyze hospital GL data including payroll, vendor, and financial statements",
+        "startDate": "2028-05-01",
+        "endDate": "2028-08-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-221",
+    "name": "Billing Inventory",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 4,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4100 Patient Billing",
+    "milestones": [
+      {
+        "name": "Agent for unbilled scorecard with commentary",
+        "startDate": "2027-08-01",
+        "endDate": "2027-11-30",
+        "status": "green"
+      },
+      {
+        "name": "Contract management calculations - Transplants",
+        "startDate": "2028-04-01",
+        "endDate": "2029-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ACE-E-18",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 5,
+    "budgetedCost": 481310.1833333333,
+    "targetedBenefit": 783030.6828345429,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Generate more EMR sections for technical appeals (H&P, orders, implant invoices, referrals, appointment history)",
+        "startDate": "2027-01-01",
+        "endDate": "2027-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-165",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 5,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Audit Compliance - Automate monthly client reports",
+        "startDate": "2026-09-06",
+        "endDate": "2027-01-06",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-167",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 5,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Audit process automation IR hand off to owning team thru submission",
+        "startDate": "2029-10-01",
+        "endDate": "2030-04-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-217",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 5,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Contract management calculations - Tricare IPPS",
+        "startDate": "2026-10-01",
+        "endDate": "2026-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-222",
+    "name": "EIQ Integrity",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 5,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3201 Revenue Integrity",
+    "milestones": [
+      {
+        "name": "Workflow for CDM update requests",
+        "startDate": "2027-01-01",
+        "endDate": "2028-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ACE-E-17",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 6,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "DAX Integration - Live transcription and translation of encounters into clinical docs and codes",
+        "startDate": "2027-04-01",
+        "endDate": "2027-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ACE-E-20",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 6,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Reasoning model for charge capture away from hard rules",
+        "startDate": "2029-07-01",
+        "endDate": "2029-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-139",
+    "name": "Government reimbursement",
+    "valueStream": "Revenue Generation",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 6,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "",
+    "milestones": [
+      {
+        "name": "Standard cost report queries and parameter tweaking (device costs, uncompensated care, cost to charge ratios, wages, etc.)",
+        "startDate": "2029-01-01",
+        "endDate": "2029-04-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ACE-E-14",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 7,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Post discharge CDI logic to replace Solventum CDI logic",
+        "startDate": "2029-10-01",
+        "endDate": "2029-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-840",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 8,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Concurrent CDI logic to replace Solventum CDI logic",
+        "startDate": "2030-01-01",
+        "endDate": "2030-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-258",
+    "name": "Government reimbursement",
+    "valueStream": "Revenue Generation",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 8,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "",
+    "milestones": [
+      {
+        "name": "Calculate impact of cost report changes on weights and reimbursement",
+        "startDate": "2029-09-01",
+        "endDate": "2029-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "Not in Aha",
+    "name": "Virtual Agent",
+    "valueStream": "Patient Engagement",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 9,
+    "budgetedCost": 1541907.39,
+    "targetedBenefit": 12000000.0,
+    "costCenter": "CC_4104 Customer Service",
+    "milestones": [
+      {
+        "name": "Outbound AI call bots for patient payments (Pre-Access and Customer Service)",
+        "startDate": "1900-01-01",
+        "endDate": "1900-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-195",
+    "name": "Billing Inventory",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 9,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4100 Patient Billing",
+    "milestones": [
+      {
+        "name": "Tag clearinghouse report that flags all claims",
+        "startDate": "2028-04-01",
+        "endDate": "2028-07-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-207",
+    "name": "Clinical Reasoning",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 10,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Coding review model for DRG and CC/MCC",
+        "startDate": "2030-07-01",
+        "endDate": "2030-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-261",
+    "name": "EIQ Enterprise Platform",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 10,
+    "budgetedCost": 2698338.3899999997,
+    "targetedBenefit": 597323.8098962648,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "AR / Denials Inventory Management",
+        "startDate": "2032-03-01",
+        "endDate": "2033-03-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-228",
+    "name": "Appeal Process Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 10,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4205 Underpayments",
+    "milestones": [
+      {
+        "name": "Automated Underpayment Appeal Creation and Submission",
+        "startDate": "2027-04-01",
+        "endDate": "2027-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "UMPA-E-24",
+    "name": "Clinical Integration",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 11,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Logic arbitration for LLM vs. ML vs. hard codes for insights and queries",
+        "startDate": "2030-10-01",
+        "endDate": "2030-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-262",
+    "name": "AP Analytics",
+    "valueStream": "Enterprise Excellence",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 11,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "[Software Self-pay] Enterprise Vendor Audit 2027",
+        "startDate": "2027-01-01",
+        "endDate": "2027-04-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "UMPA-E-18",
+    "name": "Clinical Integration",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 12,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "Combining concurrent CDI + concurrent UR logic to create one workflow and one team",
+        "startDate": "2031-01-01",
+        "endDate": "2031-03-31",
+        "status": "green"
+      },
+      {
+        "name": "Query builder to integrate natively into client EMR",
+        "startDate": "2031-04-01",
+        "endDate": "2031-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-193",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 13,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 1366040.3467259726,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Automatically export and load terms and pricing from raw contracts in the contract management module",
+        "startDate": "2030-04-01",
+        "endDate": "2030-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-137",
+    "name": "Autonomous Coding",
+    "valueStream": "Clinical",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 14,
+    "budgetedCost": 176875.0,
+    "targetedBenefit": 8257804.25,
+    "costCenter": "CC_3101 Coding",
+    "milestones": [
+      {
+        "name": "HB Autonomous Inpatient",
+        "startDate": "2027-01-01",
+        "endDate": "2027-07-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-164",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 14,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 546416.1386903891,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Use a reasoning model to review variances to determine true or false variances",
+        "startDate": "2030-07-01",
+        "endDate": "2030-12-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ANALYTICS-E-166",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 15,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 437132.91095231124,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Use a reasoning model to determine the root cause of the variance",
+        "startDate": "2031-01-01",
+        "endDate": "2031-03-31",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-641",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "L1",
+    "priorityCategory": "Later",
+    "priorityRank": 17,
+    "budgetedCost": 385476.85,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Use a reasoning model to review zero balance accounts for errors not commonly caught by contract management engines",
+        "startDate": "2031-07-01",
+        "endDate": "2031-09-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-736",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "Later",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 329979.80463244,
+    "costCenter": "CC_4107 Mail/Scanning",
+    "milestones": [
+      {
+        "name": "Correspondence through SSI",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Elixhauser flagging",
+        "startDate": "2030-04-01",
+        "endDate": "2030-06-30",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-842",
+    "name": "AR Agent",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "Later",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 3875316.115238825,
+    "costCenter": "CC_4104 Customer Service",
+    "milestones": [
+      {
+        "name": "Automated self-pay account trial balances",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "CT-I-49",
+    "name": "EIQ Integrity",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "Later",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_3201 Revenue Integrity",
+    "milestones": [
+      {
+        "name": "HCC, Risk Adjustment & Population Health Point Solution",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "Not in AHA",
+    "name": "Host Interfaces",
+    "valueStream": "Host Interfaces",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Download host Host documentation",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      },
+      {
+        "name": "Submit corrected claim for host after denial resolution",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      },
+      {
+        "name": "Refine governance structure",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      },
+      {
+        "name": "Clinical justification Review and regeneration",
+        "startDate": "2025-11-01",
+        "endDate": "2026-03-01",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQCLEAR-E-65",
+    "name": "Host Interfaces",
+    "valueStream": "Host Interfaces",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4105 Eligibility/Charity",
+    "milestones": [
+      {
+        "name": "Insurance updates (Finvi + Others)",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQCLEAR-E-80",
+    "name": "Cedar",
+    "valueStream": "Patient Engagement",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "",
+    "milestones": [
+      {
+        "name": "Improve patient engagement and patient financial yield",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-161",
+    "name": "EIQ One",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Standardize Work Queue Logic",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "#REF!",
+    "name": "EIQ One",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Merge [X] Hospitals into Combined Pool",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "FRONTRCM-E-157",
+    "name": "EIQ One",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Payer Mapping Standardization",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "EIQCLEAR-E-67",
+    "name": "EIQ One",
+    "valueStream": "Revenue Protection",
+    "lGate": "L0",
+    "priorityCategory": "New",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "Shared",
+    "milestones": [
+      {
+        "name": "Simplify reporting and denial code logic",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-200",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Cerner Integration FMC - Fairfield",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-201",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 770953.69,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Predictive analytics for estimate accuracy per CPT/payor",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-202",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Medical Necessity/Medical Policy",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-203",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "CPT Mismatch/Amended Auth WQs",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-204",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "All Payer Medical Necessity/Medical Policy",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-205",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_2101 Insurance Authorization",
+    "milestones": [
+      {
+        "name": "Red/Green Light worklist",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "MIDRCM-E-206",
+    "name": "EIQ Clear",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "AI risk scoring to prevent authorization denials.",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ACE-E-15",
+    "name": "Denial Prediction",
+    "valueStream": "Financial Clearance + Prediction",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4203 Denials & Appeals",
+    "milestones": [
+      {
+        "name": "Optimize CDM",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-741",
+    "name": "Host Interfaces",
+    "valueStream": "Host Interfaces",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "DOS/POS Corrections",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "CT-I-6",
+    "name": "Host Interfaces",
+    "valueStream": "Host Interfaces",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 1156430.54,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Update provider information into Epic",
+        "startDate": "TBD-Discovery",
+        "endDate": "TBD-Discovery",
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "UMPA-E-25",
+    "name": "Appeal Process Automation",
+    "valueStream": "Revenue Protection",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 95833.33333333333,
+    "targetedBenefit": 783030.6828345429,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Submit ED Downgrades and RFIs",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "CT-I-50",
+    "name": "AR Agent",
+    "valueStream": "Revenue Protection",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 0,
+    "costCenter": "CC_4102 Insurance Follow-up",
+    "milestones": [
+      {
+        "name": "Payor agent hold",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "BACKRCM-E-794",
+    "name": "EIQ Enforce",
+    "valueStream": "Revenue Protection",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 683020.1733629863,
+    "costCenter": "CC_4201 Contract Management",
+    "milestones": [
+      {
+        "name": "Develop a workflow to manage contract management updates",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  },
+  {
+    "id": "ACE-E-19",
+    "name": "EIQ Collect",
+    "valueStream": "Revenue Protection",
+    "lGate": "Rejected",
+    "priorityCategory": "Kill",
+    "priorityRank": 999,
+    "budgetedCost": 0,
+    "targetedBenefit": 3097717.707648791,
+    "costCenter": "CC_4104 Customer Service",
+    "milestones": [
+      {
+        "name": "Bad Debt Workflow Automation",
+        "startDate": null,
+        "endDate": null,
+        "status": "green"
+      }
+    ]
+  }
+]
