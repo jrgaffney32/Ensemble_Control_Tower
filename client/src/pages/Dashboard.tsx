@@ -1,13 +1,29 @@
 import { useState } from "react";
 import { mockProjects } from "@/lib/mockData";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useUserRole } from "@/hooks/use-user-role";
+import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
+  const { user, role, isControlTower, canEdit } = useUserRole();
+  
+  const getRoleBadge = () => {
+    switch (role) {
+      case 'control_tower':
+        return <Badge className="bg-purple-600 text-xs">Control Tower</Badge>;
+      case 'sto':
+        return <Badge className="bg-blue-600 text-xs">STO</Badge>;
+      case 'slt':
+        return <Badge className="bg-slate-600 text-xs">SLT</Badge>;
+      default:
+        return null;
+    }
+  };
 
   const filteredProjects = mockProjects.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,13 +88,27 @@ export default function Dashboard() {
         </div>
         
         <div className="mt-auto p-6 border-t border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400" />
-            <div>
-              <p className="text-sm font-medium text-white">Admin User</p>
-              <p className="text-xs opacity-60">PMO Director</p>
+          <div className="flex items-center gap-3 mb-3">
+            {user?.profileImageUrl ? (
+              <img src={user.profileImageUrl} alt="" className="w-8 h-8 rounded-full" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm">
+                {user?.firstName?.[0] || user?.email?.[0] || 'U'}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {user?.firstName || user?.email?.split('@')[0] || 'User'}
+              </p>
+              {getRoleBadge()}
             </div>
           </div>
+          <a href="/api/logout">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/10" data-testid="button-logout">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </a>
         </div>
       </aside>
 

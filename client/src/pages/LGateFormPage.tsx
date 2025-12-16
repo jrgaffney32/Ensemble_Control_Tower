@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, Save, Send, ArrowLeft, Upload, CheckCircle2, Circle, XCircle, ThumbsUp, ThumbsDown, Home, ListOrdered } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, Save, Send, ArrowLeft, Upload, CheckCircle2, Circle, XCircle, ThumbsUp, ThumbsDown, Home, ListOrdered, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { mockLGateForms, lgateDefinitions, LGate, LGateForm, LGateRequirement, getFormStatusColor, getFormStatusLabel } from "@/lib/formData";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/use-user-role";
+import { L0ConfigDialog, type L0Config } from "@/components/dashboard/L0ConfigDialog";
 
 export default function LGateFormPage() {
   const [, params] = useRoute("/project/:id/gate/:gate");
@@ -17,6 +19,8 @@ export default function LGateFormPage() {
   const projectId = params?.id || 'ACA-001';
   const gateId = (params?.gate || 'L0') as LGate;
   const { toast } = useToast();
+  const { user, isControlTower, canEdit: userCanEdit } = useUserRole();
+  const [showL0Config, setShowL0Config] = useState(false);
   
   const projectGates = mockLGateForms[projectId] || [];
   const existingForm = projectGates.find(g => g.gate === gateId);
@@ -33,9 +37,9 @@ export default function LGateFormPage() {
   const [approvalNotes, setApprovalNotes] = useState(existingForm?.approvalNotes || '');
   
   const status = existingForm?.status || 'draft';
-  const isReviewer = true;
-  const canEdit = status !== 'approved' && status !== 'rejected';
-  const canApprove = status === 'submitted' || status === 'in_review';
+  const isReviewer = isControlTower;
+  const canEdit = userCanEdit && status !== 'approved' && status !== 'rejected';
+  const canApprove = isControlTower && (status === 'submitted' || status === 'in_review');
   
   const completedCount = requirements.filter(r => r.completed).length;
   const allComplete = completedCount === requirements.length;
@@ -71,9 +75,21 @@ export default function LGateFormPage() {
   };
 
   const handleApprove = () => {
+    if (gateId === 'L0') {
+      setShowL0Config(true);
+    } else {
+      toast({
+        title: "Gate Approved",
+        description: `${gateId}: ${gateDefinition.name} has been approved.`
+      });
+      navigate(`/project/${projectId}`);
+    }
+  };
+  
+  const handleL0ConfigConfirm = (config: L0Config) => {
     toast({
-      title: "Gate Approved",
-      description: `${gateId}: ${gateDefinition.name} has been approved.`
+      title: "L0 Approved & Configured",
+      description: `Project has been approved and added to the ${config.priorityCategory} priority queue.`
     });
     navigate(`/project/${projectId}`);
   };
@@ -311,6 +327,14 @@ export default function LGateFormPage() {
 
         </div>
       </main>
+      
+      <L0ConfigDialog
+        open={showL0Config}
+        onOpenChange={setShowL0Config}
+        projectId={projectId}
+        projectName={existingForm?.projectId || projectId}
+        onConfirm={handleL0ConfigConfirm}
+      />
     </div>
   );
 }

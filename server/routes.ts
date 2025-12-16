@@ -1,16 +1,93 @@
-import type { Express } from "express";
+import type { Express, RequestHandler } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { isAuthenticated, authStorage } from "./replit_integrations/auth";
+import type { UserRole } from "@shared/schema";
+
+declare global {
+  namespace Express {
+    interface User {
+      claims: {
+        sub: string;
+        email?: string;
+        first_name?: string;
+        last_name?: string;
+        profile_image_url?: string;
+      };
+    }
+  }
+}
+
+export const requireRole = (...allowedRoles: UserRole[]): RequestHandler => {
+  return async (req, res, next) => {
+    const userId = (req.user as any)?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const userRole = await storage.getUserRole(userId);
+    const role = userRole?.role || 'slt';
+    
+    if (!allowedRoles.includes(role)) {
+      return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
+    }
+    
+    next();
+  };
+};
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
-
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+  
+  app.get("/api/user/role", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      let userRole = await storage.getUserRole(userId);
+      
+      if (!userRole) {
+        userRole = await storage.upsertUserRole({
+          userId,
+          role: 'slt',
+          valueStream: null,
+        });
+      }
+      
+      const user = await authStorage.getUser(userId);
+      
+      res.json({
+        ...user,
+        role: userRole.role,
+        valueStream: userRole.valueStream,
+      });
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+      res.status(500).json({ message: "Failed to fetch user role" });
+    }
+  });
+  
+  app.put("/api/user/:userId/role", isAuthenticated, requireRole('control_tower'), async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { role, valueStream } = req.body;
+      
+      if (!['control_tower', 'sto', 'slt'].includes(role)) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+      
+      const userRole = await storage.upsertUserRole({
+        userId,
+        role,
+        valueStream: valueStream || null,
+      });
+      
+      res.json(userRole);
+    } catch (error) {
+      console.error("Error updating user role:", error);
+      res.status(500).json({ message: "Failed to update user role" });
+    }
+  });
 
   return httpServer;
 }

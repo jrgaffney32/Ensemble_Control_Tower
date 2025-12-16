@@ -3,8 +3,10 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useUserRole } from "@/hooks/use-user-role";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
+import LandingPage from "@/pages/LandingPage";
 import ProjectRequests from "@/pages/ProjectRequests";
 import Issues from "@/pages/Issues";
 import BudgetRequests from "@/pages/BudgetRequests";
@@ -17,7 +19,7 @@ import IntakeFormPage from "@/pages/IntakeFormPage";
 import LGateFormPage from "@/pages/LGateFormPage";
 import ValueStreamPriorities from "@/pages/ValueStreamPriorities";
 
-function Router() {
+function AuthenticatedRoutes() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
@@ -35,6 +37,27 @@ function Router() {
       <Route component={NotFound} />
     </Switch>
   );
+}
+
+function Router() {
+  const { isAuthenticated, isLoading } = useUserRole();
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center font-bold text-3xl text-white mx-auto mb-4 animate-pulse">E</div>
+          <p className="text-slate-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <LandingPage />;
+  }
+  
+  return <AuthenticatedRoutes />;
 }
 
 function App() {

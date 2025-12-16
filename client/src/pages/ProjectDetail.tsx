@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,10 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { mockIntakeForms, mockLGateForms, mockProjectActions, lgateDefinitions, getFormStatusColor, getFormStatusLabel, LGate, LGateForm, FormStatus } from "@/lib/formData";
 import { mockProjects } from "@/lib/mockData";
+import { useUserRole } from "@/hooks/use-user-role";
+import { MilestoneEditor, type Milestone } from "@/components/dashboard/MilestoneEditor";
 
 export default function ProjectDetail() {
   const [, params] = useRoute("/project/:id");
   const projectId = params?.id || 'ACA-001';
+  const { user, role, canEdit, isControlTower, isSTO } = useUserRole();
   
   const project = mockProjects.find(p => p.id === projectId);
   const intakeForm = mockIntakeForms.find(f => f.projectId === projectId);
@@ -21,6 +24,26 @@ export default function ProjectDetail() {
   const completedGates = lgates.filter(g => g.status === 'approved').length;
   const currentGate = lgates.find(g => g.status === 'in_review' || g.status === 'submitted');
   const progressPercent = (completedGates / 7) * 100;
+  
+  const [milestones, setMilestones] = useState<Milestone[]>([
+    { id: 'ms-1', name: 'Requirements Complete', targetDate: '2024-02-15', status: 'green' },
+    { id: 'ms-2', name: 'Development Sprint 1', targetDate: '2024-03-01', status: 'green' },
+    { id: 'ms-3', name: 'UAT Start', targetDate: '2024-03-15', status: 'yellow' },
+    { id: 'ms-4', name: 'Production Deploy', targetDate: '2024-04-01', status: 'red' },
+  ]);
+  
+  const getRoleBadge = () => {
+    switch (role) {
+      case 'control_tower':
+        return <Badge className="bg-purple-600 text-xs">Control Tower</Badge>;
+      case 'sto':
+        return <Badge className="bg-blue-600 text-xs">STO</Badge>;
+      case 'slt':
+        return <Badge className="bg-slate-600 text-xs">SLT</Badge>;
+      default:
+        return null;
+    }
+  };
 
   const getGateIcon = (status: FormStatus) => {
     switch (status) {
@@ -92,13 +115,27 @@ export default function ProjectDetail() {
         </div>
         
         <div className="mt-auto p-6 border-t border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400" />
-            <div>
-              <p className="text-sm font-medium text-white">Admin User</p>
-              <p className="text-xs opacity-60">PMO Director</p>
+          <div className="flex items-center gap-3 mb-3">
+            {user?.profileImageUrl ? (
+              <img src={user.profileImageUrl} alt="" className="w-8 h-8 rounded-full" />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm">
+                {user?.firstName?.[0] || user?.email?.[0] || 'U'}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {user?.firstName || user?.email?.split('@')[0] || 'User'}
+              </p>
+              {getRoleBadge()}
             </div>
           </div>
+          <a href="/api/logout">
+            <Button variant="ghost" size="sm" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/10">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </a>
         </div>
       </aside>
 
@@ -162,6 +199,7 @@ export default function ProjectDetail() {
           <Tabs defaultValue="gates" className="space-y-4">
             <TabsList>
               <TabsTrigger value="gates">L-Gate Forms</TabsTrigger>
+              <TabsTrigger value="milestones">Milestones</TabsTrigger>
               <TabsTrigger value="intake">Intake Form</TabsTrigger>
               <TabsTrigger value="documents">Documents</TabsTrigger>
               <TabsTrigger value="history">Activity History</TabsTrigger>
@@ -215,6 +253,20 @@ export default function ProjectDetail() {
                   </CardContent>
                 </Card>
               ))}
+            </TabsContent>
+            
+            {/* Milestones Tab */}
+            <TabsContent value="milestones">
+              <MilestoneEditor 
+                milestones={milestones} 
+                onUpdate={setMilestones} 
+                canEdit={canEdit}
+              />
+              {!canEdit && (
+                <p className="text-sm text-muted-foreground mt-4 text-center">
+                  You have view-only access. Contact a Control Tower admin or STO to make changes.
+                </p>
+              )}
             </TabsContent>
 
             {/* Intake Form Tab */}

@@ -1,38 +1,37 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { userRoles, type UserRole, type UserRoleRecord } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUserRole(userId: string): Promise<UserRoleRecord | undefined>;
+  upsertUserRole(data: { userId: string; role: UserRole; valueStream: string | null }): Promise<UserRoleRecord>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+class DatabaseStorage implements IStorage {
+  async getUserRole(userId: string): Promise<UserRoleRecord | undefined> {
+    const [role] = await db.select().from(userRoles).where(eq(userRoles.userId, userId));
+    return role;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async upsertUserRole(data: { userId: string; role: UserRole; valueStream: string | null }): Promise<UserRoleRecord> {
+    const [role] = await db
+      .insert(userRoles)
+      .values({
+        userId: data.userId,
+        role: data.role,
+        valueStream: data.valueStream,
+      })
+      .onConflictDoUpdate({
+        target: userRoles.userId,
+        set: {
+          role: data.role,
+          valueStream: data.valueStream,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return role;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
