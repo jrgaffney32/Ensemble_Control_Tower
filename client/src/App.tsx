@@ -12,12 +12,18 @@ import ProjectList from "@/pages/ProjectList";
 import RoadmapView from "@/pages/RoadmapView";
 import DemandCapacity from "@/pages/DemandCapacity";
 import PodVelocity from "@/pages/PodVelocity";
+import ProjectDetail from "@/pages/ProjectDetail";
+import IntakeFormPage from "@/pages/IntakeFormPage";
+import LGateFormPage from "@/pages/LGateFormPage";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/projects" component={ProjectList} />
+      <Route path="/project/:id" component={ProjectDetail} />
+      <Route path="/project/:id/intake" component={IntakeFormPage} />
+      <Route path="/project/:id/gate/:gate" component={LGateFormPage} />
       <Route path="/roadmap" component={RoadmapView} />
       <Route path="/demand-capacity" component={DemandCapacity} />
       <Route path="/pod-velocity" component={PodVelocity} />

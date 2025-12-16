@@ -5,9 +5,10 @@ import { StatusBadge } from "./StatusBadge";
 import { MilestoneTimeline } from "./MilestoneTimeline";
 import { FinancialChart } from "./FinancialChart";
 import { KPITrendChart } from "./KPITrendChart";
-import { TrendingUp, TrendingDown, Minus, Gauge, Users, Zap, Target } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Gauge, Users, Zap, Target, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 interface ProjectCardProps {
   project: Project;
@@ -47,10 +48,12 @@ export function ProjectCard({ project }: ProjectCardProps) {
           
           {/* Status Matrix - Top Right Summary */}
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="h-9 text-xs font-medium bg-white hover:bg-slate-50 border-slate-200 shadow-sm gap-2 px-3">
-              <Gauge className="w-3.5 h-3.5 text-primary" />
-              Team Velocity
-            </Button>
+            <Link href={`/project/${project.id}`}>
+              <Button variant="outline" size="sm" className="h-9 text-xs font-medium bg-white hover:bg-slate-50 border-slate-200 shadow-sm gap-2 px-3" data-testid={`button-view-${project.id}`}>
+                <ExternalLink className="w-3.5 h-3.5 text-primary" />
+                View Details
+              </Button>
+            </Link>
 
             <div className="flex gap-6 bg-white px-4 py-2 rounded-lg border border-slate-100 shadow-sm">
               <div className="flex flex-col items-center gap-1">

@@ -46,7 +46,7 @@ export interface Project {
 
 export const mockProjects: Project[] = [
   {
-    id: '1',
+    id: 'ACA-001',
     name: 'Autonomous Coding Agent',
     description: 'Deploying LLM-based agents to autonomously code ED and Radiology encounters, reducing reliance on outsourced vendors.',
     valueStream: 'Mid-Cycle / Coding',
@@ -107,7 +107,7 @@ export const mockProjects: Project[] = [
     }
   },
   {
-    id: '2',
+    id: 'PAB-002',
     name: 'Prior Auth "Concierge" Bot',
     description: 'Agentic workflow to scrape payer portals, verify clinical guidelines, and submit prior authorization requests automatically.',
     valueStream: 'Pre-Service / Access',
@@ -168,7 +168,7 @@ export const mockProjects: Project[] = [
     }
   },
   {
-    id: '3',
+    id: 'DDS-003',
     name: 'Denial Defense Swarm',
     description: 'Multi-agent system that analyzes denial root causes, generates appeal letters, and predicts recovery likelihood.',
     valueStream: 'Back-Office / Claims',
@@ -228,7 +228,7 @@ export const mockProjects: Project[] = [
     }
   },
   {
-    id: '4',
+    id: 'PFG-004',
     name: 'Patient Financial Guide',
     description: 'Conversational AI voice and chat agent to handle patient billing questions, payment plans, and estimation explanation.',
     valueStream: 'Patient Experience',
