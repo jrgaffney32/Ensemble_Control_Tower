@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, initiatives, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -20,6 +20,13 @@ export interface IStorage {
   getPendingUsers(): Promise<User[]>;
   updateUserRole(userId: string, role: AppUserRole): Promise<User | undefined>;
   countUsers(): Promise<number>;
+  
+  getAllInitiatives(): Promise<InitiativeRecord[]>;
+  getInitiative(id: string): Promise<InitiativeRecord | undefined>;
+  upsertInitiative(data: InsertInitiative): Promise<InitiativeRecord>;
+  updateInitiative(id: string, data: Partial<InsertInitiative>): Promise<InitiativeRecord | undefined>;
+  bulkUpdateInitiatives(updates: { id: string; data: Partial<InsertInitiative> }[]): Promise<void>;
+  seedInitiatives(data: InsertInitiative[]): Promise<void>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -179,6 +186,62 @@ class DatabaseStorage implements IStorage {
   async countUsers(): Promise<number> {
     const result = await db.select({ count: sql<number>`count(*)` }).from(users);
     return Number(result[0]?.count || 0);
+  }
+
+  async getAllInitiatives(): Promise<InitiativeRecord[]> {
+    return await db.select().from(initiatives);
+  }
+
+  async getInitiative(id: string): Promise<InitiativeRecord | undefined> {
+    const [init] = await db.select().from(initiatives).where(eq(initiatives.id, id));
+    return init;
+  }
+
+  async upsertInitiative(data: InsertInitiative): Promise<InitiativeRecord> {
+    const [init] = await db
+      .insert(initiatives)
+      .values(data)
+      .onConflictDoUpdate({
+        target: initiatives.id,
+        set: {
+          name: data.name,
+          valueStream: data.valueStream,
+          lGate: data.lGate,
+          priorityCategory: data.priorityCategory,
+          priorityRank: data.priorityRank,
+          budgetedCost: data.budgetedCost,
+          targetedBenefit: data.targetedBenefit,
+          costCenter: data.costCenter,
+          milestones: data.milestones,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return init;
+  }
+
+  async updateInitiative(id: string, data: Partial<InsertInitiative>): Promise<InitiativeRecord | undefined> {
+    const [init] = await db
+      .update(initiatives)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(initiatives.id, id))
+      .returning();
+    return init;
+  }
+
+  async bulkUpdateInitiatives(updates: { id: string; data: Partial<InsertInitiative> }[]): Promise<void> {
+    for (const update of updates) {
+      await this.updateInitiative(update.id, update.data);
+    }
+  }
+
+  async seedInitiatives(data: InsertInitiative[]): Promise<void> {
+    for (const init of data) {
+      await this.upsertInitiative(init);
+    }
   }
 }
 

@@ -446,5 +446,119 @@ export async function registerRoutes(
     }
   });
 
+  // Initiative CRUD routes - Control Tower only
+  app.get("/api/initiatives", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const dbInitiatives = await storage.getAllInitiatives();
+      const parsed = dbInitiatives.map(init => ({
+        ...init,
+        milestones: init.milestones ? JSON.parse(init.milestones) : [],
+      }));
+      res.json(parsed);
+    } catch (error) {
+      console.error("Error fetching initiatives:", error);
+      res.status(500).json({ message: "Failed to fetch initiatives" });
+    }
+  });
+
+  app.get("/api/initiatives/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const initiative = await storage.getInitiative(id);
+      if (!initiative) {
+        return res.status(404).json({ message: "Initiative not found" });
+      }
+      res.json({
+        ...initiative,
+        milestones: initiative.milestones ? JSON.parse(initiative.milestones) : [],
+      });
+    } catch (error) {
+      console.error("Error fetching initiative:", error);
+      res.status(500).json({ message: "Failed to fetch initiative" });
+    }
+  });
+
+  app.put("/api/initiatives/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateData = req.body;
+      
+      const sanitizedData: Record<string, any> = {};
+      if (updateData.name !== undefined) sanitizedData.name = String(updateData.name);
+      if (updateData.valueStream !== undefined) sanitizedData.valueStream = String(updateData.valueStream);
+      if (updateData.lGate !== undefined) sanitizedData.lGate = String(updateData.lGate);
+      if (updateData.priorityCategory !== undefined) sanitizedData.priorityCategory = String(updateData.priorityCategory);
+      if (updateData.priorityRank !== undefined) sanitizedData.priorityRank = Number(updateData.priorityRank) || 0;
+      if (updateData.budgetedCost !== undefined) sanitizedData.budgetedCost = Number(updateData.budgetedCost) || 0;
+      if (updateData.targetedBenefit !== undefined) sanitizedData.targetedBenefit = Number(updateData.targetedBenefit) || 0;
+      if (updateData.costCenter !== undefined) sanitizedData.costCenter = String(updateData.costCenter);
+      if (updateData.milestones !== undefined) {
+        sanitizedData.milestones = typeof updateData.milestones === 'string' 
+          ? updateData.milestones 
+          : JSON.stringify(updateData.milestones);
+      }
+      
+      const initiative = await storage.updateInitiative(id, sanitizedData);
+      if (!initiative) {
+        return res.status(404).json({ message: "Initiative not found" });
+      }
+      res.json({
+        ...initiative,
+        milestones: initiative.milestones ? JSON.parse(initiative.milestones) : [],
+      });
+    } catch (error) {
+      console.error("Error updating initiative:", error);
+      res.status(500).json({ message: "Failed to update initiative" });
+    }
+  });
+
+  app.post("/api/initiatives/bulk-update", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { updates } = req.body;
+      if (!Array.isArray(updates)) {
+        return res.status(400).json({ message: "Updates must be an array" });
+      }
+      
+      const sanitizedUpdates = updates.map(({ id, data }) => {
+        const sanitizedData: Record<string, any> = {};
+        if (data.name !== undefined) sanitizedData.name = String(data.name);
+        if (data.valueStream !== undefined) sanitizedData.valueStream = String(data.valueStream);
+        if (data.lGate !== undefined) sanitizedData.lGate = String(data.lGate);
+        if (data.priorityCategory !== undefined) sanitizedData.priorityCategory = String(data.priorityCategory);
+        if (data.priorityRank !== undefined) sanitizedData.priorityRank = Number(data.priorityRank) || 0;
+        if (data.budgetedCost !== undefined) sanitizedData.budgetedCost = Number(data.budgetedCost) || 0;
+        if (data.targetedBenefit !== undefined) sanitizedData.targetedBenefit = Number(data.targetedBenefit) || 0;
+        if (data.costCenter !== undefined) sanitizedData.costCenter = String(data.costCenter);
+        if (data.milestones !== undefined) {
+          sanitizedData.milestones = typeof data.milestones === 'string' 
+            ? data.milestones 
+            : JSON.stringify(data.milestones);
+        }
+        return { id, data: sanitizedData };
+      });
+      
+      await storage.bulkUpdateInitiatives(sanitizedUpdates);
+      res.json({ success: true, message: `Updated ${updates.length} initiatives` });
+    } catch (error) {
+      console.error("Error bulk updating initiatives:", error);
+      res.status(500).json({ message: "Failed to bulk update initiatives" });
+    }
+  });
+
+  app.post("/api/initiatives/seed", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { initiatives: initData } = req.body;
+      if (!Array.isArray(initData)) {
+        return res.status(400).json({ message: "Initiatives must be an array" });
+      }
+      
+      await storage.seedInitiatives(initData);
+      res.json({ success: true, message: `Seeded ${initData.length} initiatives` });
+    } catch (error) {
+      console.error("Error seeding initiatives:", error);
+      res.status(500).json({ message: "Failed to seed initiatives" });
+    }
+  });
+
   return httpServer;
 }

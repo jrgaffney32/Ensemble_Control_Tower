@@ -24,6 +24,7 @@ import ValueStreamPriorities from "@/pages/ValueStreamPriorities";
 import CostCenterBreakout from "@/pages/CostCenterBreakout";
 import AdminPanel from "@/pages/AdminPanel";
 import UserManagement from "@/pages/UserManagement";
+import MasterGridPage from "@/pages/MasterGridPage";
 
 function AuthenticatedRoutes() {
   return (
@@ -44,6 +45,7 @@ function AuthenticatedRoutes() {
       <Route path="/budget" component={BudgetRequests} />
       <Route path="/admin" component={AdminPanel} />
       <Route path="/admin/users" component={UserManagement} />
+      <Route path="/admin/master-grid" component={MasterGridPage} />
       <Route component={NotFound} />
     </Switch>
   );

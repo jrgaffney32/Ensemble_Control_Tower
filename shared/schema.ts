@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -67,3 +67,28 @@ export const insertGateFormSchema = createInsertSchema(gateForms).omit({
 
 export type InsertGateForm = z.infer<typeof insertGateFormSchema>;
 export type GateFormRecord = typeof gateForms.$inferSelect;
+
+export type PriorityCategory = 'Shipped' | 'Now' | 'Next' | 'Later' | 'New' | 'Kill' | 'Hold for clarification';
+
+export const initiatives = pgTable("initiatives", {
+  id: varchar("id").primaryKey(),
+  name: text("name").notNull(),
+  valueStream: text("value_stream").notNull(),
+  lGate: text("l_gate").notNull().default('L0'),
+  priorityCategory: text("priority_category").$type<PriorityCategory>().notNull().default('New'),
+  priorityRank: integer("priority_rank").notNull().default(999),
+  budgetedCost: real("budgeted_cost").notNull().default(0),
+  targetedBenefit: real("targeted_benefit").notNull().default(0),
+  costCenter: text("cost_center").notNull().default(''),
+  milestones: text("milestones").default('[]'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertInitiativeSchema = createInsertSchema(initiatives).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertInitiative = z.infer<typeof insertInitiativeSchema>;
+export type InitiativeRecord = typeof initiatives.$inferSelect;
