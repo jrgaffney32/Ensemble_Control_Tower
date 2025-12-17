@@ -92,3 +92,25 @@ export const insertInitiativeSchema = createInsertSchema(initiatives).omit({
 
 export type InsertInitiative = z.infer<typeof insertInitiativeSchema>;
 export type InitiativeRecord = typeof initiatives.$inferSelect;
+
+export type MilestoneStatus = 'not_started' | 'in_progress' | 'completed' | 'missed' | 'on_hold';
+
+export const milestones = pgTable("milestones", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  name: text("name").notNull(),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  status: text("status").$type<MilestoneStatus>().notNull().default('not_started'),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertMilestoneSchema = createInsertSchema(milestones).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertMilestone = z.infer<typeof insertMilestoneSchema>;
+export type MilestoneRecord = typeof milestones.$inferSelect;

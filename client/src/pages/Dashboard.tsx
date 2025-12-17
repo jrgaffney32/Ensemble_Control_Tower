@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { groupedInitiatives, formatCurrency, type GroupedInitiative } from "@/lib/initiatives";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight, ChevronDown, MessageSquare, ClipboardList, Building2, Grid3X3 } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight, ChevronDown, MessageSquare, ClipboardList, Building2, Grid3X3, Target } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -139,6 +139,12 @@ export default function Dashboard() {
                   <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
                     <Grid3X3 className="w-4 h-4 mr-3" />
                     Master Grid
+                  </Button>
+                </Link>
+                <Link href="/admin/milestone-grid">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                    <Target className="w-4 h-4 mr-3" />
+                    Milestone Grid
                   </Button>
                 </Link>
                 <Link href="/admin">

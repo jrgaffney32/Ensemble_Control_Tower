@@ -25,6 +25,7 @@ import CostCenterBreakout from "@/pages/CostCenterBreakout";
 import AdminPanel from "@/pages/AdminPanel";
 import UserManagement from "@/pages/UserManagement";
 import MasterGridPage from "@/pages/MasterGridPage";
+import MilestoneGridPage from "@/pages/MilestoneGridPage";
 
 function AuthenticatedRoutes() {
   return (
@@ -46,6 +47,7 @@ function AuthenticatedRoutes() {
       <Route path="/admin" component={AdminPanel} />
       <Route path="/admin/users" component={UserManagement} />
       <Route path="/admin/master-grid" component={MasterGridPage} />
+      <Route path="/admin/milestone-grid" component={MilestoneGridPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, initiatives, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -27,6 +27,14 @@ export interface IStorage {
   updateInitiative(id: string, data: Partial<InsertInitiative>): Promise<InitiativeRecord | undefined>;
   bulkUpdateInitiatives(updates: { id: string; data: Partial<InsertInitiative> }[]): Promise<void>;
   seedInitiatives(data: InsertInitiative[]): Promise<void>;
+  
+  getAllMilestones(): Promise<MilestoneRecord[]>;
+  getMilestonesByInitiative(initiativeId: string): Promise<MilestoneRecord[]>;
+  getMilestone(id: string): Promise<MilestoneRecord | undefined>;
+  createMilestone(data: InsertMilestone): Promise<MilestoneRecord>;
+  updateMilestone(id: string, data: Partial<InsertMilestone>): Promise<MilestoneRecord | undefined>;
+  deleteMilestone(id: string): Promise<boolean>;
+  seedMilestones(data: InsertMilestone[]): Promise<void>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -241,6 +249,63 @@ class DatabaseStorage implements IStorage {
   async seedInitiatives(data: InsertInitiative[]): Promise<void> {
     for (const init of data) {
       await this.upsertInitiative(init);
+    }
+  }
+
+  async getAllMilestones(): Promise<MilestoneRecord[]> {
+    return await db.select().from(milestones);
+  }
+
+  async getMilestonesByInitiative(initiativeId: string): Promise<MilestoneRecord[]> {
+    return await db.select().from(milestones).where(eq(milestones.initiativeId, initiativeId));
+  }
+
+  async getMilestone(id: string): Promise<MilestoneRecord | undefined> {
+    const [milestone] = await db.select().from(milestones).where(eq(milestones.id, id));
+    return milestone;
+  }
+
+  async createMilestone(data: InsertMilestone): Promise<MilestoneRecord> {
+    const [milestone] = await db
+      .insert(milestones)
+      .values(data)
+      .returning();
+    return milestone;
+  }
+
+  async updateMilestone(id: string, data: Partial<InsertMilestone>): Promise<MilestoneRecord | undefined> {
+    const [milestone] = await db
+      .update(milestones)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(milestones.id, id))
+      .returning();
+    return milestone;
+  }
+
+  async deleteMilestone(id: string): Promise<boolean> {
+    const result = await db.delete(milestones).where(eq(milestones.id, id));
+    return true;
+  }
+
+  async seedMilestones(data: InsertMilestone[]): Promise<void> {
+    for (const m of data) {
+      await db
+        .insert(milestones)
+        .values(m)
+        .onConflictDoUpdate({
+          target: milestones.id,
+          set: {
+            name: m.name,
+            startDate: m.startDate,
+            endDate: m.endDate,
+            status: m.status,
+            notes: m.notes,
+            updatedAt: new Date(),
+          },
+        });
     }
   }
 }

@@ -560,5 +560,121 @@ export async function registerRoutes(
     }
   });
 
+  // Milestone CRUD routes - Control Tower only
+  app.get("/api/milestones", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const allMilestones = await storage.getAllMilestones();
+      const now = new Date();
+      const processedMilestones: typeof allMilestones = [];
+      
+      for (const m of allMilestones) {
+        if (m.endDate && m.status !== 'completed' && m.status !== 'missed' && new Date(m.endDate) < now) {
+          const updated = await storage.updateMilestone(m.id, { status: 'missed' });
+          processedMilestones.push(updated || { ...m, status: 'missed' });
+        } else {
+          processedMilestones.push(m);
+        }
+      }
+      
+      res.json(processedMilestones);
+    } catch (error) {
+      console.error("Error fetching milestones:", error);
+      res.status(500).json({ message: "Failed to fetch milestones" });
+    }
+  });
+
+  app.get("/api/milestones/by-initiative/:initiativeId", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { initiativeId } = req.params;
+      const initMilestones = await storage.getMilestonesByInitiative(initiativeId);
+      const now = new Date();
+      const processedMilestones: typeof initMilestones = [];
+      
+      for (const m of initMilestones) {
+        if (m.endDate && m.status !== 'completed' && m.status !== 'missed' && new Date(m.endDate) < now) {
+          const updated = await storage.updateMilestone(m.id, { status: 'missed' });
+          processedMilestones.push(updated || { ...m, status: 'missed' });
+        } else {
+          processedMilestones.push(m);
+        }
+      }
+      
+      res.json(processedMilestones);
+    } catch (error) {
+      console.error("Error fetching milestones:", error);
+      res.status(500).json({ message: "Failed to fetch milestones" });
+    }
+  });
+
+  app.post("/api/milestones", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { initiativeId, name, startDate, endDate, status, notes } = req.body;
+      const id = `ms-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      const milestone = await storage.createMilestone({
+        id,
+        initiativeId,
+        name: String(name),
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
+        status: status || 'not_started',
+        notes: notes || null,
+      });
+      res.json(milestone);
+    } catch (error) {
+      console.error("Error creating milestone:", error);
+      res.status(500).json({ message: "Failed to create milestone" });
+    }
+  });
+
+  app.put("/api/milestones/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, startDate, endDate, status, notes } = req.body;
+      
+      const updateData: Record<string, any> = {};
+      if (name !== undefined) updateData.name = String(name);
+      if (startDate !== undefined) updateData.startDate = startDate ? new Date(startDate) : null;
+      if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
+      if (status !== undefined) updateData.status = status;
+      if (notes !== undefined) updateData.notes = notes;
+      
+      const milestone = await storage.updateMilestone(id, updateData);
+      if (!milestone) {
+        return res.status(404).json({ message: "Milestone not found" });
+      }
+      res.json(milestone);
+    } catch (error) {
+      console.error("Error updating milestone:", error);
+      res.status(500).json({ message: "Failed to update milestone" });
+    }
+  });
+
+  app.delete("/api/milestones/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteMilestone(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting milestone:", error);
+      res.status(500).json({ message: "Failed to delete milestone" });
+    }
+  });
+
+  app.post("/api/milestones/seed", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { milestones: milestoneData } = req.body;
+      if (!Array.isArray(milestoneData)) {
+        return res.status(400).json({ message: "Milestones must be an array" });
+      }
+      
+      await storage.seedMilestones(milestoneData);
+      res.json({ success: true, message: `Seeded ${milestoneData.length} milestones` });
+    } catch (error) {
+      console.error("Error seeding milestones:", error);
+      res.status(500).json({ message: "Failed to seed milestones" });
+    }
+  });
+
   return httpServer;
 }
