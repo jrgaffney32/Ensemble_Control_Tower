@@ -513,6 +513,7 @@ export default function ProjectDetail() {
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="milestones">Milestones</TabsTrigger>
+              <TabsTrigger value="financials">FTE / Budget</TabsTrigger>
               <TabsTrigger value="forms">Forms</TabsTrigger>
               <TabsTrigger value="issues">Issues</TabsTrigger>
               <TabsTrigger value="requests">Requests</TabsTrigger>
@@ -617,6 +618,56 @@ export default function ProjectDetail() {
                 </Card>
               </div>
               
+              {/* Milestones Summary */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      Milestones
+                    </CardTitle>
+                    <Badge variant="outline" className="text-xs">{milestones.length} total</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {milestones.length > 0 ? (
+                    <div className="space-y-2">
+                      {milestones.slice(0, 8).map((ms, idx) => {
+                        const statuses = ['not_started', 'on_track', 'at_risk', 'missed', 'complete'] as const;
+                        const mockStatus = statuses[idx % statuses.length];
+                        const statusConfig = {
+                          not_started: { bg: 'bg-slate-100', text: 'text-slate-500', label: 'Not Started', icon: Circle },
+                          on_track: { bg: 'bg-[#e8f5f0]', text: 'text-[#2d8a6e]', label: 'On Track', icon: CheckCircle2 },
+                          at_risk: { bg: 'bg-[#fef3e5]', text: 'text-[#9a7b4f]', label: 'At Risk', icon: AlertCircle },
+                          missed: { bg: 'bg-[#fde8e8]', text: 'text-[#c45850]', label: 'Missed', icon: XCircle },
+                          complete: { bg: 'bg-[#e5f0e8]', text: 'text-[#2d6a4f]', label: 'Complete', icon: CheckCircle2 },
+                        };
+                        const config = statusConfig[mockStatus];
+                        const StatusIcon = config.icon;
+                        const targetDate = ms.targetDate || new Date(Date.now() + Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                        return (
+                          <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div className="flex items-center gap-3">
+                              <StatusIcon className={`w-4 h-4 ${config.text}`} />
+                              <div>
+                                <p className="text-sm font-medium text-slate-700">{ms.name}</p>
+                                <p className="text-xs text-slate-500">Target: {targetDate}</p>
+                              </div>
+                            </div>
+                            <Badge className={`${config.bg} ${config.text} border-0 text-[10px]`}>{config.label}</Badge>
+                          </div>
+                        );
+                      })}
+                      {milestones.length > 8 && (
+                        <p className="text-xs text-slate-500 text-center pt-2">+{milestones.length - 8} more milestones</p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-500 text-center py-4">No milestones defined</p>
+                  )}
+                </CardContent>
+              </Card>
+              
               {/* Operational KPI Placeholders */}
               <Card>
                 <CardHeader>
@@ -682,6 +733,109 @@ export default function ProjectDetail() {
                   You have view-only access. Contact a Control Tower admin or STO to make changes.
                 </p>
               )}
+            </TabsContent>
+
+            {/* FTE / Budget Financials Tab */}
+            <TabsContent value="financials" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <DollarSign className="w-4 h-4" />
+                      FTE & Budget Tracking
+                    </CardTitle>
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">Illustrative Data</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200">
+                          <th className="text-left py-3 px-2 font-semibold text-slate-600 bg-slate-50">Metric</th>
+                          {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(month => (
+                            <th key={month} className="text-right py-3 px-2 font-semibold text-slate-600 bg-slate-50 min-w-[60px]">{month}</th>
+                          ))}
+                          <th className="text-right py-3 px-2 font-semibold text-slate-700 bg-slate-100 min-w-[70px]">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-slate-100 bg-[#f8fafb]">
+                          <td className="py-2 px-2 font-medium text-slate-700">Budgeted FTEs (Cost Center)</td>
+                          {[12.5, 12.5, 13.0, 13.0, 13.5, 14.0, 14.0, 14.5, 15.0, 15.0, 15.5, 16.0].map((val, i) => (
+                            <td key={i} className="text-right py-2 px-2 font-mono text-slate-600">{val.toFixed(1)}</td>
+                          ))}
+                          <td className="text-right py-2 px-2 font-mono font-semibold text-slate-700 bg-slate-50">168.5</td>
+                        </tr>
+                        <tr className="border-b border-slate-100">
+                          <td className="py-2 px-2 font-medium text-slate-700">Budget Reduction Target</td>
+                          {[0, 0, 0.5, 0.5, 1.0, 1.0, 1.5, 1.5, 2.0, 2.0, 2.5, 2.5].map((val, i) => (
+                            <td key={i} className="text-right py-2 px-2 font-mono text-[#2d8a6e]">{val.toFixed(1)}</td>
+                          ))}
+                          <td className="text-right py-2 px-2 font-mono font-semibold text-[#2d8a6e] bg-slate-50">15.0</td>
+                        </tr>
+                        <tr className="border-b border-slate-100 bg-[#f8fafb]">
+                          <td className="py-2 px-2 font-medium text-slate-700">Actual FTE Reduction</td>
+                          {[0, 0, 0.3, 0.4, 0.8, 0.9, 1.2, 1.4, '-', '-', '-', '-'].map((val, i) => (
+                            <td key={i} className="text-right py-2 px-2 font-mono text-slate-600">{typeof val === 'number' ? val.toFixed(1) : val}</td>
+                          ))}
+                          <td className="text-right py-2 px-2 font-mono font-semibold text-slate-700 bg-slate-50">5.0</td>
+                        </tr>
+                        <tr className="border-b border-slate-100">
+                          <td className="py-2 px-2 font-medium text-slate-700">Forecasted FTE Reduction</td>
+                          {['-', '-', '-', '-', '-', '-', '-', '-', 1.8, 1.9, 2.3, 2.4].map((val, i) => (
+                            <td key={i} className="text-right py-2 px-2 font-mono text-slate-400 italic">{typeof val === 'number' ? val.toFixed(1) : val}</td>
+                          ))}
+                          <td className="text-right py-2 px-2 font-mono font-semibold text-slate-500 bg-slate-50">8.4</td>
+                        </tr>
+                        <tr className="bg-slate-50">
+                          <td className="py-2 px-2 font-semibold text-slate-700">Variance (Actual vs Target)</td>
+                          {[0, 0, -0.2, -0.1, -0.2, -0.1, -0.3, -0.1, '-', '-', '-', '-'].map((val, i) => {
+                            const isNegative = typeof val === 'number' && val < 0;
+                            return (
+                              <td key={i} className={`text-right py-2 px-2 font-mono ${isNegative ? 'text-[#c45850]' : 'text-slate-600'}`}>
+                                {typeof val === 'number' ? (val >= 0 ? '+' : '') + val.toFixed(1) : val}
+                              </td>
+                            );
+                          })}
+                          <td className="text-right py-2 px-2 font-mono font-semibold text-[#c45850] bg-slate-100">-1.0</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-4 text-center">Data shown is illustrative. Actual values will be populated from integrated systems.</p>
+                </CardContent>
+              </Card>
+              
+              <div className="grid grid-cols-3 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center">
+                      <p className="text-xs font-semibold text-slate-500 uppercase mb-2">YTD FTE Reduction</p>
+                      <p className="text-3xl font-bold font-mono text-[#2d8a6e]">5.0</p>
+                      <p className="text-xs text-slate-500 mt-1">of 15.0 target</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center">
+                      <p className="text-xs font-semibold text-slate-500 uppercase mb-2">% to Target</p>
+                      <p className="text-3xl font-bold font-mono text-[#2d4a7c]">33%</p>
+                      <p className="text-xs text-slate-500 mt-1">through Aug</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="text-center">
+                      <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Forecast Variance</p>
+                      <p className="text-3xl font-bold font-mono text-[#c45850]">-1.6</p>
+                      <p className="text-xs text-slate-500 mt-1">FTEs below plan</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Forms Tab */}
