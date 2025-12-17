@@ -367,11 +367,14 @@ export default function Dashboard() {
                       })}
                     </div>
                     <div className="p-2 text-center border-t border-slate-200">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="text-xs text-slate-600 hover:text-slate-800 hover:bg-slate-100"
-                        onClick={() => toggleStream(valueStream)}
+                      <button 
+                        type="button"
+                        className="inline-flex items-center justify-center text-xs text-slate-600 hover:text-slate-800 hover:bg-slate-100 px-3 py-1.5 rounded-md transition-colors"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleStream(valueStream);
+                        }}
                         data-testid={`toggle-stream-${valueStream}`}
                       >
                         {isExpanded ? (
@@ -385,7 +388,7 @@ export default function Dashboard() {
                             View all {count} in {valueStream}
                           </>
                         )}
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 );
