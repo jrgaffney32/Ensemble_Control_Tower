@@ -15,7 +15,7 @@ export default function LandingPage() {
             </div>
           </div>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-            AI/Automation Project Governance Dashboard for Healthcare Revenue Cycle Management
+            Strategic Project Acceleration
           </p>
         </div>
 
