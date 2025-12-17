@@ -1,16 +1,37 @@
 import { useState, useMemo } from "react";
 import { groupedInitiatives, formatCurrency, type GroupedInitiative } from "@/lib/initiatives";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight, ChevronDown, MessageSquare, ClipboardList } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useUserRole } from "@/hooks/use-user-role";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
+const LGATE_ORDER = ['L6', 'L5', 'L4', 'L3', 'L2', 'L1', 'L0', 'Rejected'];
+
+const sortByLGate = (a: GroupedInitiative, b: GroupedInitiative) => {
+  return LGATE_ORDER.indexOf(a.lGate) - LGATE_ORDER.indexOf(b.lGate);
+};
+
+const mockPendingItems: Record<string, { issues: number; requests: number; gateChanges: number }> = {};
+groupedInitiatives.forEach((init, idx) => {
+  mockPendingItems[init.ids[0]] = {
+    issues: idx % 5 === 0 ? Math.floor(Math.random() * 3) + 1 : 0,
+    requests: idx % 4 === 0 ? Math.floor(Math.random() * 2) + 1 : 0,
+    gateChanges: idx % 7 === 0 ? 1 : 0,
+  };
+});
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedStreams, setExpandedStreams] = useState<Record<string, boolean>>({});
   const { user, role, isControlTower, canEdit } = useUserRole();
+  
+  const toggleStream = (stream: string) => {
+    setExpandedStreams(prev => ({ ...prev, [stream]: !prev[stream] }));
+  };
   
   const getRoleBadge = () => {
     switch (role) {
@@ -357,8 +378,12 @@ export default function Dashboard() {
             {Object.entries(stats.byValueStream)
               .sort((a, b) => b[1] - a[1])
               .map(([valueStream, count]) => {
-                const streamInits = filteredInitiatives.filter(i => i.valueStream === valueStream).slice(0, 5);
-                if (streamInits.length === 0) return null;
+                const isExpanded = expandedStreams[valueStream];
+                const allStreamInits = filteredInitiatives
+                  .filter(i => i.valueStream === valueStream)
+                  .sort(sortByLGate);
+                const streamInits = isExpanded ? allStreamInits : allStreamInits.slice(0, 5);
+                if (allStreamInits.length === 0) return null;
                 return (
                   <div key={valueStream} className="bg-white rounded-xl border shadow-sm overflow-hidden">
                     <div className="p-4 bg-slate-50 border-b flex items-center justify-between">
@@ -371,51 +396,108 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <div className="divide-y">
-                      {streamInits.map(init => (
-                        <Link key={init.ids[0]} href={`/project/${init.ids[0]}`}>
-                          <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.ids[0]}`}>
-                            <div className="flex items-center gap-3">
-                              <div className="flex gap-1">
-                                <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
-                                <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
-                                <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
-                                <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
-                              </div>
-                              <div>
-                                <div className="font-medium text-sm">{init.name}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {init.costCenter || 'No cost center'}
-                                  {init.milestones.length > 0 && ` • ${init.milestones.length} ms`}
+                      {streamInits.map(init => {
+                        const pending = mockPendingItems[init.ids[0]] || { issues: 0, requests: 0, gateChanges: 0 };
+                        const hasPending = pending.issues > 0 || pending.requests > 0 || pending.gateChanges > 0;
+                        return (
+                          <Link key={init.ids[0]} href={`/project/${init.ids[0]}`}>
+                            <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.ids[0]}`}>
+                              <div className="flex items-center gap-3">
+                                <div className="flex gap-1">
+                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
+                                </div>
+                                <div>
+                                  <div className="font-medium text-sm flex items-center gap-2">
+                                    {init.name}
+                                    {hasPending && (
+                                      <div className="flex items-center gap-1">
+                                        {pending.issues > 0 && (
+                                          <Tooltip>
+                                            <TooltipTrigger>
+                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-medium">
+                                                <AlertCircle className="w-3 h-3" />
+                                                {pending.issues}
+                                              </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent>{pending.issues} open issue(s)</TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                        {pending.requests > 0 && (
+                                          <Tooltip>
+                                            <TooltipTrigger>
+                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
+                                                <ClipboardList className="w-3 h-3" />
+                                                {pending.requests}
+                                              </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent>{pending.requests} pending request(s)</TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                        {pending.gateChanges > 0 && (
+                                          <Tooltip>
+                                            <TooltipTrigger>
+                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-medium">
+                                                <MessageSquare className="w-3 h-3" />
+                                                {pending.gateChanges}
+                                              </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent>{pending.gateChanges} gate change(s) pending</TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {init.costCenter || 'No cost center'}
+                                    {init.milestones.length > 0 && ` • ${init.milestones.length} ms`}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline">{init.lGate}</Badge>
-                              <div className="text-right w-24">
-                                <div className="text-xs text-muted-foreground">Cost</div>
-                                <span className="text-sm font-mono">
-                                  {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
-                                </span>
+                              <div className="flex items-center gap-4">
+                                <Badge variant="outline">{init.lGate}</Badge>
+                                <div className="text-right w-24">
+                                  <div className="text-xs text-muted-foreground">Cost</div>
+                                  <span className="text-sm font-mono">
+                                    {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
+                                  </span>
+                                </div>
+                                <div className="text-right w-24">
+                                  <div className="text-xs text-muted-foreground">Benefit</div>
+                                  <span className="text-sm font-mono text-green-600">
+                                    {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
+                                  </span>
+                                </div>
+                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
                               </div>
-                              <div className="text-right w-24">
-                                <div className="text-xs text-muted-foreground">Benefit</div>
-                                <span className="text-sm font-mono text-green-600">
-                                  {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
-                                </span>
-                              </div>
-                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
                             </div>
-                          </div>
-                        </Link>
-                      ))}
+                          </Link>
+                        );
+                      })}
                     </div>
-                    {count > 5 && (
-                      <div className="p-2 text-center border-t">
-                        <Link href="/projects">
-                          <Button variant="ghost" size="sm" className="text-xs">View all {count} in {valueStream}</Button>
-                        </Link>
-                      </div>
-                    )}
+                    <div className="p-2 text-center border-t">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={() => toggleStream(valueStream)}
+                        data-testid={`toggle-stream-${valueStream}`}
+                      >
+                        {isExpanded ? (
+                          <>
+                            <ChevronDown className="w-3 h-3 mr-1 rotate-180" />
+                            Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-3 h-3 mr-1" />
+                            View all {count} in {valueStream}
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
