@@ -203,10 +203,23 @@ export async function registerRoutes(
       const userId = (req.user as any)?.claims?.sub;
       const { formData, status, changeRequestReason } = req.body;
       
+      if (status === 'approved') {
+        return res.status(403).json({ message: "Use the approve endpoint to approve forms" });
+      }
+      
       const existingForm = await storage.getGateForm(initiativeId, gate);
       
       if (existingForm?.status === 'approved' && status !== 'change_requested') {
         return res.status(400).json({ message: "Approved forms require a change request to modify" });
+      }
+      
+      if (status === 'change_requested' && !changeRequestReason?.trim()) {
+        return res.status(400).json({ message: "Change request reason is required" });
+      }
+      
+      const allowedStatuses = ['draft', 'submitted', 'change_requested'];
+      if (status && !allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: "Invalid status value" });
       }
       
       const formId = `${initiativeId}-${gate}`;
