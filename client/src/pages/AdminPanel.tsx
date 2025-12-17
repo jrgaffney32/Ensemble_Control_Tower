@@ -14,7 +14,6 @@ interface UserWithRole {
   email: string;
   firstName: string | null;
   lastName: string | null;
-  profileImageUrl: string | null;
   role: 'control_tower' | 'sto' | 'slt';
 }
 
@@ -174,13 +173,9 @@ export default function AdminPanel() {
         
         <div className="mt-auto p-6 border-t border-white/10">
           <div className="flex items-center gap-3 mb-3">
-            {user?.profileImageUrl ? (
-              <img src={user.profileImageUrl} alt="" className="w-8 h-8 rounded-full" />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm">
-                {user?.firstName?.[0] || user?.email?.[0] || 'U'}
-              </div>
-            )}
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm">
+              {user?.firstName?.[0] || user?.email?.[0] || 'U'}
+            </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">
                 {user?.firstName || user?.email?.split('@')[0] || 'User'}
@@ -188,12 +183,18 @@ export default function AdminPanel() {
               {getRoleBadge()}
             </div>
           </div>
-          <a href="/api/logout">
-            <Button variant="ghost" size="sm" className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/10">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
-          </a>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/10"
+            onClick={async () => {
+              await fetch("/api/auth/logout", { method: "POST" });
+              window.location.href = "/gate";
+            }}
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
       </aside>
 
@@ -262,13 +263,9 @@ export default function AdminPanel() {
                     {users.map((u) => (
                       <div key={u.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg" data-testid={`user-row-${u.id}`}>
                         <div className="flex items-center gap-3">
-                          {u.profileImageUrl ? (
-                            <img src={u.profileImageUrl} alt="" className="w-10 h-10 rounded-full" />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold">
-                              {u.firstName?.[0] || u.email?.[0] || 'U'}
-                            </div>
-                          )}
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold">
+                            {u.firstName?.[0] || u.email?.[0] || 'U'}
+                          </div>
                           <div>
                             <p className="font-medium">
                               {u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.email}
