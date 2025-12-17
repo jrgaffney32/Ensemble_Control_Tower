@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, Save, Send, ArrowLeft, Upload, CheckCircle2, Circle, XCircle, ThumbsUp, ThumbsDown, Home, ListOrdered, LogOut } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, Save, Send, ArrowLeft, Upload, CheckCircle2, Circle, XCircle, ThumbsUp, ThumbsDown, Home, ListOrdered, LogOut, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { mockLGateForms, lgateDefinitions, LGate, LGateForm, LGateRequirement, getFormStatusColor, getFormStatusLabel } from "@/lib/formData";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { mockLGateForms, lgateDefinitions, LGate, LGateForm, LGateRequirement, getFormStatusColor, getFormStatusLabel, RequirementInputType } from "@/lib/formData";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/use-user-role";
 import { L0ConfigDialog, type L0Config } from "@/components/dashboard/L0ConfigDialog";
@@ -30,11 +31,27 @@ export default function LGateFormPage() {
     existingForm?.requirements || gateDefinition.requirements.map((req, idx) => ({
       id: `${projectId}-${gateId}-${idx}`,
       ...req,
-      completed: false
+      completed: false,
+      value: ''
     }))
   );
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, string | number>>({});
   const [approvalNotes, setApprovalNotes] = useState(existingForm?.approvalNotes || '');
+  
+  const updateRequirementValue = (id: string, value: string | number) => {
+    setValues(prev => ({ ...prev, [id]: value }));
+    const hasValue = value !== '' && value !== undefined && value !== null;
+    setRequirements(prev => prev.map(req => 
+      req.id === id ? { ...req, completed: hasValue, value } : req
+    ));
+  };
+  
+  const markDocumentUploaded = (id: string, uploaded: boolean) => {
+    setRequirements(prev => prev.map(req => 
+      req.id === id ? { ...req, completed: uploaded, attachmentName: uploaded ? 'Document attached' : undefined } : req
+    ));
+  };
   
   const status = existingForm?.status || 'draft';
   const isReviewer = isControlTower;
@@ -204,78 +221,174 @@ export default function LGateFormPage() {
             </div>
           </div>
 
-          {/* Requirements Checklist */}
+          {/* Requirements Form */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Gate Requirements</CardTitle>
-              <CardDescription>Complete each requirement and upload supporting documents</CardDescription>
+              <CardDescription>Complete each requirement to advance to the next gate</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {requirements.map((req) => (
-                <div 
-                  key={req.id} 
-                  className={`p-4 rounded-lg border ${req.completed ? 'bg-green-50 border-green-200' : 'bg-white'}`}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="pt-0.5">
-                      <Checkbox
-                        id={req.id}
-                        checked={req.completed}
-                        onCheckedChange={() => toggleRequirement(req.id)}
-                        disabled={!canEdit}
-                        data-testid={`checkbox-${req.id}`}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <Label 
-                          htmlFor={req.id} 
-                          className={`font-medium ${req.completed ? 'text-green-700' : ''}`}
-                        >
-                          {req.name}
-                        </Label>
-                        <Badge variant="outline" className="text-xs">{req.type}</Badge>
+            <CardContent className="space-y-6">
+              {requirements.map((req) => {
+                const currentValue = values[req.id] ?? req.value ?? '';
+                const getTypeBadgeColor = (type: RequirementInputType) => {
+                  switch (type) {
+                    case 'Document': return 'bg-blue-50 text-blue-700 border-blue-200';
+                    case 'Approval': return 'bg-purple-50 text-purple-700 border-purple-200';
+                    case 'Checkpoint': return 'bg-amber-50 text-amber-700 border-amber-200';
+                    default: return 'bg-slate-50 text-slate-600 border-slate-200';
+                  }
+                };
+                
+                return (
+                  <div 
+                    key={req.id} 
+                    className={`p-4 rounded-lg border ${req.completed ? 'bg-green-50/50 border-green-200' : 'bg-white'}`}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Label className={`font-medium ${req.completed ? 'text-green-700' : ''}`}>
+                            {req.name}
+                          </Label>
+                          <Badge variant="outline" className={`text-[10px] ${getTypeBadgeColor(req.type)}`}>
+                            {req.type === 'TextField' || req.type === 'Text' || req.type === 'Number' || req.type === 'Select' ? 'Input' : req.type}
+                          </Badge>
+                        </div>
+                        {req.description && (
+                          <p className="text-xs text-muted-foreground mt-1">{req.description}</p>
+                        )}
                       </div>
-                      {req.description && (
-                        <p className="text-sm text-muted-foreground mt-1">{req.description}</p>
+                      <div>
+                        {req.completed ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-slate-300" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Input based on type */}
+                    <div className="mt-2">
+                      {req.type === 'Text' && (
+                        <Textarea
+                          placeholder={req.placeholder || 'Enter details...'}
+                          value={currentValue as string}
+                          onChange={(e) => updateRequirementValue(req.id, e.target.value)}
+                          disabled={!canEdit}
+                          rows={3}
+                          className="text-sm"
+                          data-testid={`input-${req.id}`}
+                        />
                       )}
                       
-                      <div className="mt-3 flex items-center gap-3">
-                        {req.type === 'Document' && canEdit && (
-                          <Button variant="outline" size="sm">
-                            <Upload className="w-4 h-4 mr-2" /> Upload Document
-                          </Button>
-                        )}
-                        {req.attachmentName && (
-                          <div className="flex items-center gap-2 text-sm text-blue-600">
-                            <FileText className="w-4 h-4" />
-                            <span>{req.attachmentName}</span>
-                          </div>
-                        )}
-                      </div>
+                      {req.type === 'TextField' && (
+                        <Input
+                          placeholder={req.placeholder || 'Enter value...'}
+                          value={currentValue as string}
+                          onChange={(e) => updateRequirementValue(req.id, e.target.value)}
+                          disabled={!canEdit}
+                          className="text-sm"
+                          data-testid={`input-${req.id}`}
+                        />
+                      )}
                       
-                      {canEdit && (
-                        <div className="mt-3">
-                          <Input
-                            placeholder="Add notes (optional)"
-                            value={notes[req.id] || req.notes || ''}
-                            onChange={(e) => setNotes(prev => ({ ...prev, [req.id]: e.target.value }))}
-                            className="text-sm"
-                            data-testid={`notes-${req.id}`}
+                      {req.type === 'Number' && (
+                        <Input
+                          type="number"
+                          placeholder={req.placeholder || '0'}
+                          value={currentValue as string}
+                          onChange={(e) => updateRequirementValue(req.id, e.target.value)}
+                          disabled={!canEdit}
+                          className="text-sm font-mono"
+                          data-testid={`input-${req.id}`}
+                        />
+                      )}
+                      
+                      {req.type === 'Date' && (
+                        <Input
+                          type="date"
+                          value={currentValue as string}
+                          onChange={(e) => updateRequirementValue(req.id, e.target.value)}
+                          disabled={!canEdit}
+                          className="text-sm"
+                          data-testid={`input-${req.id}`}
+                        />
+                      )}
+                      
+                      {req.type === 'Select' && req.options && (
+                        <Select
+                          value={currentValue as string}
+                          onValueChange={(val) => updateRequirementValue(req.id, val)}
+                          disabled={!canEdit}
+                        >
+                          <SelectTrigger className="text-sm" data-testid={`select-${req.id}`}>
+                            <SelectValue placeholder="Select an option..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {req.options.map((opt) => (
+                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                      
+                      {req.type === 'Document' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3">
+                            {canEdit && (
+                              <Button variant="outline" size="sm" className="text-sm" onClick={() => markDocumentUploaded(req.id, true)}>
+                                <Upload className="w-4 h-4 mr-2" /> Upload Document
+                              </Button>
+                            )}
+                            {req.attachmentName ? (
+                              <div className="flex items-center gap-2 text-sm text-blue-600">
+                                <Paperclip className="w-4 h-4" />
+                                <span>{req.attachmentName}</span>
+                                {canEdit && (
+                                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-red-500 hover:text-red-700" onClick={() => markDocumentUploaded(req.id, false)}>
+                                    Remove
+                                  </Button>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">No document attached</span>
+                            )}
+                          </div>
+                          {!req.attachmentName && canEdit && (
+                            <div className="flex items-center gap-3 pt-1">
+                              <Checkbox
+                                id={`doc-${req.id}`}
+                                checked={req.completed}
+                                onCheckedChange={(checked) => markDocumentUploaded(req.id, checked as boolean)}
+                                disabled={!canEdit}
+                                data-testid={`checkbox-doc-${req.id}`}
+                              />
+                              <Label htmlFor={`doc-${req.id}`} className="text-sm text-muted-foreground cursor-pointer">
+                                Mark as document uploaded/available
+                              </Label>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {(req.type === 'Approval' || req.type === 'Checkpoint') && (
+                        <div className="flex items-center gap-3">
+                          <Checkbox
+                            id={req.id}
+                            checked={req.completed}
+                            onCheckedChange={() => toggleRequirement(req.id)}
+                            disabled={!canEdit}
+                            data-testid={`checkbox-${req.id}`}
                           />
+                          <Label htmlFor={req.id} className="text-sm text-muted-foreground cursor-pointer">
+                            {req.type === 'Approval' ? 'Confirm approval received' : 'Mark as complete'}
+                          </Label>
                         </div>
                       )}
                     </div>
-                    <div>
-                      {req.completed ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-600" />
-                      ) : (
-                        <Circle className="w-6 h-6 text-slate-300" />
-                      )}
-                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
