@@ -51,57 +51,57 @@
 }
 
 :root {
-  /* Cool Corporate Neutral Palette */
-  --background: 210 20% 98%; /* Very light blue-grey */
-  --foreground: 222 47% 11%; /* Deep navy almost black */
+  /* Analytical Soft Grey Palette with Cool Green & Navy */
+  --background: 210 10% 97%; /* Soft warm grey */
+  --foreground: 220 25% 18%; /* Deep navy-charcoal */
 
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card-foreground: 220 25% 18%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
+  --popover-foreground: 220 25% 18%;
 
-  --primary: 221 83% 53%; /* Enterprise Blue */
-  --primary-foreground: 210 40% 98%;
+  --primary: 220 60% 35%; /* Navy accent */
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222 47% 11.2%;
+  --secondary: 210 8% 94%;
+  --secondary-foreground: 220 25% 18%;
 
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: 210 8% 94%;
+  --muted-foreground: 215 12% 50%;
 
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222 47% 11.2%;
+  --accent: 162 45% 35%; /* Cool green accent */
+  --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive: 0 65% 50%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221 83% 53%;
+  --border: 210 12% 88%;
+  --input: 210 12% 88%;
+  --ring: 220 60% 35%;
 
-  --radius: 0.5rem;
+  --radius: 0.375rem;
 
-  /* Status Colors */
-  --status-green: 142 76% 36%;
-  --status-yellow: 38 92% 50%;
-  --status-red: 0 84% 60%;
+  /* Status Colors - Muted for analytical feel */
+  --status-green: 162 50% 38%;
+  --status-yellow: 45 70% 48%;
+  --status-red: 0 60% 52%;
 
-  /* Chart Colors */
-  --chart-1: 221 83% 53%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
+  /* Chart Colors - Navy & Cool Green Palette */
+  --chart-1: 220 60% 35%; /* Navy */
+  --chart-2: 162 45% 38%; /* Cool green */
+  --chart-3: 210 15% 55%; /* Slate */
+  --chart-4: 180 30% 45%; /* Teal */
+  --chart-5: 220 40% 50%; /* Medium navy */
 
-  --sidebar: 0 0% 98%;
-  --sidebar-foreground: 240 5.3% 26.1%;
-  --sidebar-primary: 240 5.9% 10%;
-  --sidebar-primary-foreground: 0 0% 98%;
-  --sidebar-accent: 240 4.8% 95.9%;
-  --sidebar-accent-foreground: 240 5.9% 10%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 217.2 91.2% 59.8%;
+  --sidebar: 220 25% 14%;
+  --sidebar-foreground: 210 10% 85%;
+  --sidebar-primary: 162 45% 40%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 25% 20%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 220 20% 22%;
+  --sidebar-ring: 162 45% 40%;
 }
 
 .dark {

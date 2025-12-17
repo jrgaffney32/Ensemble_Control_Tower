@@ -75,7 +75,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background flex font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#0F172A] text-slate-300 hidden lg:flex flex-col fixed h-full z-10">
+      <aside className="w-64 bg-[#1e2a3b] text-slate-300 hidden lg:flex flex-col fixed h-full z-10">
         <div className="p-6">
           <Link href="/">
             <div className="flex items-center gap-3 text-white mb-8 cursor-pointer hover:opacity-80">
@@ -196,76 +196,76 @@ export default function Dashboard() {
           
           {/* Executive Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Budgeted Cost</p>
-              <p className="text-2xl font-bold text-foreground font-mono">{formatCurrency(stats.totalBudget)}</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Budgeted Cost</p>
+              <p className="text-2xl font-bold text-slate-700 font-mono">{formatCurrency(stats.totalBudget)}</p>
+              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                 <span>{groupedInitiatives.length} initiatives</span>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Targeted Benefit</p>
-              <p className="text-2xl font-bold text-foreground font-mono">{formatCurrency(stats.totalBenefit)}</p>
-              <div className="flex items-center gap-1 text-xs text-status-green mt-1">
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Targeted Benefit</p>
+              <p className="text-2xl font-bold text-[#2d8a6e] font-mono">{formatCurrency(stats.totalBenefit)}</p>
+              <div className="flex items-center gap-1 text-xs text-[#2d8a6e] mt-1">
                 <TrendingUp className="w-3 h-3" />
                 <span>Projected savings</span>
               </div>
             </div>
-             <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Backlog</p>
-              <p className="text-2xl font-bold text-amber-600 font-mono">{stats.backlogProjects}</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+             <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Backlog</p>
+              <p className="text-2xl font-bold text-slate-600 font-mono">{stats.backlogProjects}</p>
+              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                 <Clock className="w-3 h-3" />
                 <span>L1-L2 Stages</span>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Active Projects</p>
-              <p className="text-2xl font-bold text-blue-600 font-mono">{stats.activeProjects}</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Active Projects</p>
+              <p className="text-2xl font-bold text-[#2d4a7c] font-mono">{stats.activeProjects}</p>
+              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                 <span>L3-L5 Stages</span>
               </div>
             </div>
 
             {/* New Tiles */}
             <Link href="/issues">
-              <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Escalated Issues</p>
-                  <Badge variant="outline" className="text-[10px]">Illustrative</Badge>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Escalated Issues</p>
+                  <Badge variant="outline" className="text-[10px] border-slate-300 text-slate-500">Illustrative</Badge>
                 </div>
-                <p className="text-2xl font-bold text-status-red font-mono">3</p>
-                <div className="flex items-center gap-1 text-xs text-status-red mt-1">
+                <p className="text-2xl font-bold text-[#c45850] font-mono">3</p>
+                <div className="flex items-center gap-1 text-xs text-[#c45850] mt-1">
                   <AlertTriangle className="w-3 h-3" />
                   <span>Need attention</span>
                 </div>
               </div>
             </Link>
             <Link href="/requests">
-              <div className="bg-white p-4 rounded-xl border shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending Approvals</p>
-                  <Badge variant="outline" className="text-[10px]">Illustrative</Badge>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Approvals</p>
+                  <Badge variant="outline" className="text-[10px] border-slate-300 text-slate-500">Illustrative</Badge>
                 </div>
-                <p className="text-2xl font-bold text-foreground font-mono">5</p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <p className="text-2xl font-bold text-slate-700 font-mono">5</p>
+                <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                   <FileCheck className="w-3 h-3" />
                   <span>New requests</span>
                 </div>
               </div>
             </Link>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Intake Forms</p>
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Intake Forms</p>
               <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                 <FileText className="w-3 h-3" />
                 <span>No forms submitted</span>
               </div>
             </div>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Stage Gates</p>
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Stage Gates</p>
               <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                 <GitPullRequest className="w-3 h-3" />
                 <span>No gates pending</span>
               </div>
@@ -274,10 +274,10 @@ export default function Dashboard() {
 
           {/* Value Stream Summary */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="overflow-hidden">
-              <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-white border-b">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500" />
+            <Card className="overflow-hidden border-slate-200">
+              <CardHeader className="pb-3 bg-slate-50 border-b border-slate-200">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-700">
+                  <div className="w-2 h-2 rounded-full bg-[#2d4a7c]" />
                   By Value Stream
                 </CardTitle>
               </CardHeader>
@@ -288,13 +288,13 @@ export default function Dashboard() {
                     .map(([stream, count], idx) => {
                       const maxCount = Math.max(...Object.values(stats.byValueStream));
                       const percentage = (count / maxCount) * 100;
-                      const colors = ['bg-indigo-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'];
+                      const colors = ['bg-[#2d4a7c]', 'bg-[#2d8a6e]', 'bg-[#5a7a9a]', 'bg-[#4a8a8a]', 'bg-[#6b7a8c]'];
                       const color = colors[idx % colors.length];
                       return (
                         <div key={stream} className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-foreground">{stream}</span>
-                            <span className="text-sm font-bold text-foreground">{count}</span>
+                            <span className="text-sm font-medium text-slate-700">{stream}</span>
+                            <span className="text-sm font-bold text-slate-700">{count}</span>
                           </div>
                           <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div className={`h-full ${color} rounded-full transition-all duration-500`} style={{ width: `${percentage}%` }} />
@@ -305,10 +305,10 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="overflow-hidden">
-              <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-white border-b">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+            <Card className="overflow-hidden border-slate-200">
+              <CardHeader className="pb-3 bg-slate-50 border-b border-slate-200">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2 text-slate-700">
+                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" />
                   By L-Gate Stage
                 </CardTitle>
               </CardHeader>
@@ -319,44 +319,44 @@ export default function Dashboard() {
                     const maxCount = Math.max(...Object.values(stats.byLGate), 1);
                     const height = (count / maxCount) * 100;
                     const gateColors: Record<string, string> = {
-                      'L0': 'bg-purple-400',
-                      'L1': 'bg-amber-400',
-                      'L2': 'bg-amber-500',
-                      'L3': 'bg-blue-400',
-                      'L4': 'bg-blue-500',
-                      'L5': 'bg-blue-600',
-                      'L6': 'bg-green-500',
+                      'L0': 'bg-slate-400',
+                      'L1': 'bg-slate-500',
+                      'L2': 'bg-[#6b7a8c]',
+                      'L3': 'bg-[#4a6a8c]',
+                      'L4': 'bg-[#2d4a7c]',
+                      'L5': 'bg-[#1e3a5f]',
+                      'L6': 'bg-[#2d8a6e]',
                     };
                     return (
                       <div key={gate} className="flex-1 flex flex-col items-center gap-1">
-                        <span className="text-xs font-bold text-foreground">{count}</span>
+                        <span className="text-xs font-bold text-slate-700">{count}</span>
                         <div className="w-full bg-slate-100 rounded-t-md relative" style={{ height: '80px' }}>
                           <div 
                             className={`absolute bottom-0 w-full ${gateColors[gate]} rounded-t-md transition-all duration-500`} 
                             style={{ height: `${height}%` }} 
                           />
                         </div>
-                        <span className="text-xs font-medium text-muted-foreground">{gate}</span>
+                        <span className="text-xs font-medium text-slate-500">{gate}</span>
                       </div>
                     );
                   })}
                 </div>
-                <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t">
+                <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-slate-200">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-purple-400" />
-                    <span className="text-xs text-muted-foreground">New</span>
+                    <div className="w-3 h-3 rounded bg-slate-400" />
+                    <span className="text-xs text-slate-500">New</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-amber-500" />
-                    <span className="text-xs text-muted-foreground">Backlog</span>
+                    <div className="w-3 h-3 rounded bg-[#6b7a8c]" />
+                    <span className="text-xs text-slate-500">Backlog</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-blue-500" />
-                    <span className="text-xs text-muted-foreground">Active</span>
+                    <div className="w-3 h-3 rounded bg-[#2d4a7c]" />
+                    <span className="text-xs text-slate-500">Active</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-green-500" />
-                    <span className="text-xs text-muted-foreground">Shipped</span>
+                    <div className="w-3 h-3 rounded bg-[#2d8a6e]" />
+                    <span className="text-xs text-slate-500">Shipped</span>
                   </div>
                 </div>
               </CardContent>
@@ -366,12 +366,12 @@ export default function Dashboard() {
           {/* Initiative List by Value Stream */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold font-heading text-foreground">Initiatives by Value Stream</h3>
+              <h3 className="text-lg font-bold font-heading text-slate-700">Initiatives by Value Stream</h3>
               <div className="flex gap-2">
-                 <Link href="/pod-velocity"><Button variant="outline" size="sm" className="text-xs">KPI Dashboard</Button></Link>
-                 <Link href="/demand-capacity"><Button variant="outline" size="sm" className="text-xs">Demand vs. Capacity</Button></Link>
-                 <Link href="/roadmap"><Button variant="outline" size="sm" className="text-xs">Roadmap View</Button></Link>
-                 <Link href="/priorities"><Button variant="outline" size="sm" className="text-xs">Priorities</Button></Link>
+                 <Link href="/pod-velocity"><Button variant="outline" size="sm" className="text-xs border-slate-300 text-slate-600 hover:bg-slate-50">KPI Dashboard</Button></Link>
+                 <Link href="/demand-capacity"><Button variant="outline" size="sm" className="text-xs border-slate-300 text-slate-600 hover:bg-slate-50">Demand vs. Capacity</Button></Link>
+                 <Link href="/roadmap"><Button variant="outline" size="sm" className="text-xs border-slate-300 text-slate-600 hover:bg-slate-50">Roadmap View</Button></Link>
+                 <Link href="/priorities"><Button variant="outline" size="sm" className="text-xs border-slate-300 text-slate-600 hover:bg-slate-50">Priorities</Button></Link>
               </div>
             </div>
 
@@ -385,17 +385,17 @@ export default function Dashboard() {
                 const streamInits = isExpanded ? allStreamInits : allStreamInits.slice(0, 5);
                 if (allStreamInits.length === 0) return null;
                 return (
-                  <div key={valueStream} className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                    <div className="p-4 bg-slate-50 border-b flex items-center justify-between">
+                  <div key={valueStream} className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                    <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <h4 className="font-semibold text-foreground">{valueStream}</h4>
-                        <Badge variant="outline">{count} initiatives</Badge>
+                        <h4 className="font-semibold text-slate-700">{valueStream}</h4>
+                        <Badge variant="outline" className="border-slate-300 text-slate-600">{count} initiatives</Badge>
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-slate-500">
                         Budget: {formatCurrency(groupedInitiatives.filter(i => i.valueStream === valueStream).reduce((s, i) => s + i.budgetedCost, 0))}
                       </div>
                     </div>
-                    <div className="divide-y">
+                    <div className="divide-y divide-slate-100">
                       {streamInits.map(init => {
                         const pending = mockPendingItems[init.ids[0]] || { issues: 0, requests: 0, gateChanges: 0 };
                         const hasPending = pending.issues > 0 || pending.requests > 0 || pending.gateChanges > 0;
@@ -404,20 +404,20 @@ export default function Dashboard() {
                             <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.ids[0]}`}>
                               <div className="flex items-center gap-3">
                                 <div className="flex gap-1">
-                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Cost: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Benefit: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Timeline: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-green-500" title="Scope: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Cost: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Benefit: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Timeline: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Scope: Green" />
                                 </div>
                                 <div>
-                                  <div className="font-medium text-sm flex items-center gap-2">
+                                  <div className="font-medium text-sm text-slate-700 flex items-center gap-2">
                                     {init.name}
                                     {hasPending && (
                                       <div className="flex items-center gap-1">
                                         {pending.issues > 0 && (
                                           <Tooltip>
                                             <TooltipTrigger>
-                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 text-[10px] font-medium">
+                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5e6e5] text-[#c45850] text-[10px] font-medium">
                                                 <AlertCircle className="w-3 h-3" />
                                                 {pending.issues}
                                               </span>
@@ -428,7 +428,7 @@ export default function Dashboard() {
                                         {pending.requests > 0 && (
                                           <Tooltip>
                                             <TooltipTrigger>
-                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-medium">
+                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#f5f0e5] text-[#9a7b4f] text-[10px] font-medium">
                                                 <ClipboardList className="w-3 h-3" />
                                                 {pending.requests}
                                               </span>
@@ -439,7 +439,7 @@ export default function Dashboard() {
                                         {pending.gateChanges > 0 && (
                                           <Tooltip>
                                             <TooltipTrigger>
-                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-medium">
+                                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-[#e5eef5] text-[#2d4a7c] text-[10px] font-medium">
                                                 <MessageSquare className="w-3 h-3" />
                                                 {pending.gateChanges}
                                               </span>
@@ -450,38 +450,38 @@ export default function Dashboard() {
                                       </div>
                                     )}
                                   </div>
-                                  <div className="text-xs text-muted-foreground">
+                                  <div className="text-xs text-slate-500">
                                     {init.costCenter || 'No cost center'}
                                     {init.milestones.length > 0 && ` • ${init.milestones.length} ms`}
                                   </div>
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">
-                                <Badge variant="outline">{init.lGate}</Badge>
+                                <Badge variant="outline" className="border-slate-300 text-slate-600">{init.lGate}</Badge>
                                 <div className="text-right w-24">
-                                  <div className="text-xs text-muted-foreground">Cost</div>
-                                  <span className="text-sm font-mono">
+                                  <div className="text-xs text-slate-500">Cost</div>
+                                  <span className="text-sm font-mono text-slate-700">
                                     {init.budgetedCost > 0 ? formatCurrency(init.budgetedCost) : '-'}
                                   </span>
                                 </div>
                                 <div className="text-right w-24">
-                                  <div className="text-xs text-muted-foreground">Benefit</div>
-                                  <span className="text-sm font-mono text-green-600">
+                                  <div className="text-xs text-slate-500">Benefit</div>
+                                  <span className="text-sm font-mono text-[#2d8a6e]">
                                     {init.targetedBenefit > 0 ? formatCurrency(init.targetedBenefit) : '-'}
                                   </span>
                                 </div>
-                                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                                <ChevronRight className="h-4 w-4 text-slate-400" />
                               </div>
                             </div>
                           </Link>
                         );
                       })}
                     </div>
-                    <div className="p-2 text-center border-t">
+                    <div className="p-2 text-center border-t border-slate-200">
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-xs"
+                        className="text-xs text-slate-600 hover:text-slate-800 hover:bg-slate-100"
                         onClick={() => toggleStream(valueStream)}
                         data-testid={`toggle-stream-${valueStream}`}
                       >
