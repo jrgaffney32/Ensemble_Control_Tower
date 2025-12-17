@@ -121,6 +121,12 @@ export default function Dashboard() {
                 Value Stream Priorities
               </Button>
             </Link>
+            <Link href="/pod-velocity">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <TrendingUp className="w-4 h-4 mr-3" />
+                Pod Velocity & Quality
+              </Button>
+            </Link>
             {isControlTower && (
               <Link href="/admin">
                 <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">

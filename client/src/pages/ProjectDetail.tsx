@@ -464,15 +464,6 @@ export default function ProjectDetail() {
               </div>
               <div className="bg-slate-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 text-muted-foreground mb-1">
-                  <ListOrdered className="w-4 h-4" />
-                  <span className="text-xs font-semibold uppercase">Priority Rank</span>
-                </div>
-                <p className="text-lg font-bold font-mono">
-                  {initiative.priorityRank !== 999 ? `#${initiative.priorityRank}` : '-'}
-                </p>
-              </div>
-              <div className="bg-slate-50 p-4 rounded-lg">
-                <div className="flex items-center gap-2 text-muted-foreground mb-1">
                   <Calendar className="w-4 h-4" />
                   <span className="text-xs font-semibold uppercase">Milestones</span>
                 </div>
