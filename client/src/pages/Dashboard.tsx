@@ -403,12 +403,6 @@ export default function Dashboard() {
                           <Link key={init.ids[0]} href={`/project/${init.ids[0]}`}>
                             <div className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between" data-testid={`row-initiative-${init.ids[0]}`}>
                               <div className="flex items-center gap-3">
-                                <div className="flex gap-1">
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Cost: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Benefit: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Timeline: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Scope: Green" />
-                                </div>
                                 <div>
                                   <div className="font-medium text-sm text-slate-700 flex items-center gap-2">
                                     {init.name}
@@ -457,6 +451,12 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">
+                                <div className="flex gap-1" title="Status: Cost, Benefit, Timeline, Scope">
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Cost: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Benefit: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Timeline: Green" />
+                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Scope: Green" />
+                                </div>
                                 <Badge variant="outline" className="border-slate-300 text-slate-600">{init.lGate}</Badge>
                                 <div className="text-right w-24">
                                   <div className="text-xs text-slate-500">Cost</div>
