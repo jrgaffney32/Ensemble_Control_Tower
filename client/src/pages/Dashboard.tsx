@@ -1,13 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { groupedInitiatives, formatCurrency, type GroupedInitiative } from "@/lib/initiatives";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight, ChevronDown, MessageSquare, ClipboardList, Building2, Grid3X3, Target } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, ChevronRight, ChevronDown, MessageSquare, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { useUserRole } from "@/hooks/use-user-role";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 const LGATE_ORDER = ['L6', 'L5', 'L4', 'L3', 'L2', 'L1', 'L0', 'Rejected'];
 
@@ -27,24 +26,14 @@ groupedInitiatives.forEach((init, idx) => {
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedStreams, setExpandedStreams] = useState<Record<string, boolean>>({});
-  const { user, role, isControlTower, canEdit } = useUserRole();
   
-  const toggleStream = (stream: string) => {
-    setExpandedStreams(prev => ({ ...prev, [stream]: !prev[stream] }));
-  };
-  
-  const getRoleBadge = () => {
-    switch (role) {
-      case 'control_tower':
-        return <Badge className="bg-purple-600 text-xs">Control Tower</Badge>;
-      case 'sto':
-        return <Badge className="bg-blue-600 text-xs">STO</Badge>;
-      case 'slt':
-        return <Badge className="bg-slate-600 text-xs">SLT</Badge>;
-      default:
-        return null;
-    }
-  };
+  const toggleStream = useCallback((stream: string) => {
+    setExpandedStreams(prev => {
+      const newState = { ...prev };
+      newState[stream] = !prev[stream];
+      return newState;
+    });
+  }, []);
 
   const stats = useMemo(() => {
     const totalBudget = groupedInitiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
@@ -73,161 +62,14 @@ export default function Dashboard() {
 
 
   return (
-    <div className="min-h-screen bg-background flex font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#1e2a3b] text-slate-300 hidden lg:flex flex-col fixed h-full z-10">
-        <div className="p-6">
-          <Link href="/">
-            <div className="flex flex-col gap-2 text-white mb-8 cursor-pointer hover:opacity-80">
-              <img src="/attached_assets/ensemble-logo-singleline-standard-1738760348662_1765935308200.jpg" alt="Ensemble" className="h-5" />
-              <span className="text-[10px] font-medium opacity-70 tracking-widest uppercase">Control Tower</span>
-            </div>
-          </Link>
-          
-          <nav className="space-y-1">
-            <Link href="/">
-              <Button variant="ghost" className="w-full justify-start text-white bg-white/10 hover:bg-white/20 hover:text-white">
-                <LayoutDashboard className="w-4 h-4 mr-3" />
-                Portfolio Overview
-              </Button>
-            </Link>
-            <Link href="/requests">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <FileText className="w-4 h-4 mr-3" />
-                Project Requests
-              </Button>
-            </Link>
-            <Link href="/issues">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <AlertCircle className="w-4 h-4 mr-3" />
-                Issues
-              </Button>
-            </Link>
-            <Link href="/budget">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <PieChart className="w-4 h-4 mr-3" />
-                Budget Requests
-              </Button>
-            </Link>
-            <Link href="/roadmap">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <Calendar className="w-4 h-4 mr-3" />
-                Roadmap
-              </Button>
-            </Link>
-            <Link href="/priorities">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <ListOrdered className="w-4 h-4 mr-3" />
-                Value Stream Priorities
-              </Button>
-            </Link>
-            <Link href="/cost-centers">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <Building2 className="w-4 h-4 mr-3" />
-                Cost Center Breakout
-              </Button>
-            </Link>
-            <Link href="/pod-velocity">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <TrendingUp className="w-4 h-4 mr-3" />
-                Pod Velocity & Quality
-              </Button>
-            </Link>
-            {isControlTower && (
-              <>
-                <Link href="/admin/master-grid">
-                  <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                    <Grid3X3 className="w-4 h-4 mr-3" />
-                    Master Grid
-                  </Button>
-                </Link>
-                <Link href="/admin/milestone-grid">
-                  <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                    <Target className="w-4 h-4 mr-3" />
-                    Milestone Grid
-                  </Button>
-                </Link>
-                <Link href="/admin">
-                  <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                    <Shield className="w-4 h-4 mr-3" />
-                    Admin Panel
-                  </Button>
-                </Link>
-                <Link href="/admin/users">
-                  <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                    <Users className="w-4 h-4 mr-3" />
-                    User Management
-                  </Button>
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-        
-        <div className="mt-auto p-6 border-t border-white/10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm">
-              {user?.firstName?.[0] || user?.email?.[0] || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
-                {user?.firstName || user?.email?.split('@')[0] || 'User'}
-              </p>
-              {getRoleBadge()}
-            </div>
-          </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/10" 
-            data-testid="button-logout"
-            onClick={async () => {
-              await fetch("/api/auth/logout", { method: "POST" });
-              window.location.href = "/gate";
-            }}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 lg:ml-64">
-        {/* Top Header */}
-        <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/">
-              <Button variant="ghost" size="icon" className="hover:bg-slate-100" data-testid="button-home">
-                <Home className="h-5 w-5 text-slate-600" />
-              </Button>
-            </Link>
-            <h2 className="text-lg font-bold font-heading text-foreground">Ensemble Control Tower</h2>
-            <Badge variant="outline" className="text-xs">Strategic Funding Lane</Badge>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            <div className="relative w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search initiatives..." 
-                className="pl-9 bg-slate-50 border-slate-200"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <Button variant="outline" size="icon" className="border-slate-200">
-              <Filter className="h-4 w-4 text-slate-600" />
-            </Button>
-            <Button variant="outline" size="icon" className="border-slate-200 relative">
-              <Bell className="h-4 w-4 text-slate-600" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-status-red rounded-full border border-white"></span>
-            </Button>
-          </div>
-        </header>
-
-        {/* Dashboard Content */}
-        <div className="p-8 space-y-8 bg-slate-50/50 min-h-[calc(100vh-64px)]">
+    <AppLayout 
+      title="Ensemble Control Tower" 
+      subtitle="Strategic Funding Lane"
+      showSearch={true}
+      searchValue={searchTerm}
+      onSearchChange={setSearchTerm}
+    >
+      <div className="p-8 space-y-8 bg-slate-50/50 min-h-[calc(100vh-64px)]">
           
           {/* Executive Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -550,8 +392,7 @@ export default function Dashboard() {
               })}
           </div>
 
-        </div>
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 }

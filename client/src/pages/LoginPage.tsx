@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 
 export default function LoginPage() {
   const [, navigate] = useLocation();
@@ -50,7 +51,8 @@ export default function LoginPage() {
           title: "Welcome back!",
           description: `Logged in as ${data.user.email}`,
         });
-        navigate("/");
+        await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+        window.location.href = "/";
       } else {
         toast({
           title: "Login Failed",
