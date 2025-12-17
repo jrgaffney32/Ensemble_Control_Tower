@@ -39,12 +39,18 @@ export interface IntakeForm {
   comments?: string;
 }
 
+export type RequirementInputType = 'Document' | 'Approval' | 'Checkpoint' | 'Text' | 'TextField' | 'Number' | 'Date' | 'Select';
+
 export interface LGateRequirement {
   id: string;
   name: string;
   description?: string;
-  type: 'Document' | 'Approval' | 'Checkpoint';
+  type: RequirementInputType;
+  inputType?: RequirementInputType;
+  placeholder?: string;
+  options?: string[];
   completed: boolean;
+  value?: string | number;
   attachmentUrl?: string;
   attachmentName?: string;
   notes?: string;
@@ -74,62 +80,84 @@ export interface ProjectGateAction {
 }
 
 // L-Gate definitions with requirements
+// Document type is ONLY used for: Basic requirements document, UAT plan and results, Change management and roll out plan
+// All other requirements use native form fields
 export const lgateDefinitions: Record<LGate, { name: string; requirements: Omit<LGateRequirement, 'id' | 'completed'>[] }> = {
   L0: {
     name: 'Ideation',
     requirements: [
-      { name: 'Intake form completed', type: 'Document' }
+      { name: 'Intake form completed', type: 'Checkpoint', description: 'Complete the project intake form with all required fields' }
     ]
   },
   L1: {
     name: 'Review and Approval',
     requirements: [
-      { name: 'Base design agreement', type: 'Document' },
-      { name: 'T-shirt size cost estimate', type: 'Document' },
-      { name: 'Steerco approval with reason', type: 'Approval' }
+      { name: 'Base design agreement', type: 'Text', placeholder: 'Describe the agreed-upon base design approach and key decisions', description: 'Document the agreed design approach' },
+      { name: 'T-shirt size cost estimate', type: 'Select', options: ['XS ($0-$50K)', 'S ($50K-$100K)', 'M ($100K-$250K)', 'L ($250K-$500K)', 'XL ($500K+)'], description: 'Estimated project cost range' },
+      { name: 'Estimated timeline', type: 'TextField', placeholder: 'e.g., 3-6 months', description: 'Expected project duration' },
+      { name: 'Steerco approval notes', type: 'Text', placeholder: 'Document Steerco approval decision and rationale', description: 'Record of steering committee approval' },
+      { name: 'Steerco approval confirmed', type: 'Approval', description: 'Confirm steering committee has approved' }
     ]
   },
   L2: {
     name: 'Resource Scheduling',
     requirements: [
-      { name: 'Team assignment and RACI', type: 'Document' },
-      { name: 'Specific team members assigned', type: 'Document' },
-      { name: 'Major milestones defined', type: 'Document' }
+      { name: 'Team lead / Project manager', type: 'TextField', placeholder: 'Name of assigned team lead', description: 'Primary project lead' },
+      { name: 'Technical lead', type: 'TextField', placeholder: 'Name of technical lead', description: 'Lead engineer or architect' },
+      { name: 'Team members', type: 'Text', placeholder: 'List all assigned team members with roles', description: 'Full team roster with responsibilities' },
+      { name: 'RACI matrix', type: 'Text', placeholder: 'Define Responsible, Accountable, Consulted, Informed parties', description: 'Responsibility assignment matrix' },
+      { name: 'Major milestones', type: 'Text', placeholder: 'List key milestones with target dates', description: 'Project milestone schedule' },
+      { name: 'Resource allocation confirmed', type: 'Checkpoint', description: 'Confirm all resources are allocated and available' }
     ]
   },
   L3: {
     name: 'Design',
     requirements: [
-      { name: 'Basic requirements document', type: 'Document' },
-      { name: 'AI evaluation and governance form', type: 'Document' },
-      { name: 'KPI movement plan', type: 'Document' },
-      { name: 'Revised scope', type: 'Document' },
-      { name: 'Success criteria', type: 'Document' },
-      { name: 'Revised cost and benefit estimates', type: 'Document' }
+      { name: 'Basic requirements document', type: 'Document', description: 'Attach detailed requirements specification' },
+      { name: 'AI/Automation evaluation', type: 'Text', placeholder: 'Describe AI/automation components, risks, and governance considerations', description: 'AI evaluation and governance assessment' },
+      { name: 'Governance approval status', type: 'Select', options: ['Not Required', 'Pending Review', 'Approved', 'Approved with Conditions'], description: 'AI governance approval status' },
+      { name: 'Current KPI baseline', type: 'TextField', placeholder: 'e.g., Auto-code rate: 65%, Error rate: 8%', description: 'Current state metrics' },
+      { name: 'Target KPI improvement', type: 'TextField', placeholder: 'e.g., Auto-code rate: 85%, Error rate: 2%', description: 'Expected metric improvements' },
+      { name: 'Revised scope description', type: 'Text', placeholder: 'Document any scope changes from initial intake', description: 'Updated project scope' },
+      { name: 'Success criteria', type: 'Text', placeholder: 'Define measurable success criteria for go-live', description: 'Clear success metrics' },
+      { name: 'Revised cost estimate ($)', type: 'Number', placeholder: '0', description: 'Updated cost estimate in dollars' },
+      { name: 'Revised benefit estimate ($)', type: 'Number', placeholder: '0', description: 'Updated benefit estimate in dollars' }
     ]
   },
   L4: {
     name: 'Build and Release',
     requirements: [
-      { name: 'UAT plan and results', type: 'Document' },
-      { name: 'Change management and roll out plan', type: 'Document' },
-      { name: 'Pilot goals and results', type: 'Document' },
-      { name: 'Revised cost and benefits', type: 'Document' }
+      { name: 'UAT plan and results', type: 'Document', description: 'Attach UAT plan and test results documentation' },
+      { name: 'Change management and roll out plan', type: 'Document', description: 'Attach change management and rollout plan' },
+      { name: 'Pilot scope', type: 'TextField', placeholder: 'e.g., 2 facilities, 50 users', description: 'Define pilot scope' },
+      { name: 'Pilot goals', type: 'Text', placeholder: 'List specific goals and success metrics for pilot phase', description: 'Pilot phase objectives' },
+      { name: 'Pilot results summary', type: 'Text', placeholder: 'Summarize pilot outcomes and lessons learned', description: 'Pilot results and findings' },
+      { name: 'Pilot status', type: 'Select', options: ['Not Started', 'In Progress', 'Completed - Success', 'Completed - Issues Found', 'Cancelled'], description: 'Current pilot status' },
+      { name: 'Updated cost ($)', type: 'Number', placeholder: '0', description: 'Cost estimate after pilot' },
+      { name: 'Updated benefit ($)', type: 'Number', placeholder: '0', description: 'Benefit estimate after pilot' }
     ]
   },
   L5: {
     name: 'Full Scale Roll Out',
     requirements: [
-      { name: 'Updated milestones', type: 'Document' },
-      { name: 'Ongoing KPI monitoring', type: 'Checkpoint' },
-      { name: 'Financial impact', type: 'Document' }
+      { name: 'Rollout schedule', type: 'Text', placeholder: 'Detail the full-scale rollout schedule by location/phase', description: 'Deployment timeline' },
+      { name: 'Updated milestones', type: 'Text', placeholder: 'List updated milestones for full-scale deployment', description: 'Revised milestone schedule' },
+      { name: 'KPI tracking method', type: 'Text', placeholder: 'Describe how KPIs will be monitored ongoing', description: 'KPI monitoring approach' },
+      { name: 'Current KPI performance', type: 'TextField', placeholder: 'e.g., 82% auto-code rate achieved', description: 'Latest KPI measurements' },
+      { name: 'Realized benefit to date ($)', type: 'Number', placeholder: '0', description: 'Benefits achieved so far' },
+      { name: 'Full-scale rollout confirmed', type: 'Checkpoint', description: 'Confirm full-scale deployment is complete' }
     ]
   },
   L6: {
     name: 'Value Realization',
     requirements: [
-      { name: 'Ongoing KPI monitoring', type: 'Checkpoint' },
-      { name: 'Financial impact', type: 'Document' }
+      { name: 'Final KPI results', type: 'TextField', placeholder: 'e.g., 87% auto-code rate, 1.5% error rate', description: 'Final achieved KPI metrics' },
+      { name: 'KPI monitoring status', type: 'Select', options: ['Active Monitoring', 'Periodic Review', 'Transitioned to Operations'], description: 'Ongoing monitoring status' },
+      { name: 'Total realized benefit ($)', type: 'Number', placeholder: '0', description: 'Total benefits achieved' },
+      { name: 'Total actual cost ($)', type: 'Number', placeholder: '0', description: 'Total project cost' },
+      { name: 'ROI achieved', type: 'TextField', placeholder: 'e.g., 3.2x ROI', description: 'Return on investment' },
+      { name: 'Lessons learned', type: 'Text', placeholder: 'Document key lessons and recommendations for future projects', description: 'Project retrospective' },
+      { name: 'Value realization confirmed', type: 'Checkpoint', description: 'Confirm value targets have been met' }
     ]
   }
 };
