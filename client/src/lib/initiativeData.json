@@ -62,7 +62,7 @@
   {
     "id": "MIDRCM-E-192, MIDRCM-E-193, MIDRCM-E-194",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L5",
     "priorityCategory": "Shipped",
     "priorityRank": 999,
@@ -380,7 +380,7 @@
   {
     "id": "BACKRCM-E-776",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -406,7 +406,7 @@
   {
     "id": "INSOVER-E-97",
     "name": "Billing Inventory",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -426,7 +426,7 @@
   {
     "id": "INSOVER-E-98",
     "name": "Appeal Process Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -446,7 +446,7 @@
   {
     "id": "INSOVER-E-93",
     "name": "Cash Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -466,7 +466,7 @@
   {
     "id": "INSOVER-E-94",
     "name": "Cash Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -486,7 +486,7 @@
   {
     "id": "INSOVER-E-95",
     "name": "Cash Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -506,7 +506,7 @@
   {
     "id": "BACKRCM-E-844",
     "name": "PRC",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -526,7 +526,7 @@
   {
     "id": "BACKRCM-S-36",
     "name": "PRC",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -546,7 +546,7 @@
   {
     "id": "BACKRCM-S-20",
     "name": "PRC",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -566,7 +566,7 @@
   {
     "id": "BACKRCM-E-821",
     "name": "Billing Inventory",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -586,7 +586,7 @@
   {
     "id": "INSOVER-E-78",
     "name": "EIQ Integrity",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L4",
     "priorityCategory": "Now",
     "priorityRank": 999,
@@ -686,7 +686,7 @@
   {
     "id": "MIDRCM-E-208",
     "name": "Appeal Process Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 1,
@@ -706,7 +706,7 @@
   {
     "id": "MIDRCM-E-209",
     "name": "AR Agent",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 1,
@@ -938,7 +938,7 @@
   {
     "id": "BACKRCM-E-824",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 4,
@@ -1018,7 +1018,7 @@
   {
     "id": "BACKRCM-E-828",
     "name": "AR Agent",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 5,
@@ -1098,7 +1098,7 @@
   {
     "id": "INSOVER-E-100",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 6,
@@ -1158,7 +1158,7 @@
   {
     "id": "BACKRCM-E-850",
     "name": "Appeal Process Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 7,
@@ -1178,7 +1178,7 @@
   {
     "id": "BACKRCM-E-841",
     "name": "Appeal Process Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 8,
@@ -1198,7 +1198,7 @@
   {
     "id": "BACKRCM-E-849",
     "name": "EIQ Integrity",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L3",
     "priorityCategory": "Next",
     "priorityRank": 8,
@@ -1258,7 +1258,7 @@
   {
     "id": "ANALYTICS-E-243",
     "name": "Pricing Optimization",
-    "valueStream": "Revenue Generation",
+    "valueStream": "Value X",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 1,
@@ -1278,7 +1278,7 @@
   {
     "id": "ANALYTICS-E-256",
     "name": "PRC",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 1,
@@ -2058,7 +2058,7 @@
   {
     "id": "ANALYTICS-E-245",
     "name": "Office of the CFO",
-    "valueStream": "Revenue Generation",
+    "valueStream": "Value X",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 3,
@@ -2078,7 +2078,7 @@
   {
     "id": "ANALYTICS-E-252",
     "name": "Cash Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 3,
@@ -2098,7 +2098,7 @@
   {
     "id": "ANALYTICS-E-260",
     "name": "Billing Inventory",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 3,
@@ -2118,7 +2118,7 @@
   {
     "id": "ANALYTICS-E-251",
     "name": "Government reimbursement",
-    "valueStream": "Revenue Generation",
+    "valueStream": "Value X",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 4,
@@ -2138,7 +2138,7 @@
   {
     "id": "ANALYTICS-E-221",
     "name": "Billing Inventory",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 4,
@@ -2178,7 +2178,7 @@
   {
     "id": "ANALYTICS-E-165",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 5,
@@ -2198,7 +2198,7 @@
   {
     "id": "ANALYTICS-E-167",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 5,
@@ -2218,7 +2218,7 @@
   {
     "id": "ANALYTICS-E-222",
     "name": "EIQ Integrity",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 5,
@@ -2278,7 +2278,7 @@
   {
     "id": "ANALYTICS-E-139",
     "name": "Government reimbursement",
-    "valueStream": "Revenue Generation",
+    "valueStream": "Value X",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 6,
@@ -2338,7 +2338,7 @@
   {
     "id": "ANALYTICS-E-258",
     "name": "Government reimbursement",
-    "valueStream": "Revenue Generation",
+    "valueStream": "Value X",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 8,
@@ -2378,7 +2378,7 @@
   {
     "id": "ANALYTICS-E-195",
     "name": "Billing Inventory",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 9,
@@ -2438,7 +2438,7 @@
   {
     "id": "ANALYTICS-E-228",
     "name": "Appeal Process Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L1",
     "priorityCategory": "Later",
     "priorityRank": 10,
@@ -2544,7 +2544,7 @@
   {
     "id": "BACKRCM-E-736",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L0",
     "priorityCategory": "Later",
     "priorityRank": 999,
@@ -2570,7 +2570,7 @@
   {
     "id": "BACKRCM-E-842",
     "name": "AR Agent",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L0",
     "priorityCategory": "Later",
     "priorityRank": 999,
@@ -2590,7 +2590,7 @@
   {
     "id": "CT-I-49",
     "name": "EIQ Integrity",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "L0",
     "priorityCategory": "Later",
     "priorityRank": 999,
@@ -2770,7 +2770,7 @@
   {
     "id": "UMPA-E-25",
     "name": "Appeal Process Automation",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "Rejected",
     "priorityCategory": "Kill",
     "priorityRank": 999,
@@ -2790,7 +2790,7 @@
   {
     "id": "CT-I-50",
     "name": "AR Agent",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "Rejected",
     "priorityCategory": "Kill",
     "priorityRank": 999,
@@ -2810,7 +2810,7 @@
   {
     "id": "ACE-E-19",
     "name": "EIQ Collect",
-    "valueStream": "Revenue Protection",
+    "valueStream": "Revenue Protection + Payer",
     "lGate": "Rejected",
     "priorityCategory": "Kill",
     "priorityRank": 999,
