@@ -28,9 +28,10 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     const totalBudget = groupedInitiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
     const totalBenefit = groupedInitiatives.reduce((sum, i) => sum + i.targetedBenefit, 0);
-    const activeProjects = groupedInitiatives.filter(i => i.priorityCategory === 'Now').length;
-    const nextProjects = groupedInitiatives.filter(i => i.priorityCategory === 'Next').length;
-    const shippedProjects = groupedInitiatives.filter(i => i.priorityCategory === 'Shipped').length;
+    const newProjects = groupedInitiatives.filter(i => i.lGate === 'L0').length;
+    const backlogProjects = groupedInitiatives.filter(i => ['L1', 'L2'].includes(i.lGate)).length;
+    const activeProjects = groupedInitiatives.filter(i => ['L3', 'L4', 'L5'].includes(i.lGate)).length;
+    const shippedProjects = groupedInitiatives.filter(i => i.lGate === 'L6').length;
     
     const byValueStream: Record<string, number> = {};
     const byLGate: Record<string, number> = {};
@@ -39,7 +40,7 @@ export default function Dashboard() {
       byLGate[i.lGate] = (byLGate[i.lGate] || 0) + 1;
     });
     
-    return { totalBudget, totalBenefit, activeProjects, nextProjects, shippedProjects, byValueStream, byLGate };
+    return { totalBudget, totalBenefit, newProjects, backlogProjects, activeProjects, shippedProjects, byValueStream, byLGate };
   }, []);
 
   const filteredInitiatives = useMemo(() => {
@@ -190,18 +191,32 @@ export default function Dashboard() {
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Active Projects</p>
-              <p className="text-2xl font-bold text-blue-600 font-mono">{stats.activeProjects}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">New Projects</p>
+              <p className="text-2xl font-bold text-purple-600 font-mono">{stats.newProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <span>{stats.shippedProjects} shipped</span>
+                <span>L0 Stage</span>
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pipeline</p>
-              <p className="text-2xl font-bold text-amber-600 font-mono">{stats.nextProjects}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Backlog</p>
+              <p className="text-2xl font-bold text-amber-600 font-mono">{stats.backlogProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                 <Clock className="w-3 h-3" />
-                <span>In queue</span>
+                <span>L1-L2 Stages</span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Active Projects</p>
+              <p className="text-2xl font-bold text-blue-600 font-mono">{stats.activeProjects}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <span>L3-L5 Stages</span>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-xl border shadow-sm">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Shipped</p>
+              <p className="text-2xl font-bold text-green-600 font-mono">{stats.shippedProjects}</p>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <span>L6 Complete</span>
               </div>
             </div>
 
@@ -252,39 +267,90 @@ export default function Dashboard() {
 
           {/* Value Stream Summary */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">By Value Stream</CardTitle>
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-white border-b">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                  By Value Stream
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
+              <CardContent className="pt-4">
+                <div className="space-y-3">
                   {Object.entries(stats.byValueStream)
                     .sort((a, b) => b[1] - a[1])
-                    .map(([stream, count]) => (
-                      <div key={stream} className="flex items-center justify-between py-1">
-                        <span className="text-sm text-muted-foreground">{stream}</span>
-                        <Badge variant="outline">{count}</Badge>
-                      </div>
-                    ))}
+                    .map(([stream, count], idx) => {
+                      const maxCount = Math.max(...Object.values(stats.byValueStream));
+                      const percentage = (count / maxCount) * 100;
+                      const colors = ['bg-indigo-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500', 'bg-rose-500'];
+                      const color = colors[idx % colors.length];
+                      return (
+                        <div key={stream} className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-foreground">{stream}</span>
+                            <span className="text-sm font-bold text-foreground">{count}</span>
+                          </div>
+                          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className={`h-full ${color} rounded-full transition-all duration-500`} style={{ width: `${percentage}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">By L-Gate Stage</CardTitle>
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-3 bg-gradient-to-r from-slate-50 to-white border-b">
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  By L-Gate Stage
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'Rejected'].map(gate => {
+              <CardContent className="pt-4">
+                <div className="flex items-end justify-between gap-2 h-32">
+                  {['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'].map((gate) => {
                     const count = stats.byLGate[gate] || 0;
-                    if (count === 0) return null;
+                    const maxCount = Math.max(...Object.values(stats.byLGate), 1);
+                    const height = (count / maxCount) * 100;
+                    const gateColors: Record<string, string> = {
+                      'L0': 'bg-purple-400',
+                      'L1': 'bg-amber-400',
+                      'L2': 'bg-amber-500',
+                      'L3': 'bg-blue-400',
+                      'L4': 'bg-blue-500',
+                      'L5': 'bg-blue-600',
+                      'L6': 'bg-green-500',
+                    };
                     return (
-                      <div key={gate} className="flex items-center justify-between py-1">
-                        <span className="text-sm text-muted-foreground">{gate}</span>
-                        <Badge variant="outline">{count}</Badge>
+                      <div key={gate} className="flex-1 flex flex-col items-center gap-1">
+                        <span className="text-xs font-bold text-foreground">{count}</span>
+                        <div className="w-full bg-slate-100 rounded-t-md relative" style={{ height: '80px' }}>
+                          <div 
+                            className={`absolute bottom-0 w-full ${gateColors[gate]} rounded-t-md transition-all duration-500`} 
+                            style={{ height: `${height}%` }} 
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-muted-foreground">{gate}</span>
                       </div>
                     );
                   })}
+                </div>
+                <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-purple-400" />
+                    <span className="text-xs text-muted-foreground">New</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-amber-500" />
+                    <span className="text-xs text-muted-foreground">Backlog</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-blue-500" />
+                    <span className="text-xs text-muted-foreground">Active</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-green-500" />
+                    <span className="text-xs text-muted-foreground">Shipped</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
