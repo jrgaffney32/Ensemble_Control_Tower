@@ -14,6 +14,7 @@ import ProjectList from "@/pages/ProjectList";
 import RoadmapView from "@/pages/RoadmapView";
 import DemandCapacity from "@/pages/DemandCapacity";
 import PodVelocity from "@/pages/PodVelocity";
+import PodPerformance from "@/pages/PodPerformance";
 import ProjectDetail from "@/pages/ProjectDetail";
 import IntakeFormPage from "@/pages/IntakeFormPage";
 import LGateFormPage from "@/pages/LGateFormPage";
@@ -32,6 +33,7 @@ function AuthenticatedRoutes() {
       <Route path="/priorities" component={ValueStreamPriorities} />
       <Route path="/demand-capacity" component={DemandCapacity} />
       <Route path="/pod-velocity" component={PodVelocity} />
+      <Route path="/pod-performance" component={PodPerformance} />
       <Route path="/requests" component={ProjectRequests} />
       <Route path="/issues" component={Issues} />
       <Route path="/budget" component={BudgetRequests} />
