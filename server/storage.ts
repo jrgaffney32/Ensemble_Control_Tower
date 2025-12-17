@@ -1,6 +1,6 @@
-import { userRoles, initiativeStatuses, gateForms, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, isNull } from "drizzle-orm";
 
 export interface IStorage {
   getUserRole(userId: string): Promise<UserRoleRecord | undefined>;
@@ -12,6 +12,14 @@ export interface IStorage {
   getGateForm(initiativeId: string, gate: string): Promise<GateFormRecord | undefined>;
   getGateFormsForInitiative(initiativeId: string): Promise<GateFormRecord[]>;
   upsertGateForm(data: { id: string; initiativeId: string; gate: string; status: FormStatus; formData?: string; submittedBy?: string; submittedAt?: Date; approvedBy?: string; approvedAt?: Date; changeRequestReason?: string; changeRequestedBy?: string; changeRequestedAt?: Date }): Promise<GateFormRecord>;
+  
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUserById(id: string): Promise<User | undefined>;
+  createUser(data: { email: string; passwordHash: string; firstName?: string; lastName?: string }): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  getPendingUsers(): Promise<User[]>;
+  updateUserRole(userId: string, role: AppUserRole): Promise<User | undefined>;
+  countUsers(): Promise<number>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -121,6 +129,56 @@ class DatabaseStorage implements IStorage {
       })
       .returning();
     return form;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async createUser(data: { email: string; passwordHash: string; firstName?: string; lastName?: string }): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values({
+        email: data.email,
+        passwordHash: data.passwordHash,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        status: 'pending_role',
+      })
+      .returning();
+    return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getPendingUsers(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.status, 'pending_role'));
+  }
+
+  async updateUserRole(userId: string, role: AppUserRole): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({
+        role: role,
+        status: 'active',
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async countUsers(): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` }).from(users);
+    return Number(result[0]?.count || 0);
   }
 }
 

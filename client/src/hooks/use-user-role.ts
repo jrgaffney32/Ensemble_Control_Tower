@@ -1,18 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import type { UserRole } from "@shared/schema";
+import type { AppUserRole } from "@shared/schema";
 
 interface UserWithRole {
   id: string;
-  email: string | null;
+  email: string;
   firstName: string | null;
   lastName: string | null;
-  profileImageUrl: string | null;
-  role: UserRole;
-  valueStream: string | null;
+  role: AppUserRole | null;
+  status: string;
 }
 
-async function fetchUserRole(): Promise<UserWithRole | null> {
-  const response = await fetch("/api/user/role", {
+async function fetchCurrentUser(): Promise<UserWithRole | null> {
+  const response = await fetch("/api/auth/me", {
     credentials: "include",
   });
 
@@ -29,8 +28,8 @@ async function fetchUserRole(): Promise<UserWithRole | null> {
 
 export function useUserRole() {
   const { data: user, isLoading, refetch } = useQuery<UserWithRole | null>({
-    queryKey: ["/api/user/role"],
-    queryFn: fetchUserRole,
+    queryKey: ["/api/auth/me"],
+    queryFn: fetchCurrentUser,
     retry: false,
     staleTime: 1000 * 60 * 5,
   });
@@ -40,7 +39,7 @@ export function useUserRole() {
   return {
     user,
     isLoading,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && user.status === 'active',
     role,
     isControlTower: role === 'control_tower',
     isSTO: role === 'sto',

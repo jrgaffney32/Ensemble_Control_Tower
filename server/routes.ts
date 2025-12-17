@@ -1,34 +1,53 @@
 import type { Express, RequestHandler } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { isAuthenticated, authStorage } from "./replit_integrations/auth";
-import type { UserRole } from "@shared/schema";
+import type { AppUserRole } from "@shared/schema";
+import { registerUserSchema, loginUserSchema } from "@shared/schema";
+import bcrypt from "bcryptjs";
+
+const MASTER_PASSWORD = "ENSB101$$";
+
+declare module 'express-session' {
+  interface SessionData {
+    gatePassed?: boolean;
+    userId?: string;
+    userEmail?: string;
+    userRole?: AppUserRole;
+  }
+}
 
 declare global {
   namespace Express {
     interface User {
-      claims: {
-        sub: string;
-        email?: string;
-        first_name?: string;
-        last_name?: string;
-        profile_image_url?: string;
-      };
+      id: string;
+      email: string;
+      role?: AppUserRole;
+      firstName?: string;
+      lastName?: string;
     }
   }
 }
 
-export const requireRole = (...allowedRoles: UserRole[]): RequestHandler => {
+const isSessionAuthenticated: RequestHandler = (req, res, next) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
+};
+
+const requireAppRole = (...allowedRoles: AppUserRole[]): RequestHandler => {
   return async (req, res, next) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = req.session.userId;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const userRole = await storage.getUserRole(userId);
-    const role = userRole?.role || 'slt';
+    const user = await storage.getUserById(userId);
+    if (!user || !user.role) {
+      return res.status(403).json({ message: "Role not assigned" });
+    }
     
-    if (!allowedRoles.includes(role)) {
+    if (!allowedRoles.includes(user.role)) {
       return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
     }
     
@@ -41,28 +60,164 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
-  app.get("/api/user/role", isAuthenticated, async (req, res) => {
+  // Master password gate check
+  app.post("/api/auth/verify-gate", (req, res) => {
+    const { password } = req.body;
+    if (password === MASTER_PASSWORD) {
+      req.session.gatePassed = true;
+      return res.json({ success: true });
+    }
+    return res.status(401).json({ message: "Invalid access code" });
+  });
+  
+  app.get("/api/auth/gate-status", (req, res) => {
+    res.json({ gatePassed: !!req.session.gatePassed });
+  });
+  
+  // User registration
+  app.post("/api/auth/register", async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
-      let userRole = await storage.getUserRole(userId);
-      
-      if (!userRole) {
-        const userCount = await storage.countUserRoles();
-        const isFirstUser = userCount === 0;
-        
-        userRole = await storage.upsertUserRole({
-          userId,
-          role: isFirstUser ? 'control_tower' : 'slt',
-          valueStream: null,
-        });
+      if (!req.session.gatePassed) {
+        return res.status(403).json({ message: "Access code required" });
       }
       
-      const user = await authStorage.getUser(userId);
+      const parsed = registerUserSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: parsed.error.errors[0].message });
+      }
+      
+      const { email, password, firstName, lastName } = parsed.data;
+      
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+      
+      const passwordHash = await bcrypt.hash(password, 10);
+      
+      const userCount = await storage.countUsers();
+      const isFirstUser = userCount === 0;
+      
+      const user = await storage.createUser({
+        email,
+        passwordHash,
+        firstName,
+        lastName,
+      });
+      
+      if (isFirstUser) {
+        await storage.updateUserRole(user.id, 'control_tower');
+      }
+      
+      res.json({ 
+        success: true, 
+        message: isFirstUser ? "Registration successful. You are the first user and have been assigned admin role." : "Registration successful. Please wait for an admin to assign your role."
+      });
+    } catch (error) {
+      console.error("Error registering user:", error);
+      res.status(500).json({ message: "Registration failed" });
+    }
+  });
+  
+  // User login
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      if (!req.session.gatePassed) {
+        return res.status(403).json({ message: "Access code required" });
+      }
+      
+      const parsed = loginUserSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: parsed.error.errors[0].message });
+      }
+      
+      const { email, password } = parsed.data;
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user || !user.passwordHash) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+      
+      if (user.status === 'pending_role') {
+        return res.status(403).json({ message: "Your account is pending role assignment. Please contact an administrator." });
+      }
+      
+      if (user.status === 'inactive') {
+        return res.status(403).json({ message: "Your account has been deactivated." });
+      }
+      
+      req.session.userId = user.id;
+      req.session.userEmail = user.email;
+      req.session.userRole = user.role || undefined;
+      
+      res.json({ 
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+        }
+      });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+  
+  // Logout
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ success: true });
+    });
+  });
+  
+  // Get current session user
+  app.get("/api/auth/me", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    const user = await storage.getUserById(req.session.userId);
+    if (!user) {
+      req.session.destroy(() => {});
+      return res.status(401).json({ message: "User not found" });
+    }
+    
+    res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      status: user.status,
+    });
+  });
+  
+  // Get user role (session-based)
+  app.get("/api/user/role", isSessionAuthenticated, async (req, res) => {
+    try {
+      const user = await storage.getUserById(req.session.userId!);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
       
       res.json({
-        ...user,
-        role: userRole.role,
-        valueStream: userRole.valueStream,
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        status: user.status,
       });
     } catch (error) {
       console.error("Error fetching user role:", error);
@@ -70,55 +225,70 @@ export async function registerRoutes(
     }
   });
   
-  app.put("/api/user/:userId/role", isAuthenticated, requireRole('control_tower'), async (req, res) => {
+  // Admin: Assign role to user
+  app.put("/api/user/:userId/role", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
     try {
       const { userId } = req.params;
-      const { role, valueStream } = req.body;
+      const { role } = req.body;
       
       if (!['control_tower', 'sto', 'slt'].includes(role)) {
         return res.status(400).json({ message: "Invalid role" });
       }
       
-      const userRole = await storage.upsertUserRole({
-        userId,
-        role,
-        valueStream: valueStream || null,
-      });
+      const user = await storage.updateUserRole(userId, role);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
       
-      res.json(userRole);
+      res.json(user);
     } catch (error) {
       console.error("Error updating user role:", error);
       res.status(500).json({ message: "Failed to update user role" });
     }
   });
   
-  app.get("/api/admin/users", isAuthenticated, requireRole('control_tower'), async (req, res) => {
+  // Admin: Get all users
+  app.get("/api/admin/users", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
     try {
-      const allRoles = await storage.getAllUserRoles();
+      const users = await storage.getAllUsers();
       
-      const usersWithRoles = await Promise.all(
-        allRoles.map(async (roleRecord) => {
-          const user = await authStorage.getUser(roleRecord.userId);
-          return {
-            odisId: roleRecord.userId,
-            email: user?.email || 'Unknown',
-            firstName: user?.firstName || null,
-            lastName: user?.lastName || null,
-            profileImageUrl: user?.profileImageUrl || null,
-            role: roleRecord.role,
-            valueStream: roleRecord.valueStream,
-          };
-        })
-      );
+      const usersResponse = users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        status: user.status,
+      }));
       
-      res.json(usersWithRoles);
+      res.json(usersResponse);
     } catch (error) {
-      console.error("Error fetching admin users:", error);
+      console.error("Error fetching users:", error);
       res.status(500).json({ message: "Failed to fetch users" });
     }
   });
+  
+  // Admin: Get pending users
+  app.get("/api/admin/pending-users", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const users = await storage.getPendingUsers();
+      
+      const usersResponse = users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        status: user.status,
+      }));
+      
+      res.json(usersResponse);
+    } catch (error) {
+      console.error("Error fetching pending users:", error);
+      res.status(500).json({ message: "Failed to fetch pending users" });
+    }
+  });
 
-  app.get("/api/initiatives/:initiativeId/status", isAuthenticated, async (req, res) => {
+  app.get("/api/initiatives/:initiativeId/status", isSessionAuthenticated, async (req, res) => {
     try {
       const { initiativeId } = req.params;
       const status = await storage.getInitiativeStatus(initiativeId);
@@ -140,7 +310,7 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/initiatives/:initiativeId/status", isAuthenticated, requireRole('control_tower', 'sto'), async (req, res) => {
+  app.put("/api/initiatives/:initiativeId/status", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
     try {
       const { initiativeId } = req.params;
       const { costStatus, benefitStatus, timelineStatus, scopeStatus } = req.body;
@@ -166,7 +336,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/initiatives/:initiativeId/forms", isAuthenticated, async (req, res) => {
+  app.get("/api/initiatives/:initiativeId/forms", isSessionAuthenticated, async (req, res) => {
     try {
       const { initiativeId } = req.params;
       const forms = await storage.getGateFormsForInitiative(initiativeId);
@@ -177,7 +347,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/initiatives/:initiativeId/forms/:gate", isAuthenticated, async (req, res) => {
+  app.get("/api/initiatives/:initiativeId/forms/:gate", isSessionAuthenticated, async (req, res) => {
     try {
       const { initiativeId, gate } = req.params;
       const form = await storage.getGateForm(initiativeId, gate);
@@ -197,10 +367,10 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/initiatives/:initiativeId/forms/:gate", isAuthenticated, requireRole('control_tower', 'sto'), async (req, res) => {
+  app.put("/api/initiatives/:initiativeId/forms/:gate", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
     try {
       const { initiativeId, gate } = req.params;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.session.userId;
       const { formData, status, changeRequestReason } = req.body;
       
       if (status === 'approved') {
@@ -250,10 +420,10 @@ export async function registerRoutes(
     }
   });
 
-  app.put("/api/initiatives/:initiativeId/forms/:gate/approve", isAuthenticated, requireRole('control_tower'), async (req, res) => {
+  app.put("/api/initiatives/:initiativeId/forms/:gate/approve", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
     try {
       const { initiativeId, gate } = req.params;
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = req.session.userId;
       
       const existingForm = await storage.getGateForm(initiativeId, gate);
       if (!existingForm || existingForm.status !== 'submitted') {

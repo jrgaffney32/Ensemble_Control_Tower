@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -6,7 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useUserRole } from "@/hooks/use-user-role";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
-import LandingPage from "@/pages/LandingPage";
+import MasterGatePage from "@/pages/MasterGatePage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
 import ProjectRequests from "@/pages/ProjectRequests";
 import Issues from "@/pages/Issues";
 import BudgetRequests from "@/pages/BudgetRequests";
@@ -21,6 +23,7 @@ import LGateFormPage from "@/pages/LGateFormPage";
 import ValueStreamPriorities from "@/pages/ValueStreamPriorities";
 import CostCenterBreakout from "@/pages/CostCenterBreakout";
 import AdminPanel from "@/pages/AdminPanel";
+import UserManagement from "@/pages/UserManagement";
 
 function AuthenticatedRoutes() {
   return (
@@ -40,6 +43,7 @@ function AuthenticatedRoutes() {
       <Route path="/issues" component={Issues} />
       <Route path="/budget" component={BudgetRequests} />
       <Route path="/admin" component={AdminPanel} />
+      <Route path="/admin/users" component={UserManagement} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -47,6 +51,20 @@ function AuthenticatedRoutes() {
 
 function Router() {
   const { isAuthenticated, isLoading } = useUserRole();
+  const [location] = useLocation();
+  
+  const publicRoutes = ["/gate", "/login", "/register"];
+  const isPublicRoute = publicRoutes.includes(location);
+  
+  if (isPublicRoute) {
+    return (
+      <Switch>
+        <Route path="/gate" component={MasterGatePage} />
+        <Route path="/login" component={LoginPage} />
+        <Route path="/register" component={RegisterPage} />
+      </Switch>
+    );
+  }
   
   if (isLoading) {
     return (
@@ -60,7 +78,8 @@ function Router() {
   }
   
   if (!isAuthenticated) {
-    return <LandingPage />;
+    window.location.href = "/gate";
+    return null;
   }
   
   return <AuthenticatedRoutes />;
