@@ -19,6 +19,7 @@ import ProjectDetail from "@/pages/ProjectDetail";
 import IntakeFormPage from "@/pages/IntakeFormPage";
 import LGateFormPage from "@/pages/LGateFormPage";
 import ValueStreamPriorities from "@/pages/ValueStreamPriorities";
+import CostCenterBreakout from "@/pages/CostCenterBreakout";
 import AdminPanel from "@/pages/AdminPanel";
 
 function AuthenticatedRoutes() {
@@ -34,6 +35,7 @@ function AuthenticatedRoutes() {
       <Route path="/demand-capacity" component={DemandCapacity} />
       <Route path="/pod-velocity" component={PodVelocity} />
       <Route path="/pod-performance" component={PodPerformance} />
+      <Route path="/cost-centers" component={CostCenterBreakout} />
       <Route path="/requests" component={ProjectRequests} />
       <Route path="/issues" component={Issues} />
       <Route path="/budget" component={BudgetRequests} />

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { groupedInitiatives, formatCurrency, type GroupedInitiative } from "@/lib/initiatives";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight, ChevronDown, MessageSquare, ClipboardList } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, Search, Filter, TrendingUp, Clock, AlertTriangle, FileCheck, GitPullRequest, FileText, AlertCircle, Home, ListOrdered, LogOut, Shield, Users, ChevronRight, ChevronDown, MessageSquare, ClipboardList, Building2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -119,6 +119,12 @@ export default function Dashboard() {
               <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
                 <ListOrdered className="w-4 h-4 mr-3" />
                 Value Stream Priorities
+              </Button>
+            </Link>
+            <Link href="/cost-centers">
+              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
+                <Building2 className="w-4 h-4 mr-3" />
+                Cost Center Breakout
               </Button>
             </Link>
             <Link href="/pod-velocity">
