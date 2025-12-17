@@ -191,13 +191,6 @@ export default function Dashboard() {
               </div>
             </div>
              <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">New Projects</p>
-              <p className="text-2xl font-bold text-purple-600 font-mono">{stats.newProjects}</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <span>L0 Stage</span>
-              </div>
-            </div>
-             <div className="bg-white p-4 rounded-xl border shadow-sm">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Backlog</p>
               <p className="text-2xl font-bold text-amber-600 font-mono">{stats.backlogProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
@@ -210,13 +203,6 @@ export default function Dashboard() {
               <p className="text-2xl font-bold text-blue-600 font-mono">{stats.activeProjects}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                 <span>L3-L5 Stages</span>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-xl border shadow-sm">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Shipped</p>
-              <p className="text-2xl font-bold text-green-600 font-mono">{stats.shippedProjects}</p>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <span>L6 Complete</span>
               </div>
             </div>
 
