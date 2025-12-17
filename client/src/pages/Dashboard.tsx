@@ -451,11 +451,23 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">
-                                <div className="flex gap-1" title="Status: Cost, Benefit, Timeline, Scope">
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Cost: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Benefit: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Timeline: Green" />
-                                  <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Scope: Green" />
+                                <div className="flex gap-2" title="Status: Budget, Cost, Timeline, Scope">
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Budget: Green" />
+                                    <span className="text-[8px] text-slate-400 mt-0.5">B</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Cost: Green" />
+                                    <span className="text-[8px] text-slate-400 mt-0.5">C</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Timeline: Green" />
+                                    <span className="text-[8px] text-slate-400 mt-0.5">T</span>
+                                  </div>
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-2 h-2 rounded-full bg-[#2d8a6e]" title="Scope: Green" />
+                                    <span className="text-[8px] text-slate-400 mt-0.5">S</span>
+                                  </div>
                                 </div>
                                 <Badge variant="outline" className="border-slate-300 text-slate-600">{init.lGate}</Badge>
                                 <div className="text-right w-24">
