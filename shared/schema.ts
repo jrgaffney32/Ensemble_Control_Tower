@@ -40,3 +40,30 @@ export const insertInitiativeStatusSchema = createInsertSchema(initiativeStatuse
 
 export type InsertInitiativeStatus = z.infer<typeof insertInitiativeStatusSchema>;
 export type InitiativeStatusRecord = typeof initiativeStatuses.$inferSelect;
+
+export type FormStatus = 'not_started' | 'draft' | 'submitted' | 'approved' | 'change_requested';
+
+export const gateForms = pgTable("gate_forms", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  gate: text("gate").notNull(),
+  status: text("status").$type<FormStatus>().notNull().default('not_started'),
+  formData: text("form_data"),
+  submittedBy: varchar("submitted_by"),
+  submittedAt: timestamp("submitted_at"),
+  approvedBy: varchar("approved_by"),
+  approvedAt: timestamp("approved_at"),
+  changeRequestReason: text("change_request_reason"),
+  changeRequestedBy: varchar("change_requested_by"),
+  changeRequestedAt: timestamp("change_requested_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertGateFormSchema = createInsertSchema(gateForms).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertGateForm = z.infer<typeof insertGateFormSchema>;
+export type GateFormRecord = typeof gateForms.$inferSelect;

@@ -166,5 +166,102 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/initiatives/:initiativeId/forms", isAuthenticated, async (req, res) => {
+    try {
+      const { initiativeId } = req.params;
+      const forms = await storage.getGateFormsForInitiative(initiativeId);
+      res.json(forms);
+    } catch (error) {
+      console.error("Error fetching gate forms:", error);
+      res.status(500).json({ message: "Failed to fetch gate forms" });
+    }
+  });
+
+  app.get("/api/initiatives/:initiativeId/forms/:gate", isAuthenticated, async (req, res) => {
+    try {
+      const { initiativeId, gate } = req.params;
+      const form = await storage.getGateForm(initiativeId, gate);
+      if (!form) {
+        return res.json({
+          id: `${initiativeId}-${gate}`,
+          initiativeId,
+          gate,
+          status: 'not_started',
+          formData: null,
+        });
+      }
+      res.json(form);
+    } catch (error) {
+      console.error("Error fetching gate form:", error);
+      res.status(500).json({ message: "Failed to fetch gate form" });
+    }
+  });
+
+  app.put("/api/initiatives/:initiativeId/forms/:gate", isAuthenticated, requireRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { initiativeId, gate } = req.params;
+      const userId = (req.user as any)?.claims?.sub;
+      const { formData, status, changeRequestReason } = req.body;
+      
+      const existingForm = await storage.getGateForm(initiativeId, gate);
+      
+      if (existingForm?.status === 'approved' && status !== 'change_requested') {
+        return res.status(400).json({ message: "Approved forms require a change request to modify" });
+      }
+      
+      const formId = `${initiativeId}-${gate}`;
+      const updateData: any = {
+        id: formId,
+        initiativeId,
+        gate,
+        status: status || (existingForm?.status === 'not_started' ? 'draft' : existingForm?.status),
+        formData,
+      };
+      
+      if (status === 'submitted') {
+        updateData.submittedBy = userId;
+        updateData.submittedAt = new Date();
+      }
+      
+      if (status === 'change_requested') {
+        updateData.changeRequestReason = changeRequestReason;
+        updateData.changeRequestedBy = userId;
+        updateData.changeRequestedAt = new Date();
+      }
+      
+      const form = await storage.upsertGateForm(updateData);
+      res.json(form);
+    } catch (error) {
+      console.error("Error updating gate form:", error);
+      res.status(500).json({ message: "Failed to update gate form" });
+    }
+  });
+
+  app.put("/api/initiatives/:initiativeId/forms/:gate/approve", isAuthenticated, requireRole('control_tower'), async (req, res) => {
+    try {
+      const { initiativeId, gate } = req.params;
+      const userId = (req.user as any)?.claims?.sub;
+      
+      const existingForm = await storage.getGateForm(initiativeId, gate);
+      if (!existingForm || existingForm.status !== 'submitted') {
+        return res.status(400).json({ message: "Only submitted forms can be approved" });
+      }
+      
+      const form = await storage.upsertGateForm({
+        id: existingForm.id,
+        initiativeId,
+        gate,
+        status: 'approved',
+        formData: existingForm.formData || undefined,
+        approvedBy: userId,
+        approvedAt: new Date(),
+      });
+      res.json(form);
+    } catch (error) {
+      console.error("Error approving gate form:", error);
+      res.status(500).json({ message: "Failed to approve gate form" });
+    }
+  });
+
   return httpServer;
 }

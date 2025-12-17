@@ -1,6 +1,6 @@
-import { userRoles, initiativeStatuses, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus } from "@shared/schema";
 import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUserRole(userId: string): Promise<UserRoleRecord | undefined>;
@@ -9,6 +9,9 @@ export interface IStorage {
   countUserRoles(): Promise<number>;
   getInitiativeStatus(initiativeId: string): Promise<InitiativeStatusRecord | undefined>;
   upsertInitiativeStatus(data: { initiativeId: string; costStatus: StatusValue; benefitStatus: StatusValue; timelineStatus: StatusValue; scopeStatus: StatusValue }): Promise<InitiativeStatusRecord>;
+  getGateForm(initiativeId: string, gate: string): Promise<GateFormRecord | undefined>;
+  getGateFormsForInitiative(initiativeId: string): Promise<GateFormRecord[]>;
+  upsertGateForm(data: { id: string; initiativeId: string; gate: string; status: FormStatus; formData?: string; submittedBy?: string; submittedAt?: Date; approvedBy?: string; approvedAt?: Date; changeRequestReason?: string; changeRequestedBy?: string; changeRequestedAt?: Date }): Promise<GateFormRecord>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -73,6 +76,51 @@ class DatabaseStorage implements IStorage {
       })
       .returning();
     return status;
+  }
+
+  async getGateForm(initiativeId: string, gate: string): Promise<GateFormRecord | undefined> {
+    const [form] = await db.select().from(gateForms).where(and(eq(gateForms.initiativeId, initiativeId), eq(gateForms.gate, gate)));
+    return form;
+  }
+
+  async getGateFormsForInitiative(initiativeId: string): Promise<GateFormRecord[]> {
+    return await db.select().from(gateForms).where(eq(gateForms.initiativeId, initiativeId));
+  }
+
+  async upsertGateForm(data: { id: string; initiativeId: string; gate: string; status: FormStatus; formData?: string; submittedBy?: string; submittedAt?: Date; approvedBy?: string; approvedAt?: Date; changeRequestReason?: string; changeRequestedBy?: string; changeRequestedAt?: Date }): Promise<GateFormRecord> {
+    const [form] = await db
+      .insert(gateForms)
+      .values({
+        id: data.id,
+        initiativeId: data.initiativeId,
+        gate: data.gate,
+        status: data.status,
+        formData: data.formData,
+        submittedBy: data.submittedBy,
+        submittedAt: data.submittedAt,
+        approvedBy: data.approvedBy,
+        approvedAt: data.approvedAt,
+        changeRequestReason: data.changeRequestReason,
+        changeRequestedBy: data.changeRequestedBy,
+        changeRequestedAt: data.changeRequestedAt,
+      })
+      .onConflictDoUpdate({
+        target: gateForms.id,
+        set: {
+          status: data.status,
+          formData: data.formData,
+          submittedBy: data.submittedBy,
+          submittedAt: data.submittedAt,
+          approvedBy: data.approvedBy,
+          approvedAt: data.approvedAt,
+          changeRequestReason: data.changeRequestReason,
+          changeRequestedBy: data.changeRequestedBy,
+          changeRequestedAt: data.changeRequestedAt,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return form;
   }
 }
 

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut, DollarSign, Target, TrendingUp, BarChart3, Activity } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, Settings, Bell, FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, XCircle, Upload, FileUp, MessageSquare, Home, ListOrdered, LogOut, DollarSign, Target, TrendingUp, BarChart3, Activity, Lock, Edit2, ExternalLink } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import { MilestoneEditor, type Milestone } from "@/components/dashboard/Mileston
 import { formatCurrency, getGroupedInitiativeById, type GroupedInitiative } from "@/lib/initiatives";
 
 type StatusValue = 'green' | 'yellow' | 'red';
+type FormStatus = 'not_started' | 'draft' | 'submitted' | 'approved' | 'change_requested';
 
 interface InitiativeStatus {
   initiativeId: string;
@@ -20,6 +21,122 @@ interface InitiativeStatus {
   benefitStatus: StatusValue;
   timelineStatus: StatusValue;
   scopeStatus: StatusValue;
+}
+
+interface GateFormData {
+  id: string;
+  initiativeId: string;
+  gate: string;
+  status: FormStatus;
+}
+
+function FormsTabContent({ projectId, canEdit }: { projectId: string; canEdit: boolean }) {
+  const { data: forms = [], isLoading } = useQuery<GateFormData[]>({
+    queryKey: ['/api/initiatives', projectId, 'forms'],
+    queryFn: async () => {
+      const res = await fetch(`/api/initiatives/${projectId}/forms`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch forms');
+      return res.json();
+    },
+    enabled: !!projectId,
+  });
+  
+  const getFormStatus = (gate: string): FormStatus => {
+    const form = forms.find(f => f.gate === gate);
+    return form?.status || 'not_started';
+  };
+  
+  const getStatusIcon = (status: FormStatus) => {
+    switch (status) {
+      case 'approved':
+        return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+      case 'submitted':
+        return <Clock className="w-4 h-4 text-blue-600" />;
+      case 'draft':
+        return <Edit2 className="w-4 h-4 text-amber-600" />;
+      case 'change_requested':
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return <Circle className="w-4 h-4 text-slate-300" />;
+    }
+  };
+  
+  const getStatusBadge = (status: FormStatus) => {
+    switch (status) {
+      case 'approved':
+        return <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">Approved</Badge>;
+      case 'submitted':
+        return <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">Submitted</Badge>;
+      case 'draft':
+        return <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-200">Draft</Badge>;
+      case 'change_requested':
+        return <Badge variant="outline" className="text-xs bg-red-50 text-red-700 border-red-200">Change Requested</Badge>;
+      default:
+        return <Badge variant="outline" className="text-xs text-slate-400">Not Started</Badge>;
+    }
+  };
+  
+  const gates = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'];
+  
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-base">Intake Form</CardTitle>
+            <Badge variant="outline" className="text-slate-500">Not Started</Badge>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Link href={`/project/${projectId}/intake`}>
+            <div className="flex items-center justify-between p-3 bg-slate-50 rounded-md hover:bg-slate-100 cursor-pointer transition-colors">
+              <div className="flex items-center gap-3">
+                <FileText className="w-4 h-4 text-slate-500" />
+                <span className="text-sm">Project Intake Form</span>
+              </div>
+              <ExternalLink className="w-4 h-4 text-slate-400" />
+            </div>
+          </Link>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-base">Stage Gate Forms</CardTitle>
+            {isLoading && <span className="text-xs text-muted-foreground">Loading...</span>}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {gates.map(gate => {
+              const status = getFormStatus(gate);
+              const isApproved = status === 'approved';
+              return (
+                <Link key={gate} href={`/project/${projectId}/gate/${gate}`}>
+                  <div 
+                    className={`flex items-center justify-between p-3 rounded-md cursor-pointer transition-colors ${
+                      isApproved ? 'bg-green-50 hover:bg-green-100' : 'bg-slate-50 hover:bg-slate-100'
+                    }`}
+                    data-testid={`form-link-${gate}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(status)}
+                      <span className="text-sm font-medium">{gate} Gate Review</span>
+                      {isApproved && <Lock className="w-3 h-3 text-green-600" />}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {getStatusBadge(status)}
+                      <ChevronRight className="w-4 h-4 text-slate-400" />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default function ProjectDetail() {
@@ -569,40 +686,7 @@ export default function ProjectDetail() {
 
             {/* Forms Tab */}
             <TabsContent value="forms">
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-base">Intake Form</CardTitle>
-                      <Badge variant="outline" className="text-slate-500">Not Started</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">No intake form has been submitted for this initiative.</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <CardTitle className="text-base">Stage Gate Forms</CardTitle>
-                      <Badge variant="outline" className="text-slate-500">Not Started</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6'].map(gate => (
-                        <div key={gate} className="flex items-center justify-between p-3 bg-slate-50 rounded-md">
-                          <div className="flex items-center gap-3">
-                            <Circle className="w-4 h-4 text-slate-300" />
-                            <span className="text-sm">{gate} Gate Review</span>
-                          </div>
-                          <Badge variant="outline" className="text-xs text-slate-400">Not Started</Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+              <FormsTabContent projectId={projectId} canEdit={canEdit} />
             </TabsContent>
 
             {/* Issues Tab */}
