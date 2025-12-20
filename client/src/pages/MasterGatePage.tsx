@@ -47,46 +47,46 @@ export default function MasterGatePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-slate-700 bg-slate-800/50 backdrop-blur">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
-            <ShieldCheck className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl text-white">Ensemble Control Tower</CardTitle>
-            <CardDescription className="text-slate-400 mt-2">
-              Enter access code to continue
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-300">Access Code</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter access code"
-                  className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
-                  data-testid="input-access-code"
-                />
-              </div>
+        <Card className="w-full max-w-md border-slate-700 bg-slate-800/50 backdrop-blur">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center">
+              <ShieldCheck className="w-8 h-8 text-white" />
             </div>
-            <Button 
-              type="submit" 
-              className="w-full bg-blue-600 hover:bg-blue-700" 
-              disabled={isLoading || !password}
-              data-testid="button-verify-code"
-            >
-              {isLoading ? "Verifying..." : "Continue"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <div>
+              <CardTitle className="text-2xl text-white">Ensemble Control Tower</CardTitle>
+              <CardDescription className="text-slate-400 mt-2">
+                Enter access code to continue
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-slate-300">Access Code</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter access code"
+                    className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-500"
+                    data-testid="input-access-code"
+                  />
+                </div>
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-700" 
+                disabled={isLoading || !password}
+                data-testid="button-verify-code"
+              >
+                {isLoading ? "Verifying..." : "Continue"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
     </div>
   );
 }

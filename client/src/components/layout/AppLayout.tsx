@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, TrendingUp, FileText, AlertCircle, ListOrdered, LogOut, Shield, Users, Building2, Grid3X3, Target, Home, Bell, Filter, Search } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, TrendingUp, FileText, AlertCircle, ListOrdered, LogOut, Shield, Users, Building2, Grid3X3, Target, Home, Bell, Filter, Search, BarChart3, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,9 @@ const NAV_ITEMS = [
   { path: "/priorities", label: "Value Stream Priorities", icon: ListOrdered },
   { path: "/cost-centers", label: "Cost Center Breakout", icon: Building2 },
   { path: "/pod-velocity", label: "Pod Velocity & Quality", icon: TrendingUp },
+  { path: "/demand-capacity", label: "Demand vs. Capacity", icon: BarChart3 },
+  { path: "/pod-performance", label: "Pod Performance", icon: BarChart3 },
+  { path: "/projects", label: "All Projects", icon: FolderOpen },
 ];
 
 const ADMIN_NAV_ITEMS = [
@@ -61,6 +64,9 @@ export function AppLayout({
 
   const isActive = (path: string) => {
     if (path === "/") return location === "/";
+    if (path === "/projects") {
+      return location === "/projects" || location.startsWith("/project/");
+    }
     return location.startsWith(path);
   };
 

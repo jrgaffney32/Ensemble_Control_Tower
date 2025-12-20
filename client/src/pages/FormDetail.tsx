@@ -1,16 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, FileText, AlertCircle, ChevronRight, CheckCircle2, Clock, XCircle, Home, ListOrdered, LogOut, Lock, Edit2, Send, MessageSquare } from "lucide-react";
+import { FileText, AlertCircle, CheckCircle2, Lock, Edit2, Send, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useUserRole } from "@/hooks/use-user-role";
 import { getGroupedInitiativeById } from "@/lib/initiatives";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 type FormStatus = 'not_started' | 'draft' | 'submitted' | 'approved' | 'change_requested';
 
@@ -55,7 +55,7 @@ export default function FormDetail() {
   const [, params] = useRoute("/project/:id/form/:gate");
   const projectId = params?.id || '';
   const gate = params?.gate || '';
-  const { user, role, canEdit, isControlTower } = useUserRole();
+  const { canEdit, isControlTower } = useUserRole();
   const queryClient = useQueryClient();
   
   const initiative = useMemo(() => getGroupedInitiativeById(projectId), [projectId]);
@@ -168,19 +168,6 @@ export default function FormDetail() {
         return <Badge variant="outline">Unknown</Badge>;
     }
   };
-  
-  const getRoleBadge = () => {
-    switch (role) {
-      case 'control_tower':
-        return <Badge className="bg-purple-600 text-xs">Control Tower</Badge>;
-      case 'sto':
-        return <Badge className="bg-blue-600 text-xs">STO</Badge>;
-      case 'slt':
-        return <Badge className="bg-slate-600 text-xs">SLT</Badge>;
-      default:
-        return null;
-    }
-  };
 
   if (!initiative) {
     return (
@@ -196,316 +183,241 @@ export default function FormDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex font-sans">
-      <aside className="w-64 bg-[#0F172A] text-slate-300 hidden lg:flex flex-col fixed h-full z-10">
-        <div className="p-6">
-          <Link href="/">
-            <div className="flex items-center gap-3 text-white mb-8 cursor-pointer hover:opacity-80">
-              <img src="/attached_assets/ensemblehp_logo2_1765915775273.jpeg" alt="Ensemble" className="w-8 h-8 rounded-lg" />
-              <h1 className="font-heading font-bold text-xl tracking-tight">ENSEMBLE<br/><span className="text-xs font-normal opacity-70 tracking-widest">CONTROL TOWER</span></h1>
-            </div>
-          </Link>
-          
-          <nav className="space-y-1">
-            <Link href="/">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <LayoutDashboard className="w-4 h-4 mr-3" />
-                Portfolio Overview
-              </Button>
-            </Link>
-            <Link href="/projects">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <FileText className="w-4 h-4 mr-3" />
-                All Projects
-              </Button>
-            </Link>
-            <Link href="/priorities">
-              <Button variant="ghost" className="w-full justify-start hover:bg-white/5 hover:text-white">
-                <ListOrdered className="w-4 h-4 mr-3" />
-                Value Stream Priorities
-              </Button>
-            </Link>
-          </nav>
+    <AppLayout title="Form Detail">
+      <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold font-heading">{gate} Gate Review Form</h1>
+            <p className="text-muted-foreground">{initiative.name}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {getStatusBadge(formData?.status || 'not_started')}
+            {isApproved && (
+              <div className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded text-sm">
+                <Lock className="w-4 h-4" />
+                <span>Locked</span>
+              </div>
+            )}
+          </div>
         </div>
         
-        <div className="mt-auto p-6 border-t border-white/10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 flex items-center justify-center text-white font-semibold text-sm">
-              {user?.firstName?.[0] || user?.email?.[0] || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
-                {user?.firstName || user?.email?.split('@')[0] || 'User'}
-              </p>
-              {getRoleBadge()}
-            </div>
-          </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="w-full justify-start text-slate-400 hover:text-white hover:bg-white/10"
-            onClick={async () => {
-              await fetch("/api/auth/logout", { method: "POST" });
-              window.location.href = "/gate";
-            }}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-      </aside>
-
-      <main className="flex-1 lg:ml-64">
-        <header className="h-16 border-b bg-white sticky top-0 z-20 px-8 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm">
-            <Link href="/">
-              <Button variant="ghost" size="icon" className="hover:bg-slate-100" data-testid="button-home">
-                <Home className="h-5 w-5 text-slate-600" />
-              </Button>
-            </Link>
-            <Link href="/projects" className="text-muted-foreground hover:text-foreground">Projects</Link>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <Link href={`/project/${projectId}`} className="text-muted-foreground hover:text-foreground">{initiative.name}</Link>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            <span className="font-semibold text-foreground">{gate} Gate Form</span>
-          </div>
-        </header>
-
-        <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold font-heading">{gate} Gate Review Form</h1>
-              <p className="text-muted-foreground">{initiative.name}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              {getStatusBadge(formData?.status || 'not_started')}
-              {isApproved && (
-                <div className="flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded text-sm">
-                  <Lock className="w-4 h-4" />
-                  <span>Locked</span>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {isApproved && (
-            <Card className="border-amber-200 bg-amber-50">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Lock className="w-5 h-5 text-amber-600" />
-                    <div>
-                      <p className="font-medium text-amber-800">This form has been approved and is locked</p>
-                      <p className="text-sm text-amber-600">To make changes, you must submit a change request for re-approval.</p>
-                    </div>
-                  </div>
-                  {canEdit && (
-                    <Button 
-                      variant="outline" 
-                      className="border-amber-300 text-amber-700 hover:bg-amber-100"
-                      onClick={() => setChangeRequestDialogOpen(true)}
-                      data-testid="button-request-change"
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Request Change
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-          
-          {formData?.status === 'change_requested' && formData.changeRequestReason && (
-            <Card className="border-red-200 bg-red-50">
-              <CardContent className="py-4">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+        {isApproved && (
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Lock className="w-5 h-5 text-amber-600" />
                   <div>
-                    <p className="font-medium text-red-800">Change Request Submitted</p>
-                    <p className="text-sm text-red-600 mt-1">{formData.changeRequestReason}</p>
+                    <p className="font-medium text-amber-800">This form has been approved and is locked</p>
+                    <p className="text-sm text-amber-600">To make changes, you must submit a change request for re-approval.</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-          
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                Gate Review Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {isLoading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading form...</div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="objectives">Objectives</Label>
-                      <Textarea
-                        id="objectives"
-                        placeholder="What are the key objectives for this gate?"
-                        value={formFields.objectives}
-                        onChange={(e) => handleFieldChange('objectives', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-objectives"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="scope">Scope</Label>
-                      <Textarea
-                        id="scope"
-                        placeholder="Define the scope of work"
-                        value={formFields.scope}
-                        onChange={(e) => handleFieldChange('scope', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-scope"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="deliverables">Deliverables</Label>
-                      <Textarea
-                        id="deliverables"
-                        placeholder="List expected deliverables"
-                        value={formFields.deliverables}
-                        onChange={(e) => handleFieldChange('deliverables', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-deliverables"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="risks">Risks</Label>
-                      <Textarea
-                        id="risks"
-                        placeholder="Identify potential risks"
-                        value={formFields.risks}
-                        onChange={(e) => handleFieldChange('risks', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-risks"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="dependencies">Dependencies</Label>
-                      <Textarea
-                        id="dependencies"
-                        placeholder="List dependencies"
-                        value={formFields.dependencies}
-                        onChange={(e) => handleFieldChange('dependencies', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-dependencies"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="resources">Resources Required</Label>
-                      <Textarea
-                        id="resources"
-                        placeholder="List required resources"
-                        value={formFields.resources}
-                        onChange={(e) => handleFieldChange('resources', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-resources"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="timeline">Timeline</Label>
-                      <Textarea
-                        id="timeline"
-                        placeholder="Define the timeline and milestones"
-                        value={formFields.timeline}
-                        onChange={(e) => handleFieldChange('timeline', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-timeline"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="successCriteria">Success Criteria</Label>
-                      <Textarea
-                        id="successCriteria"
-                        placeholder="Define success criteria"
-                        value={formFields.successCriteria}
-                        onChange={(e) => handleFieldChange('successCriteria', e.target.value)}
-                        disabled={!canEditForm}
-                        className="min-h-[100px]"
-                        data-testid="input-success-criteria"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-          
-          <div className="flex items-center justify-between pt-4">
-            <Link href={`/project/${projectId}`}>
-              <Button variant="outline" data-testid="button-back">
-                Back to Initiative
-              </Button>
-            </Link>
-            
-            <div className="flex items-center gap-3">
-              {canEditForm && (
-                <>
+                {canEdit && (
                   <Button 
                     variant="outline" 
-                    onClick={handleSaveDraft}
-                    disabled={updateFormMutation.isPending}
-                    data-testid="button-save-draft"
+                    className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                    onClick={() => setChangeRequestDialogOpen(true)}
+                    data-testid="button-request-change"
                   >
-                    <Edit2 className="w-4 h-4 mr-2" />
-                    Save Draft
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Request Change
                   </Button>
-                  <Button 
-                    onClick={handleSubmit}
-                    disabled={updateFormMutation.isPending}
-                    data-testid="button-submit"
-                  >
-                    <Send className="w-4 h-4 mr-2" />
-                    Submit for Approval
-                  </Button>
-                </>
-              )}
-              
-              {canApproveForm && (
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        {formData?.status === 'change_requested' && formData.changeRequestReason && (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="py-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-red-800">Change Request Submitted</p>
+                  <p className="text-sm text-red-600 mt-1">{formData.changeRequestReason}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Gate Review Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {isLoading ? (
+              <div className="text-center py-8 text-muted-foreground">Loading form...</div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="objectives">Objectives</Label>
+                    <Textarea
+                      id="objectives"
+                      placeholder="What are the key objectives for this gate?"
+                      value={formFields.objectives}
+                      onChange={(e) => handleFieldChange('objectives', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-objectives"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="scope">Scope</Label>
+                    <Textarea
+                      id="scope"
+                      placeholder="Define the scope of work"
+                      value={formFields.scope}
+                      onChange={(e) => handleFieldChange('scope', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-scope"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="deliverables">Deliverables</Label>
+                    <Textarea
+                      id="deliverables"
+                      placeholder="List expected deliverables"
+                      value={formFields.deliverables}
+                      onChange={(e) => handleFieldChange('deliverables', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-deliverables"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="risks">Risks</Label>
+                    <Textarea
+                      id="risks"
+                      placeholder="Identify potential risks"
+                      value={formFields.risks}
+                      onChange={(e) => handleFieldChange('risks', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-risks"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="dependencies">Dependencies</Label>
+                    <Textarea
+                      id="dependencies"
+                      placeholder="List dependencies"
+                      value={formFields.dependencies}
+                      onChange={(e) => handleFieldChange('dependencies', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-dependencies"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="resources">Resources Required</Label>
+                    <Textarea
+                      id="resources"
+                      placeholder="List required resources"
+                      value={formFields.resources}
+                      onChange={(e) => handleFieldChange('resources', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-resources"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="timeline">Timeline</Label>
+                    <Textarea
+                      id="timeline"
+                      placeholder="Define the timeline and milestones"
+                      value={formFields.timeline}
+                      onChange={(e) => handleFieldChange('timeline', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-timeline"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="successCriteria">Success Criteria</Label>
+                    <Textarea
+                      id="successCriteria"
+                      placeholder="Define success criteria"
+                      value={formFields.successCriteria}
+                      onChange={(e) => handleFieldChange('successCriteria', e.target.value)}
+                      disabled={!canEditForm}
+                      className="min-h-[100px]"
+                      data-testid="input-success-criteria"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+        
+        <div className="flex items-center justify-between pt-4">
+          <Link href={`/project/${projectId}`}>
+            <Button variant="outline" data-testid="button-back">
+              Back to Initiative
+            </Button>
+          </Link>
+          
+          <div className="flex items-center gap-3">
+            {canEditForm && (
+              <>
                 <Button 
-                  onClick={handleApprove}
-                  disabled={approveFormMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700"
-                  data-testid="button-approve"
+                  variant="outline" 
+                  onClick={handleSaveDraft}
+                  disabled={updateFormMutation.isPending}
+                  data-testid="button-save-draft"
                 >
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Approve
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Save Draft
                 </Button>
-              )}
-              
-              {updateFormMutation.isPending && (
-                <span className="text-sm text-muted-foreground">Saving...</span>
-              )}
-              
-              {updateFormMutation.isError && (
-                <span className="text-sm text-red-600">{(updateFormMutation.error as Error).message}</span>
-              )}
-            </div>
+                <Button 
+                  onClick={handleSubmit}
+                  disabled={updateFormMutation.isPending}
+                  data-testid="button-submit"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Submit for Approval
+                </Button>
+              </>
+            )}
+            
+            {canApproveForm && (
+              <Button 
+                onClick={handleApprove}
+                disabled={approveFormMutation.isPending}
+                className="bg-green-600 hover:bg-green-700"
+                data-testid="button-approve"
+              >
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                Approve
+              </Button>
+            )}
+            
+            {updateFormMutation.isPending && (
+              <span className="text-sm text-muted-foreground">Saving...</span>
+            )}
+            
+            {updateFormMutation.isError && (
+              <span className="text-sm text-red-600">{(updateFormMutation.error as Error).message}</span>
+            )}
           </div>
         </div>
-      </main>
+      </div>
       
       <Dialog open={changeRequestDialogOpen} onOpenChange={setChangeRequestDialogOpen}>
         <DialogContent>
@@ -542,6 +454,6 @@ export default function FormDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </AppLayout>
   );
 }
