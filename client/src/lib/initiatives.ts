@@ -1,6 +1,6 @@
 import initiativeData from './initiativeData.json';
 
-export interface Milestone {
+export interface Capability {
   name: string;
   startDate: string | null;
   endDate: string | null;
@@ -18,8 +18,10 @@ export interface Initiative {
   budgetedCost: number;
   targetedBenefit: number;
   costCenter: string;
-  milestones: Milestone[];
+  milestones: Capability[];
 }
+
+export type Milestone = Capability;
 
 export const initiatives: Initiative[] = initiativeData as Initiative[];
 
@@ -71,7 +73,8 @@ export interface GroupedInitiative {
   budgetedCost: number;
   targetedBenefit: number;
   costCenter: string;
-  milestones: Milestone[];
+  capabilities: Capability[];
+  milestones: Capability[];
   subInitiatives: Initiative[];
 }
 
@@ -80,7 +83,7 @@ export const getGroupedInitiatives = (): GroupedInitiative[] => {
   
   initiatives.forEach(init => {
     const key = `${init.name}__${init.valueStream}`;
-    const milestonesWithSource = init.milestones.map(m => ({ ...m, sourceId: init.id }));
+    const capabilitiesWithSource = init.milestones.map(m => ({ ...m, sourceId: init.id }));
     if (!grouped[key]) {
       grouped[key] = {
         name: init.name,
@@ -92,14 +95,16 @@ export const getGroupedInitiatives = (): GroupedInitiative[] => {
         budgetedCost: init.budgetedCost,
         targetedBenefit: init.targetedBenefit,
         costCenter: init.costCenter,
-        milestones: [...milestonesWithSource],
+        capabilities: [...capabilitiesWithSource],
+        milestones: [...capabilitiesWithSource],
         subInitiatives: [init]
       };
     } else {
       grouped[key].ids.push(init.id);
       grouped[key].budgetedCost += init.budgetedCost;
       grouped[key].targetedBenefit += init.targetedBenefit;
-      grouped[key].milestones.push(...milestonesWithSource);
+      grouped[key].capabilities.push(...capabilitiesWithSource);
+      grouped[key].milestones.push(...capabilitiesWithSource);
       grouped[key].subInitiatives.push(init);
       if (init.priorityRank < grouped[key].priorityRank) {
         grouped[key].priorityRank = init.priorityRank;

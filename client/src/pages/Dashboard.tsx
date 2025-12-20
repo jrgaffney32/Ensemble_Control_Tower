@@ -323,8 +323,20 @@ export default function Dashboard() {
                                   </div>
                                   <div className="text-xs text-slate-500">
                                     {init.costCenter || 'No cost center'}
-                                    {init.milestones.length > 0 && ` • ${init.milestones.length} ms`}
+                                    {init.capabilities.length > 0 && ` • ${init.capabilities.length} capabilities`}
                                   </div>
+                                  {init.capabilities.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {init.capabilities.slice(0, 3).map((cap, idx) => (
+                                        <span key={idx} className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">
+                                          {cap.name}
+                                        </span>
+                                      ))}
+                                      {init.capabilities.length > 3 && (
+                                        <span className="text-[10px] text-slate-400">+{init.capabilities.length - 3} more</span>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                               <div className="flex items-center gap-4">

@@ -346,7 +346,7 @@ export default function ProjectDetail() {
             <div className="bg-slate-50 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-muted-foreground mb-1">
                 <Calendar className="w-4 h-4" />
-                <span className="text-xs font-semibold uppercase">Milestones</span>
+                <span className="text-xs font-semibold uppercase">Capabilities</span>
               </div>
               <p className="text-lg font-bold font-mono">{initiative.milestones.length}</p>
             </div>
@@ -382,6 +382,7 @@ export default function ProjectDetail() {
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="capabilities">Capabilities</TabsTrigger>
             <TabsTrigger value="milestones">Milestones</TabsTrigger>
             <TabsTrigger value="financials">FTE / Budget</TabsTrigger>
             <TabsTrigger value="forms">Forms</TabsTrigger>
@@ -494,10 +495,40 @@ export default function ProjectDetail() {
             </div>
           </TabsContent>
 
+          <TabsContent value="capabilities">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Capabilities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {initiative.milestones.length > 0 ? (
+                  <div className="space-y-3">
+                    {initiative.milestones.map((cap, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-3 h-3 rounded-full ${
+                            cap.status === 'green' ? 'bg-green-500' : 
+                            cap.status === 'yellow' ? 'bg-yellow-500' : 'bg-red-500'
+                          }`} />
+                          <span className="font-medium text-sm">{cap.name}</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {cap.startDate && cap.endDate ? `${cap.startDate} - ${cap.endDate}` : 'No dates set'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm">No capabilities defined for this initiative.</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="milestones">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Milestones</CardTitle>
+                <CardTitle className="text-base">Project Milestones</CardTitle>
               </CardHeader>
               <CardContent>
                 <MilestoneEditor
