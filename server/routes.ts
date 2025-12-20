@@ -676,5 +676,134 @@ export async function registerRoutes(
     }
   });
 
+  // Capability CRUD routes
+  app.get("/api/capabilities", isSessionAuthenticated, async (req, res) => {
+    try {
+      const allCapabilities = await storage.getAllCapabilities();
+      res.json(allCapabilities);
+    } catch (error) {
+      console.error("Error fetching capabilities:", error);
+      res.status(500).json({ message: "Failed to fetch capabilities" });
+    }
+  });
+
+  app.get("/api/capabilities/pending", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const pending = await storage.getPendingCapabilities();
+      res.json(pending);
+    } catch (error) {
+      console.error("Error fetching pending capabilities:", error);
+      res.status(500).json({ message: "Failed to fetch pending capabilities" });
+    }
+  });
+
+  app.get("/api/capabilities/by-initiative/:initiativeId", isSessionAuthenticated, async (req, res) => {
+    try {
+      const { initiativeId } = req.params;
+      const caps = await storage.getCapabilitiesByInitiative(initiativeId);
+      res.json(caps);
+    } catch (error) {
+      console.error("Error fetching capabilities:", error);
+      res.status(500).json({ message: "Failed to fetch capabilities" });
+    }
+  });
+
+  app.post("/api/capabilities", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { initiativeId, name, description, healthStatus, estimatedEffort, startDate, endDate } = req.body;
+      const id = `cap-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const user = req.session?.user;
+      
+      const capability = await storage.createCapability({
+        id,
+        initiativeId,
+        name: String(name),
+        description: description || null,
+        healthStatus: healthStatus || 'green',
+        approvalStatus: 'submitted',
+        estimatedEffort: estimatedEffort || 0,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
+        submittedBy: user?.id || null,
+        submittedAt: new Date(),
+      });
+      res.json(capability);
+    } catch (error) {
+      console.error("Error creating capability:", error);
+      res.status(500).json({ message: "Failed to create capability" });
+    }
+  });
+
+  app.put("/api/capabilities/:id", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, description, healthStatus, estimatedEffort, startDate, endDate } = req.body;
+      
+      const updateData: Record<string, any> = {};
+      if (name !== undefined) updateData.name = String(name);
+      if (description !== undefined) updateData.description = description;
+      if (healthStatus !== undefined) updateData.healthStatus = healthStatus;
+      if (estimatedEffort !== undefined) updateData.estimatedEffort = estimatedEffort;
+      if (startDate !== undefined) updateData.startDate = startDate ? new Date(startDate) : null;
+      if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
+      
+      const capability = await storage.updateCapability(id, updateData);
+      if (!capability) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      res.json(capability);
+    } catch (error) {
+      console.error("Error updating capability:", error);
+      res.status(500).json({ message: "Failed to update capability" });
+    }
+  });
+
+  app.put("/api/capabilities/:id/approve", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = req.session?.user;
+      
+      const capability = await storage.approveCapability(id, user?.id || 'unknown');
+      if (!capability) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      res.json(capability);
+    } catch (error) {
+      console.error("Error approving capability:", error);
+      res.status(500).json({ message: "Failed to approve capability" });
+    }
+  });
+
+  app.put("/api/capabilities/:id/reject", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { rejectionReason } = req.body;
+      
+      if (!rejectionReason) {
+        return res.status(400).json({ message: "Rejection reason is required" });
+      }
+      
+      const capability = await storage.rejectCapability(id, rejectionReason);
+      if (!capability) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      res.json(capability);
+    } catch (error) {
+      console.error("Error rejecting capability:", error);
+      res.status(500).json({ message: "Failed to reject capability" });
+    }
+  });
+
+  app.delete("/api/capabilities/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteCapability(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting capability:", error);
+      res.status(500).json({ message: "Failed to delete capability" });
+    }
+  });
+
   return httpServer;
 }

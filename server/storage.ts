@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -35,6 +35,16 @@ export interface IStorage {
   updateMilestone(id: string, data: Partial<InsertMilestone>): Promise<MilestoneRecord | undefined>;
   deleteMilestone(id: string): Promise<boolean>;
   seedMilestones(data: InsertMilestone[]): Promise<void>;
+  
+  getAllCapabilities(): Promise<CapabilityRecord[]>;
+  getCapabilitiesByInitiative(initiativeId: string): Promise<CapabilityRecord[]>;
+  getCapability(id: string): Promise<CapabilityRecord | undefined>;
+  createCapability(data: InsertCapability): Promise<CapabilityRecord>;
+  updateCapability(id: string, data: Partial<InsertCapability>): Promise<CapabilityRecord | undefined>;
+  deleteCapability(id: string): Promise<boolean>;
+  approveCapability(id: string, approvedBy: string): Promise<CapabilityRecord | undefined>;
+  rejectCapability(id: string, rejectionReason: string): Promise<CapabilityRecord | undefined>;
+  getPendingCapabilities(): Promise<CapabilityRecord[]>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -307,6 +317,75 @@ class DatabaseStorage implements IStorage {
           },
         });
     }
+  }
+
+  async getAllCapabilities(): Promise<CapabilityRecord[]> {
+    return await db.select().from(capabilities);
+  }
+
+  async getCapabilitiesByInitiative(initiativeId: string): Promise<CapabilityRecord[]> {
+    return await db.select().from(capabilities).where(eq(capabilities.initiativeId, initiativeId));
+  }
+
+  async getCapability(id: string): Promise<CapabilityRecord | undefined> {
+    const [cap] = await db.select().from(capabilities).where(eq(capabilities.id, id));
+    return cap;
+  }
+
+  async createCapability(data: InsertCapability): Promise<CapabilityRecord> {
+    const [cap] = await db
+      .insert(capabilities)
+      .values(data)
+      .returning();
+    return cap;
+  }
+
+  async updateCapability(id: string, data: Partial<InsertCapability>): Promise<CapabilityRecord | undefined> {
+    const [cap] = await db
+      .update(capabilities)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(capabilities.id, id))
+      .returning();
+    return cap;
+  }
+
+  async deleteCapability(id: string): Promise<boolean> {
+    await db.delete(capabilities).where(eq(capabilities.id, id));
+    return true;
+  }
+
+  async approveCapability(id: string, approvedBy: string): Promise<CapabilityRecord | undefined> {
+    const [cap] = await db
+      .update(capabilities)
+      .set({
+        approvalStatus: 'approved' as CapabilityStatus,
+        approvedBy,
+        approvedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(capabilities.id, id))
+      .returning();
+    return cap;
+  }
+
+  async rejectCapability(id: string, rejectionReason: string): Promise<CapabilityRecord | undefined> {
+    const [cap] = await db
+      .update(capabilities)
+      .set({
+        approvalStatus: 'rejected' as CapabilityStatus,
+        rejectionReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(capabilities.id, id))
+      .returning();
+    return cap;
+  }
+
+  async getPendingCapabilities(): Promise<CapabilityRecord[]> {
+    return await db.select().from(capabilities).where(eq(capabilities.approvalStatus, 'submitted'));
   }
 }
 

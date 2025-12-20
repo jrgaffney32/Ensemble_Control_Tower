@@ -114,3 +114,33 @@ export const insertMilestoneSchema = createInsertSchema(milestones).omit({
 
 export type InsertMilestone = z.infer<typeof insertMilestoneSchema>;
 export type MilestoneRecord = typeof milestones.$inferSelect;
+
+export type CapabilityStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'change_requested';
+export type CapabilityHealthStatus = 'green' | 'yellow' | 'red';
+
+export const capabilities = pgTable("capabilities", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  healthStatus: text("health_status").$type<CapabilityHealthStatus>().notNull().default('green'),
+  approvalStatus: text("approval_status").$type<CapabilityStatus>().notNull().default('draft'),
+  estimatedEffort: integer("estimated_effort").default(0),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  submittedBy: varchar("submitted_by"),
+  submittedAt: timestamp("submitted_at"),
+  approvedBy: varchar("approved_by"),
+  approvedAt: timestamp("approved_at"),
+  rejectionReason: text("rejection_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertCapabilitySchema = createInsertSchema(capabilities).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertCapability = z.infer<typeof insertCapabilitySchema>;
+export type CapabilityRecord = typeof capabilities.$inferSelect;

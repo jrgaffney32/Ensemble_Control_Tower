@@ -1,15 +1,23 @@
 import { useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
-import { Save, Send } from "lucide-react";
+import { Save, Send, Plus, Trash2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { mockIntakeForms, IntakeForm } from "@/lib/formData";
 import { useToast } from "@/hooks/use-toast";
 import { AppLayout } from "@/components/layout/AppLayout";
+
+interface CapabilityInput {
+  id: string;
+  name: string;
+  description: string;
+  estimatedEffort: number;
+}
 
 export default function IntakeFormPage() {
   const [, params] = useRoute("/project/:id/intake");
@@ -42,9 +50,36 @@ export default function IntakeFormPage() {
     status: 'draft'
   });
 
+  const [capabilities, setCapabilities] = useState<CapabilityInput[]>([
+    { id: `cap-${Date.now()}`, name: '', description: '', estimatedEffort: 0 }
+  ]);
+
+  const addCapability = () => {
+    setCapabilities(prev => [...prev, { 
+      id: `cap-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, 
+      name: '', 
+      description: '', 
+      estimatedEffort: 0 
+    }]);
+  };
+
+  const removeCapability = (id: string) => {
+    if (capabilities.length > 1) {
+      setCapabilities(prev => prev.filter(c => c.id !== id));
+    }
+  };
+
+  const updateCapability = (id: string, field: keyof CapabilityInput, value: string | number) => {
+    setCapabilities(prev => prev.map(c => 
+      c.id === id ? { ...c, [field]: value } : c
+    ));
+  };
+
   const updateField = (field: keyof IntakeForm, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
+
+  const hasValidCapability = capabilities.some(c => c.name.trim() !== '');
 
   const handleSave = () => {
     toast({
@@ -54,9 +89,18 @@ export default function IntakeFormPage() {
   };
 
   const handleSubmit = () => {
+    if (!hasValidCapability) {
+      toast({
+        title: "Capability Required",
+        description: "Please add at least one capability for this initiative.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     toast({
       title: "Form Submitted",
-      description: "Your intake form has been submitted for review."
+      description: "Your intake form and capabilities have been submitted for review."
     });
     navigate(`/project/${projectId}`);
   };
@@ -353,6 +397,81 @@ export default function IntakeFormPage() {
                 data-testid="input-scale-target"
               />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className={!hasValidCapability ? 'border-amber-300 bg-amber-50/50' : ''}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CardTitle className="text-base">Capabilities *</CardTitle>
+                <Badge variant="outline" className="text-xs">Required</Badge>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={addCapability} data-testid="button-add-capability">
+                <Plus className="w-4 h-4 mr-1" /> Add Capability
+              </Button>
+            </div>
+            {!hasValidCapability && (
+              <div className="flex items-center gap-2 text-amber-600 text-sm mt-2">
+                <AlertCircle className="w-4 h-4" />
+                <span>At least one capability is required for this initiative</span>
+              </div>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Define the specific outcomes or features this initiative will deliver. Each capability will require approval before implementation.
+            </p>
+            {capabilities.map((cap, index) => (
+              <div key={cap.id} className="p-4 border rounded-lg bg-white space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-muted-foreground">Capability {index + 1}</span>
+                  {capabilities.length > 1 && (
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => removeCapability(cap.id)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      data-testid={`button-remove-capability-${index}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>Capability Name *</Label>
+                    <Input 
+                      placeholder="e.g., Automated Prior Auth Processing"
+                      value={cap.name}
+                      onChange={(e) => updateCapability(cap.id, 'name', e.target.value)}
+                      data-testid={`input-capability-name-${index}`}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Estimated Effort (points)</Label>
+                    <Input 
+                      type="number"
+                      placeholder="0"
+                      value={cap.estimatedEffort || ''}
+                      onChange={(e) => updateCapability(cap.id, 'estimatedEffort', Number(e.target.value))}
+                      data-testid={`input-capability-effort-${index}`}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea 
+                    placeholder="Describe what this capability will deliver..."
+                    rows={2}
+                    value={cap.description}
+                    onChange={(e) => updateCapability(cap.id, 'description', e.target.value)}
+                    data-testid={`input-capability-desc-${index}`}
+                  />
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
