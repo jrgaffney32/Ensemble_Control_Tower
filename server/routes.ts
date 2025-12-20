@@ -763,10 +763,15 @@ export async function registerRoutes(
       const { id } = req.params;
       const user = req.session?.user;
       
-      const capability = await storage.approveCapability(id, user?.id || 'unknown');
-      if (!capability) {
+      const existing = await storage.getCapability(id);
+      if (!existing) {
         return res.status(404).json({ message: "Capability not found" });
       }
+      if (existing.approvalStatus !== 'submitted') {
+        return res.status(400).json({ message: "Only submitted capabilities can be approved" });
+      }
+      
+      const capability = await storage.approveCapability(id, user?.id || 'unknown');
       res.json(capability);
     } catch (error) {
       console.error("Error approving capability:", error);
@@ -783,10 +788,15 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Rejection reason is required" });
       }
       
-      const capability = await storage.rejectCapability(id, rejectionReason);
-      if (!capability) {
+      const existing = await storage.getCapability(id);
+      if (!existing) {
         return res.status(404).json({ message: "Capability not found" });
       }
+      if (existing.approvalStatus !== 'submitted') {
+        return res.status(400).json({ message: "Only submitted capabilities can be rejected" });
+      }
+      
+      const capability = await storage.rejectCapability(id, rejectionReason);
       res.json(capability);
     } catch (error) {
       console.error("Error rejecting capability:", error);
@@ -802,6 +812,52 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting capability:", error);
       res.status(500).json({ message: "Failed to delete capability" });
+    }
+  });
+
+  app.put("/api/capabilities/:id/request-changes", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { changeReason } = req.body;
+      
+      if (!changeReason) {
+        return res.status(400).json({ message: "Change reason is required" });
+      }
+      
+      const existing = await storage.getCapability(id);
+      if (!existing) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      if (existing.approvalStatus !== 'submitted') {
+        return res.status(400).json({ message: "Only submitted capabilities can have changes requested" });
+      }
+      
+      const capability = await storage.requestCapabilityChanges(id, changeReason);
+      res.json(capability);
+    } catch (error) {
+      console.error("Error requesting capability changes:", error);
+      res.status(500).json({ message: "Failed to request capability changes" });
+    }
+  });
+
+  app.put("/api/capabilities/:id/resubmit", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = req.session?.user;
+      
+      const existing = await storage.getCapability(id);
+      if (!existing) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      if (!['rejected', 'change_requested', 'draft'].includes(existing.approvalStatus)) {
+        return res.status(400).json({ message: "Only rejected, change-requested, or draft capabilities can be resubmitted" });
+      }
+      
+      const capability = await storage.resubmitCapability(id, user?.id || 'unknown');
+      res.json(capability);
+    } catch (error) {
+      console.error("Error resubmitting capability:", error);
+      res.status(500).json({ message: "Failed to resubmit capability" });
     }
   });
 

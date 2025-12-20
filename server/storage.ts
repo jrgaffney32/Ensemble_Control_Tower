@@ -387,6 +387,34 @@ class DatabaseStorage implements IStorage {
   async getPendingCapabilities(): Promise<CapabilityRecord[]> {
     return await db.select().from(capabilities).where(eq(capabilities.approvalStatus, 'submitted'));
   }
+
+  async requestCapabilityChanges(id: string, changeReason: string): Promise<CapabilityRecord | undefined> {
+    const [cap] = await db
+      .update(capabilities)
+      .set({
+        approvalStatus: 'change_requested' as CapabilityStatus,
+        rejectionReason: changeReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(capabilities.id, id))
+      .returning();
+    return cap;
+  }
+
+  async resubmitCapability(id: string, submittedBy: string): Promise<CapabilityRecord | undefined> {
+    const [cap] = await db
+      .update(capabilities)
+      .set({
+        approvalStatus: 'submitted' as CapabilityStatus,
+        submittedBy,
+        submittedAt: new Date(),
+        rejectionReason: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(capabilities.id, id))
+      .returning();
+    return cap;
+  }
 }
 
 export const storage = new DatabaseStorage();
