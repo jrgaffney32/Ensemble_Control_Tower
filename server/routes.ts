@@ -861,5 +861,233 @@ export async function registerRoutes(
     }
   });
 
+  // Request CRUD and approval routes
+  app.get("/api/requests", isSessionAuthenticated, async (req, res) => {
+    try {
+      const allRequests = await storage.getAllRequests();
+      res.json(allRequests);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+      res.status(500).json({ message: "Failed to fetch requests" });
+    }
+  });
+
+  app.get("/api/requests/pending", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const pending = await storage.getPendingRequests();
+      res.json(pending);
+    } catch (error) {
+      console.error("Error fetching pending requests:", error);
+      res.status(500).json({ message: "Failed to fetch pending requests" });
+    }
+  });
+
+  app.post("/api/requests", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { initiativeId, type, title, description, requestedAmount, justification } = req.body;
+      const id = `req-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const user = req.session?.user;
+      
+      const request = await storage.createRequest({
+        id,
+        initiativeId,
+        type,
+        title: String(title),
+        description: description || null,
+        requestedAmount: requestedAmount || null,
+        justification: justification || null,
+        status: 'submitted',
+        submittedBy: user?.id || null,
+        submittedAt: new Date(),
+      });
+      res.json(request);
+    } catch (error) {
+      console.error("Error creating request:", error);
+      res.status(500).json({ message: "Failed to create request" });
+    }
+  });
+
+  app.put("/api/requests/:id/approve", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = req.session?.user;
+      
+      const existing = await storage.getRequest(id);
+      if (!existing) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+      if (existing.status !== 'submitted') {
+        return res.status(400).json({ message: "Only submitted requests can be approved" });
+      }
+      
+      const request = await storage.approveRequest(id, user?.id || 'unknown');
+      res.json(request);
+    } catch (error) {
+      console.error("Error approving request:", error);
+      res.status(500).json({ message: "Failed to approve request" });
+    }
+  });
+
+  app.put("/api/requests/:id/reject", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { rejectionReason } = req.body;
+      
+      if (!rejectionReason) {
+        return res.status(400).json({ message: "Rejection reason is required" });
+      }
+      
+      const existing = await storage.getRequest(id);
+      if (!existing) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+      if (existing.status !== 'submitted') {
+        return res.status(400).json({ message: "Only submitted requests can be rejected" });
+      }
+      
+      const request = await storage.rejectRequest(id, rejectionReason);
+      res.json(request);
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+      res.status(500).json({ message: "Failed to reject request" });
+    }
+  });
+
+  // Issue CRUD and resolution routes
+  app.get("/api/issues", isSessionAuthenticated, async (req, res) => {
+    try {
+      const allIssues = await storage.getAllIssues();
+      res.json(allIssues);
+    } catch (error) {
+      console.error("Error fetching issues:", error);
+      res.status(500).json({ message: "Failed to fetch issues" });
+    }
+  });
+
+  app.get("/api/issues/open", isSessionAuthenticated, async (req, res) => {
+    try {
+      const openIssues = await storage.getOpenIssues();
+      res.json(openIssues);
+    } catch (error) {
+      console.error("Error fetching open issues:", error);
+      res.status(500).json({ message: "Failed to fetch open issues" });
+    }
+  });
+
+  app.post("/api/issues", isSessionAuthenticated, requireAppRole('control_tower', 'sto'), async (req, res) => {
+    try {
+      const { initiativeId, title, description, severity } = req.body;
+      const id = `iss-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const user = req.session?.user;
+      
+      const issue = await storage.createIssue({
+        id,
+        initiativeId,
+        title: String(title),
+        description: description || null,
+        severity: severity || 'medium',
+        status: 'open',
+        reportedBy: user?.id || null,
+        reportedAt: new Date(),
+      });
+      res.json(issue);
+    } catch (error) {
+      console.error("Error creating issue:", error);
+      res.status(500).json({ message: "Failed to create issue" });
+    }
+  });
+
+  app.put("/api/issues/:id/resolve", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { resolution } = req.body;
+      const user = req.session?.user;
+      
+      if (!resolution) {
+        return res.status(400).json({ message: "Resolution is required" });
+      }
+      
+      const issue = await storage.resolveIssue(id, user?.id || 'unknown', resolution);
+      if (!issue) {
+        return res.status(404).json({ message: "Issue not found" });
+      }
+      res.json(issue);
+    } catch (error) {
+      console.error("Error resolving issue:", error);
+      res.status(500).json({ message: "Failed to resolve issue" });
+    }
+  });
+
+  // Gate form approval routes
+  app.get("/api/gate-forms/pending", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const pending = await storage.getPendingGateForms();
+      res.json(pending);
+    } catch (error) {
+      console.error("Error fetching pending gate forms:", error);
+      res.status(500).json({ message: "Failed to fetch pending gate forms" });
+    }
+  });
+
+  app.put("/api/gate-forms/:id/approve", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = req.session?.user;
+      
+      const form = await storage.approveGateForm(id, user?.id || 'unknown');
+      if (!form) {
+        return res.status(404).json({ message: "Gate form not found" });
+      }
+      res.json(form);
+    } catch (error) {
+      console.error("Error approving gate form:", error);
+      res.status(500).json({ message: "Failed to approve gate form" });
+    }
+  });
+
+  app.put("/api/gate-forms/:id/reject", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
+      const user = req.session?.user;
+      
+      if (!reason) {
+        return res.status(400).json({ message: "Rejection reason is required" });
+      }
+      
+      const form = await storage.rejectGateForm(id, reason, user?.id || 'unknown');
+      if (!form) {
+        return res.status(404).json({ message: "Gate form not found" });
+      }
+      res.json(form);
+    } catch (error) {
+      console.error("Error rejecting gate form:", error);
+      res.status(500).json({ message: "Failed to reject gate form" });
+    }
+  });
+
+  // Summary endpoint for pending counts
+  app.get("/api/review/pending-counts", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const [capabilities, reqs, gateForms, issuesList] = await Promise.all([
+        storage.getPendingCapabilities(),
+        storage.getPendingRequests(),
+        storage.getPendingGateForms(),
+        storage.getOpenIssues(),
+      ]);
+      
+      res.json({
+        capabilities: capabilities.length,
+        requests: reqs.length,
+        gateForms: gateForms.length,
+        issues: issuesList.length,
+        total: capabilities.length + reqs.length + gateForms.length + issuesList.length,
+      });
+    } catch (error) {
+      console.error("Error fetching pending counts:", error);
+      res.status(500).json({ message: "Failed to fetch pending counts" });
+    }
+  });
+
   return httpServer;
 }
