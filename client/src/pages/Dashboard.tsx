@@ -26,6 +26,7 @@ groupedInitiatives.forEach((init, idx) => {
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedStreams, setExpandedStreams] = useState<Record<string, boolean>>({});
+  const [expandedCapabilities, setExpandedCapabilities] = useState<Record<string, boolean>>({});
   
   const toggleStream = useCallback((stream: string) => {
     setExpandedStreams(prev => {
@@ -33,6 +34,15 @@ export default function Dashboard() {
       newState[stream] = !prev[stream];
       return newState;
     });
+  }, []);
+
+  const toggleCapabilities = useCallback((initId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpandedCapabilities(prev => ({
+      ...prev,
+      [initId]: !prev[initId]
+    }));
   }, []);
 
   const stats = useMemo(() => {
@@ -327,13 +337,20 @@ export default function Dashboard() {
                                   </div>
                                   {init.capabilities.length > 0 && (
                                     <div className="flex flex-wrap gap-1 mt-1">
-                                      {init.capabilities.slice(0, 3).map((cap, idx) => (
+                                      {(expandedCapabilities[init.ids[0]] ? init.capabilities : init.capabilities.slice(0, 3)).map((cap, idx) => (
                                         <span key={idx} className="text-[10px] px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded">
                                           {cap.name}
                                         </span>
                                       ))}
                                       {init.capabilities.length > 3 && (
-                                        <span className="text-[10px] text-slate-400">+{init.capabilities.length - 3} more</span>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => toggleCapabilities(init.ids[0], e)}
+                                          className="text-[10px] text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+                                          data-testid={`button-toggle-capabilities-${init.ids[0]}`}
+                                        >
+                                          {expandedCapabilities[init.ids[0]] ? 'show less' : `+${init.capabilities.length - 3} more`}
+                                        </button>
                                       )}
                                     </div>
                                   )}
