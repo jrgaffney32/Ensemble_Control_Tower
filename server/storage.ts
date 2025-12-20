@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, requests, issues, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -45,6 +45,27 @@ export interface IStorage {
   approveCapability(id: string, approvedBy: string): Promise<CapabilityRecord | undefined>;
   rejectCapability(id: string, rejectionReason: string): Promise<CapabilityRecord | undefined>;
   getPendingCapabilities(): Promise<CapabilityRecord[]>;
+  
+  getAllRequests(): Promise<RequestRecord[]>;
+  getRequest(id: string): Promise<RequestRecord | undefined>;
+  createRequest(data: InsertRequest): Promise<RequestRecord>;
+  updateRequest(id: string, data: Partial<InsertRequest>): Promise<RequestRecord | undefined>;
+  deleteRequest(id: string): Promise<boolean>;
+  getPendingRequests(): Promise<RequestRecord[]>;
+  approveRequest(id: string, approvedBy: string): Promise<RequestRecord | undefined>;
+  rejectRequest(id: string, rejectionReason: string): Promise<RequestRecord | undefined>;
+  
+  getAllIssues(): Promise<IssueRecord[]>;
+  getIssue(id: string): Promise<IssueRecord | undefined>;
+  createIssue(data: InsertIssue): Promise<IssueRecord>;
+  updateIssue(id: string, data: Partial<InsertIssue>): Promise<IssueRecord | undefined>;
+  deleteIssue(id: string): Promise<boolean>;
+  getOpenIssues(): Promise<IssueRecord[]>;
+  resolveIssue(id: string, resolvedBy: string, resolution: string): Promise<IssueRecord | undefined>;
+  
+  getPendingGateForms(): Promise<GateFormRecord[]>;
+  approveGateForm(id: string, approvedBy: string): Promise<GateFormRecord | undefined>;
+  rejectGateForm(id: string, reason: string, rejectedBy: string): Promise<GateFormRecord | undefined>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -414,6 +435,145 @@ class DatabaseStorage implements IStorage {
       .where(eq(capabilities.id, id))
       .returning();
     return cap;
+  }
+
+  async getAllRequests(): Promise<RequestRecord[]> {
+    return await db.select().from(requests);
+  }
+
+  async getRequest(id: string): Promise<RequestRecord | undefined> {
+    const [req] = await db.select().from(requests).where(eq(requests.id, id));
+    return req;
+  }
+
+  async createRequest(data: InsertRequest): Promise<RequestRecord> {
+    const [req] = await db.insert(requests).values(data).returning();
+    return req;
+  }
+
+  async updateRequest(id: string, data: Partial<InsertRequest>): Promise<RequestRecord | undefined> {
+    const [req] = await db
+      .update(requests)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(requests.id, id))
+      .returning();
+    return req;
+  }
+
+  async deleteRequest(id: string): Promise<boolean> {
+    await db.delete(requests).where(eq(requests.id, id));
+    return true;
+  }
+
+  async getPendingRequests(): Promise<RequestRecord[]> {
+    return await db.select().from(requests).where(eq(requests.status, 'submitted'));
+  }
+
+  async approveRequest(id: string, approvedBy: string): Promise<RequestRecord | undefined> {
+    const [req] = await db
+      .update(requests)
+      .set({
+        status: 'approved' as RequestStatus,
+        approvedBy,
+        approvedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(requests.id, id))
+      .returning();
+    return req;
+  }
+
+  async rejectRequest(id: string, rejectionReason: string): Promise<RequestRecord | undefined> {
+    const [req] = await db
+      .update(requests)
+      .set({
+        status: 'rejected' as RequestStatus,
+        rejectionReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(requests.id, id))
+      .returning();
+    return req;
+  }
+
+  async getAllIssues(): Promise<IssueRecord[]> {
+    return await db.select().from(issues);
+  }
+
+  async getIssue(id: string): Promise<IssueRecord | undefined> {
+    const [issue] = await db.select().from(issues).where(eq(issues.id, id));
+    return issue;
+  }
+
+  async createIssue(data: InsertIssue): Promise<IssueRecord> {
+    const [issue] = await db.insert(issues).values(data).returning();
+    return issue;
+  }
+
+  async updateIssue(id: string, data: Partial<InsertIssue>): Promise<IssueRecord | undefined> {
+    const [issue] = await db
+      .update(issues)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(issues.id, id))
+      .returning();
+    return issue;
+  }
+
+  async deleteIssue(id: string): Promise<boolean> {
+    await db.delete(issues).where(eq(issues.id, id));
+    return true;
+  }
+
+  async getOpenIssues(): Promise<IssueRecord[]> {
+    return await db.select().from(issues).where(eq(issues.status, 'open'));
+  }
+
+  async resolveIssue(id: string, resolvedBy: string, resolution: string): Promise<IssueRecord | undefined> {
+    const [issue] = await db
+      .update(issues)
+      .set({
+        status: 'resolved' as IssueStatus,
+        resolvedBy,
+        resolvedAt: new Date(),
+        resolution,
+        updatedAt: new Date(),
+      })
+      .where(eq(issues.id, id))
+      .returning();
+    return issue;
+  }
+
+  async getPendingGateForms(): Promise<GateFormRecord[]> {
+    return await db.select().from(gateForms).where(eq(gateForms.status, 'submitted'));
+  }
+
+  async approveGateForm(id: string, approvedBy: string): Promise<GateFormRecord | undefined> {
+    const [form] = await db
+      .update(gateForms)
+      .set({
+        status: 'approved' as FormStatus,
+        approvedBy,
+        approvedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(gateForms.id, id))
+      .returning();
+    return form;
+  }
+
+  async rejectGateForm(id: string, reason: string, rejectedBy: string): Promise<GateFormRecord | undefined> {
+    const [form] = await db
+      .update(gateForms)
+      .set({
+        status: 'change_requested' as FormStatus,
+        changeRequestReason: reason,
+        changeRequestedBy: rejectedBy,
+        changeRequestedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(gateForms.id, id))
+      .returning();
+    return form;
   }
 }
 

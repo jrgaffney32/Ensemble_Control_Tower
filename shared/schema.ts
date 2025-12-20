@@ -144,3 +144,60 @@ export const insertCapabilitySchema = createInsertSchema(capabilities).omit({
 
 export type InsertCapability = z.infer<typeof insertCapabilitySchema>;
 export type CapabilityRecord = typeof capabilities.$inferSelect;
+
+export type RequestType = 'budget' | 'capacity' | 'resource' | 'timeline';
+export type RequestStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'change_requested';
+
+export const requests = pgTable("requests", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  type: text("type").$type<RequestType>().notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  requestedAmount: real("requested_amount"),
+  justification: text("justification"),
+  status: text("status").$type<RequestStatus>().notNull().default('draft'),
+  submittedBy: varchar("submitted_by"),
+  submittedAt: timestamp("submitted_at"),
+  approvedBy: varchar("approved_by"),
+  approvedAt: timestamp("approved_at"),
+  rejectionReason: text("rejection_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertRequestSchema = createInsertSchema(requests).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertRequest = z.infer<typeof insertRequestSchema>;
+export type RequestRecord = typeof requests.$inferSelect;
+
+export type IssueSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type IssueStatus = 'open' | 'in_review' | 'resolved' | 'escalated' | 'closed';
+
+export const issues = pgTable("issues", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  severity: text("severity").$type<IssueSeverity>().notNull().default('medium'),
+  status: text("status").$type<IssueStatus>().notNull().default('open'),
+  reportedBy: varchar("reported_by"),
+  reportedAt: timestamp("reported_at"),
+  assignedTo: varchar("assigned_to"),
+  resolvedBy: varchar("resolved_by"),
+  resolvedAt: timestamp("resolved_at"),
+  resolution: text("resolution"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertIssueSchema = createInsertSchema(issues).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertIssue = z.infer<typeof insertIssueSchema>;
+export type IssueRecord = typeof issues.$inferSelect;
