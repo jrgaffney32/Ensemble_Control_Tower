@@ -115,8 +115,8 @@ export default function Dashboard() {
             </div>
 
             {/* New Tiles */}
-            <Link href="/issues">
-              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors">
+            <Link href="/review-center">
+              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors" data-testid="tile-escalated-issues">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Escalated Issues</p>
                   <Badge variant="outline" className="text-[10px] border-slate-300 text-slate-500">Illustrative</Badge>
@@ -128,8 +128,8 @@ export default function Dashboard() {
                 </div>
               </div>
             </Link>
-            <Link href="/requests">
-              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors">
+            <Link href="/review-center">
+              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors" data-testid="tile-pending-approvals">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Pending Approvals</p>
                   <Badge variant="outline" className="text-[10px] border-slate-300 text-slate-500">Illustrative</Badge>
@@ -141,22 +141,26 @@ export default function Dashboard() {
                 </div>
               </div>
             </Link>
-            <div className="bg-white p-4 rounded-lg border border-slate-200">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Intake Forms</p>
-              <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
-              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-                <FileText className="w-3 h-3" />
-                <span>No forms submitted</span>
+            <Link href="/review-center">
+              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors" data-testid="tile-intake-forms">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Intake Forms</p>
+                <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
+                <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+                  <FileText className="w-3 h-3" />
+                  <span>No forms submitted</span>
+                </div>
               </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg border border-slate-200">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Stage Gates</p>
-              <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
-              <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-                <GitPullRequest className="w-3 h-3" />
-                <span>No gates pending</span>
+            </Link>
+            <Link href="/review-center">
+              <div className="bg-white p-4 rounded-lg border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors" data-testid="tile-stage-gates">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Stage Gates</p>
+                <p className="text-2xl font-bold text-slate-400 font-mono">-</p>
+                <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+                  <GitPullRequest className="w-3 h-3" />
+                  <span>No gates pending</span>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Value Stream Summary */}
