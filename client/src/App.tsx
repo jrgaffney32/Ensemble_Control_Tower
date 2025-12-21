@@ -28,6 +28,7 @@ import MasterGridPage from "@/pages/MasterGridPage";
 import MilestoneGridPage from "@/pages/MilestoneGridPage";
 import ReviewCenterPage from "@/pages/ReviewCenterPage";
 import ImportPage from "@/pages/ImportPage";
+import FinancialsPage from "@/pages/FinancialsPage";
 
 function AuthenticatedRoutes() {
   return (
@@ -43,6 +44,7 @@ function AuthenticatedRoutes() {
       <Route path="/pod-velocity" component={PodVelocity} />
       <Route path="/pod-performance" component={PodPerformance} />
       <Route path="/cost-centers" component={CostCenterBreakout} />
+      <Route path="/financials" component={FinancialsPage} />
       <Route path="/requests" component={ProjectRequests} />
       <Route path="/issues" component={Issues} />
       <Route path="/budget" component={BudgetRequests} />

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, TrendingUp, FileText, AlertCircle, ListOrdered, LogOut, Shield, Users, Building2, Grid3X3, Target, Home, Bell, Filter, Search, BarChart3, FolderOpen, Upload } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, TrendingUp, FileText, AlertCircle, ListOrdered, LogOut, Shield, Users, Building2, Grid3X3, Target, Home, Bell, Filter, Search, BarChart3, FolderOpen, Upload, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { path: "/roadmap", label: "Roadmap", icon: Calendar },
   { path: "/priorities", label: "Value Stream Priorities", icon: ListOrdered },
   { path: "/cost-centers", label: "Cost Center Breakout", icon: Building2 },
+  { path: "/financials", label: "Cost & Benefit Financials", icon: DollarSign },
   { path: "/pod-velocity", label: "Pod Velocity & Quality", icon: TrendingUp },
   { path: "/demand-capacity", label: "Demand vs. Capacity", icon: BarChart3 },
   { path: "/pod-performance", label: "Pod Performance", icon: BarChart3 },
