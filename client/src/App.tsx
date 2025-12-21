@@ -27,6 +27,7 @@ import UserManagement from "@/pages/UserManagement";
 import MasterGridPage from "@/pages/MasterGridPage";
 import MilestoneGridPage from "@/pages/MilestoneGridPage";
 import ReviewCenterPage from "@/pages/ReviewCenterPage";
+import ImportPage from "@/pages/ImportPage";
 
 function AuthenticatedRoutes() {
   return (
@@ -50,6 +51,7 @@ function AuthenticatedRoutes() {
       <Route path="/admin/master-grid" component={MasterGridPage} />
       <Route path="/admin/milestone-grid" component={MilestoneGridPage} />
       <Route path="/review-center" component={ReviewCenterPage} />
+      <Route path="/admin/import" component={ImportPage} />
       <Route component={NotFound} />
     </Switch>
   );

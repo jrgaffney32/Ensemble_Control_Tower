@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, PieChart, Calendar, TrendingUp, FileText, AlertCircle, ListOrdered, LogOut, Shield, Users, Building2, Grid3X3, Target, Home, Bell, Filter, Search, BarChart3, FolderOpen } from "lucide-react";
+import { LayoutDashboard, PieChart, Calendar, TrendingUp, FileText, AlertCircle, ListOrdered, LogOut, Shield, Users, Building2, Grid3X3, Target, Home, Bell, Filter, Search, BarChart3, FolderOpen, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,7 @@ const ADMIN_NAV_ITEMS = [
   { path: "/review-center", label: "Review Center", icon: Bell },
   { path: "/admin/master-grid", label: "Master Grid", icon: Grid3X3 },
   { path: "/admin/milestone-grid", label: "Milestone Grid", icon: Target },
+  { path: "/admin/import", label: "Import Metrics", icon: Upload },
   { path: "/admin", label: "Admin Panel", icon: Shield },
   { path: "/admin/users", label: "User Management", icon: Users },
 ];
