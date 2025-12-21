@@ -26,6 +26,7 @@ import AdminPanel from "@/pages/AdminPanel";
 import UserManagement from "@/pages/UserManagement";
 import MasterGridPage from "@/pages/MasterGridPage";
 import MilestoneGridPage from "@/pages/MilestoneGridPage";
+import ReviewCenterPage from "@/pages/ReviewCenterPage";
 
 function AuthenticatedRoutes() {
   return (
@@ -48,6 +49,7 @@ function AuthenticatedRoutes() {
       <Route path="/admin/users" component={UserManagement} />
       <Route path="/admin/master-grid" component={MasterGridPage} />
       <Route path="/admin/milestone-grid" component={MilestoneGridPage} />
+      <Route path="/review-center" component={ReviewCenterPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -31,6 +31,7 @@ const NAV_ITEMS = [
 ];
 
 const ADMIN_NAV_ITEMS = [
+  { path: "/review-center", label: "Review Center", icon: Bell },
   { path: "/admin/master-grid", label: "Master Grid", icon: Grid3X3 },
   { path: "/admin/milestone-grid", label: "Milestone Grid", icon: Target },
   { path: "/admin", label: "Admin Panel", icon: Shield },
