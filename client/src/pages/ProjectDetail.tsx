@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRoute, Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, Upload, FileUp, MessageSquare, DollarSign, Target, TrendingUp, Lock, Edit2, ExternalLink, Calendar } from "lucide-react";
+import { FileText, AlertCircle, ChevronRight, CheckCircle2, Circle, Clock, Upload, FileUp, MessageSquare, DollarSign, Target, TrendingUp, Lock, Edit2, ExternalLink, Calendar, MessageCircle, XCircle, HelpCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,302 @@ interface GateFormData {
   initiativeId: string;
   gate: string;
   status: FormStatus;
+}
+
+interface RequestRecord {
+  id: string;
+  initiativeId: string;
+  type: string;
+  title: string;
+  description?: string;
+  requestedAmount?: number;
+  justification?: string;
+  status: string;
+  submittedAt?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+}
+
+interface IssueRecord {
+  id: string;
+  initiativeId: string;
+  title: string;
+  description?: string;
+  severity: string;
+  status: string;
+  reportedAt?: string;
+  resolvedBy?: string;
+  resolvedAt?: string;
+  resolution?: string;
+}
+
+interface GateFormFeedback {
+  id: string;
+  initiativeId: string;
+  gate: string;
+  status: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  changeRequestReason?: string;
+  changeRequestedBy?: string;
+  changeRequestedAt?: string;
+}
+
+interface CapabilityFeedback {
+  id: string;
+  initiativeId: string;
+  name: string;
+  approvalStatus: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+}
+
+function ControlTowerFeedback({ projectId }: { projectId: string }) {
+  const { data: requests = [] } = useQuery<RequestRecord[]>({
+    queryKey: ['/api/requests'],
+  });
+
+  const { data: issues = [] } = useQuery<IssueRecord[]>({
+    queryKey: ['/api/issues'],
+  });
+
+  const { data: gateForms = [] } = useQuery<GateFormFeedback[]>({
+    queryKey: ['/api/initiatives', projectId, 'forms'],
+    queryFn: async () => {
+      const res = await fetch(`/api/initiatives/${projectId}/forms`, { credentials: 'include' });
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const { data: capabilities = [] } = useQuery<CapabilityFeedback[]>({
+    queryKey: ['/api/initiatives', projectId, 'capabilities'],
+    queryFn: async () => {
+      const res = await fetch(`/api/initiatives/${projectId}/capabilities`, { credentials: 'include' });
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const projectRequests = requests.filter(r => r.initiativeId === projectId);
+  const projectIssues = issues.filter(i => i.initiativeId === projectId);
+  const reviewedGateForms = gateForms.filter(f => f.status === 'approved' || f.status === 'change_requested');
+  const reviewedCapabilities = capabilities.filter(c => c.approvalStatus === 'approved' || c.approvalStatus === 'rejected' || c.approvalStatus === 'change_requested');
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+      case 'rejected':
+      case 'change_requested':
+        return <XCircle className="w-4 h-4 text-red-600" />;
+      case 'resolved':
+      case 'closed':
+        return <CheckCircle2 className="w-4 h-4 text-blue-600" />;
+      case 'submitted':
+      case 'in_review':
+        return <Clock className="w-4 h-4 text-amber-600" />;
+      default:
+        return <HelpCircle className="w-4 h-4 text-slate-400" />;
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <Badge className="bg-green-500 text-xs">Approved</Badge>;
+      case 'rejected':
+        return <Badge variant="destructive" className="text-xs">Rejected</Badge>;
+      case 'change_requested':
+        return <Badge className="bg-amber-500 text-xs">Changes Requested</Badge>;
+      case 'resolved':
+        return <Badge className="bg-blue-500 text-xs">Resolved</Badge>;
+      case 'closed':
+        return <Badge variant="secondary" className="text-xs">Closed</Badge>;
+      default:
+        return <Badge variant="outline" className="text-xs">{status}</Badge>;
+    }
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const hasFeedback = projectRequests.length > 0 || projectIssues.length > 0 || reviewedGateForms.length > 0 || reviewedCapabilities.length > 0;
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <MessageCircle className="w-4 h-4" />
+            Control Tower Feedback
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {!hasFeedback ? (
+            <p className="text-muted-foreground text-sm">No Control Tower feedback yet for this initiative.</p>
+          ) : (
+            <div className="space-y-6">
+              {reviewedCapabilities.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <Target className="w-4 h-4" />
+                    Capability Reviews
+                  </h4>
+                  <div className="space-y-3">
+                    {reviewedCapabilities.map(cap => (
+                      <div key={cap.id} className="p-4 bg-slate-50 rounded-lg border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(cap.approvalStatus)}
+                            <span className="font-medium">{cap.name}</span>
+                          </div>
+                          {getStatusBadge(cap.approvalStatus)}
+                        </div>
+                        {cap.rejectionReason && (
+                          <div className="mt-3 p-3 bg-red-50 rounded border border-red-100">
+                            <p className="text-xs font-semibold text-red-700 mb-1">Feedback:</p>
+                            <p className="text-sm text-red-600">{cap.rejectionReason}</p>
+                          </div>
+                        )}
+                        {cap.approvedAt && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {cap.approvalStatus === 'approved' ? 'Approved' : 'Reviewed'} on {formatDate(cap.approvedAt)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {reviewedGateForms.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Gate Form Reviews
+                  </h4>
+                  <div className="space-y-3">
+                    {reviewedGateForms.map(form => (
+                      <div key={form.id} className="p-4 bg-slate-50 rounded-lg border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(form.status)}
+                            <span className="font-medium">{form.gate} Gate Form</span>
+                          </div>
+                          {getStatusBadge(form.status)}
+                        </div>
+                        {form.changeRequestReason && (
+                          <div className="mt-3 p-3 bg-amber-50 rounded border border-amber-100">
+                            <p className="text-xs font-semibold text-amber-700 mb-1">Change Request:</p>
+                            <p className="text-sm text-amber-600">{form.changeRequestReason}</p>
+                          </div>
+                        )}
+                        {form.approvedAt && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Approved on {formatDate(form.approvedAt)}
+                          </p>
+                        )}
+                        {form.changeRequestedAt && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Changes requested on {formatDate(form.changeRequestedAt)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {projectRequests.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <DollarSign className="w-4 h-4" />
+                    Request Responses
+                  </h4>
+                  <div className="space-y-3">
+                    {projectRequests.map(req => (
+                      <div key={req.id} className="p-4 bg-slate-50 rounded-lg border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(req.status)}
+                            <div>
+                              <span className="font-medium">{req.title}</span>
+                              <Badge variant="outline" className="ml-2 text-xs">{req.type}</Badge>
+                            </div>
+                          </div>
+                          {getStatusBadge(req.status)}
+                        </div>
+                        {req.description && (
+                          <p className="text-sm text-muted-foreground mt-2">{req.description}</p>
+                        )}
+                        {req.rejectionReason && (
+                          <div className="mt-3 p-3 bg-red-50 rounded border border-red-100">
+                            <p className="text-xs font-semibold text-red-700 mb-1">Rejection Reason:</p>
+                            <p className="text-sm text-red-600">{req.rejectionReason}</p>
+                          </div>
+                        )}
+                        {req.approvedAt && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {req.status === 'approved' ? 'Approved' : 'Reviewed'} on {formatDate(req.approvedAt)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {projectIssues.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Issue Responses
+                  </h4>
+                  <div className="space-y-3">
+                    {projectIssues.map(issue => (
+                      <div key={issue.id} className="p-4 bg-slate-50 rounded-lg border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(issue.status)}
+                            <div>
+                              <span className="font-medium">{issue.title}</span>
+                              <Badge variant={issue.severity === 'critical' ? 'destructive' : issue.severity === 'high' ? 'secondary' : 'outline'} className="ml-2 text-xs">
+                                {issue.severity}
+                              </Badge>
+                            </div>
+                          </div>
+                          {getStatusBadge(issue.status)}
+                        </div>
+                        {issue.description && (
+                          <p className="text-sm text-muted-foreground mt-2">{issue.description}</p>
+                        )}
+                        {issue.resolution && (
+                          <div className="mt-3 p-3 bg-blue-50 rounded border border-blue-100">
+                            <p className="text-xs font-semibold text-blue-700 mb-1">Resolution:</p>
+                            <p className="text-sm text-blue-600">{issue.resolution}</p>
+                          </div>
+                        )}
+                        {issue.resolvedAt && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Resolved on {formatDate(issue.resolvedAt)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 function FormsTabContent({ projectId, canEdit }: { projectId: string; canEdit: boolean }) {
@@ -388,6 +684,7 @@ export default function ProjectDetail() {
             <TabsTrigger value="forms">Forms</TabsTrigger>
             <TabsTrigger value="issues">Issues</TabsTrigger>
             <TabsTrigger value="requests">Requests</TabsTrigger>
+            <TabsTrigger value="feedback">CT Feedback</TabsTrigger>
             <TabsTrigger value="activity">Activity</TabsTrigger>
           </TabsList>
 
@@ -575,6 +872,10 @@ export default function ProjectDetail() {
                 <p className="text-muted-foreground text-sm">No pending requests</p>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="feedback">
+            <ControlTowerFeedback projectId={projectId} />
           </TabsContent>
 
           <TabsContent value="activity">
