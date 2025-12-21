@@ -201,3 +201,71 @@ export const insertIssueSchema = createInsertSchema(issues).omit({
 
 export type InsertIssue = z.infer<typeof insertIssueSchema>;
 export type IssueRecord = typeof issues.$inferSelect;
+
+// FTE Snapshots - tracks FTE allocation per initiative over time
+export const fteSnapshots = pgTable("fte_snapshots", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  snapshotDate: timestamp("snapshot_date").notNull(),
+  fteCommitted: real("fte_committed").notNull().default(0),
+  fteActual: real("fte_actual").notNull().default(0),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertFteSnapshotSchema = createInsertSchema(fteSnapshots).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertFteSnapshot = z.infer<typeof insertFteSnapshotSchema>;
+export type FteSnapshotRecord = typeof fteSnapshots.$inferSelect;
+
+// Initiative KPIs - tracks key performance indicators per initiative
+export type KpiStatus = 'green' | 'yellow' | 'red' | 'offtrack';
+
+export const initiativeKpis = pgTable("initiative_kpis", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  kpiKey: text("kpi_key").notNull(),
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  targetValue: real("target_value").notNull().default(0),
+  actualValue: real("actual_value").notNull().default(0),
+  status: text("status").$type<KpiStatus>().notNull().default('green'),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertInitiativeKpiSchema = createInsertSchema(initiativeKpis).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertInitiativeKpi = z.infer<typeof insertInitiativeKpiSchema>;
+export type InitiativeKpiRecord = typeof initiativeKpis.$inferSelect;
+
+// Pod Performance - tracks pod metrics per initiative
+export const podPerformance = pgTable("pod_performance", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  podName: text("pod_name").notNull(),
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  velocity: real("velocity").notNull().default(0),
+  qualityScore: real("quality_score").notNull().default(0),
+  backlogHealth: real("backlog_health").notNull().default(0),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPodPerformanceSchema = createInsertSchema(podPerformance).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertPodPerformance = z.infer<typeof insertPodPerformanceSchema>;
+export type PodPerformanceRecord = typeof podPerformance.$inferSelect;
