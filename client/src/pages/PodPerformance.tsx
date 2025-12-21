@@ -60,6 +60,44 @@ const cycleTimeData = [
   { stage: 'Deployment', time: 0.3 },
 ];
 
+const scorecardMetrics = {
+  delivery: [
+    { name: 'Planned to Done (Original Commitment)', value: '87%', target: '90%', status: 'yellow' },
+    { name: 'Planned to Done (Including Adds)', value: '92%', target: '85%', status: 'green' },
+    { name: 'Scope Churn (Peak)', value: '18%', target: '<20%', status: 'green' },
+    { name: 'Scope Churn (End)', value: '12%', target: '<15%', status: 'green' },
+    { name: 'Release Burndown Shape', value: 'End-loaded', target: 'Linear', status: 'yellow' },
+    { name: 'Feature Cycle Time', value: '40-90h typical', target: '<72h', status: 'yellow' },
+    { name: 'Team Velocity (Story Points)', value: '40.3 avg - 14.3 σ', target: 'Stable', status: 'green' },
+  ],
+  engineering: [
+    { name: 'PR Time to Merge', value: '4.2h', target: '<8h', status: 'green' },
+    { name: 'Coding Days per Week', value: '3.8', target: '>4', status: 'yellow' },
+    { name: 'Work Mix – Rework Share', value: '15%', target: '<20%', status: 'green' },
+    { name: 'Defect Density', value: '0.8/KLOC', target: '<1.0', status: 'green' },
+    { name: 'Backlog Aging – Open Defects >90d', value: '3', target: '0', status: 'red' },
+    { name: 'Copilot Acceptance Rate (by count)', value: '34%', target: '>30%', status: 'green' },
+    { name: 'Copilot Acceptance Rate (by lines)', value: '28%', target: '>25%', status: 'green' },
+  ],
+  operations: [
+    { name: 'Failed Requests (30d)', value: '0.02%', target: '<0.1%', status: 'green' },
+    { name: 'Server Response Time (avg)', value: '145ms', target: '<200ms', status: 'green' },
+    { name: 'Availability', value: '99.95%', target: '>99.9%', status: 'green' },
+  ],
+  dora: [
+    { name: 'Deployment Frequency', value: '8/week', target: 'Daily', status: 'green' },
+    { name: 'Lead Time for Changes', value: '2.2 days', target: '<1 week', status: 'green' },
+    { name: 'Change Failure Rate', value: '4%', target: '<15%', status: 'green' },
+    { name: 'Mean Time to Restore', value: '48 min', target: '<1 hour', status: 'green' },
+  ],
+  space: [
+    { name: 'Quality of Interaction', value: '-', target: 'TBD', status: 'neutral' },
+    { name: 'Code Ownership', value: '-', target: 'TBD', status: 'neutral' },
+    { name: 'Context Switching', value: '-', target: 'TBD', status: 'neutral' },
+    { name: 'WIP Limits', value: '-', target: 'TBD', status: 'neutral' },
+  ],
+};
+
 export default function PodPerformance() {
   const [selectedPod, setSelectedPod] = useState('patient-access');
   const [timeRange, setTimeRange] = useState('6w');
@@ -198,14 +236,137 @@ export default function PodPerformance() {
           </Card>
         </div>
 
-        <Tabs defaultValue="velocity" className="space-y-4">
+        <Tabs defaultValue="scorecard" className="space-y-4">
           <TabsList>
+            <TabsTrigger value="scorecard">Scorecard</TabsTrigger>
             <TabsTrigger value="velocity">Velocity</TabsTrigger>
             <TabsTrigger value="dora">DORA Metrics</TabsTrigger>
             <TabsTrigger value="quality">Code Quality</TabsTrigger>
             <TabsTrigger value="flow">Flow Metrics</TabsTrigger>
             <TabsTrigger value="health">Team Health</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="scorecard" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Target className="w-4 h-4" />
+                    Delivery Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {scorecardMetrics.delivery.map((metric, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <span className="text-sm">{metric.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium">{metric.value}</span>
+                          <Badge variant={metric.status === 'green' ? 'default' : metric.status === 'yellow' ? 'secondary' : 'destructive'} className={`text-xs ${metric.status === 'green' ? 'bg-green-500' : metric.status === 'yellow' ? 'bg-amber-500 text-white' : ''}`}>
+                            {metric.target}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <GitPullRequest className="w-4 h-4" />
+                    Engineering Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {scorecardMetrics.engineering.map((metric, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <span className="text-sm">{metric.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium">{metric.value}</span>
+                          <Badge variant={metric.status === 'green' ? 'default' : metric.status === 'yellow' ? 'secondary' : 'destructive'} className={`text-xs ${metric.status === 'green' ? 'bg-green-500' : metric.status === 'yellow' ? 'bg-amber-500 text-white' : ''}`}>
+                            {metric.target}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Gauge className="w-4 h-4" />
+                    Operations Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {scorecardMetrics.operations.map((metric, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <span className="text-sm">{metric.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium">{metric.value}</span>
+                          <Badge variant="default" className="text-xs bg-green-500">
+                            {metric.target}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Zap className="w-4 h-4" />
+                    DORA Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {scorecardMetrics.dora.map((metric, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2 border-b last:border-0">
+                        <span className="text-sm">{metric.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium">{metric.value}</span>
+                          <Badge variant="default" className="text-xs bg-green-500">
+                            {metric.target}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="lg:col-span-2">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    SPACE Metrics
+                    <Badge variant="outline" className="ml-2 text-xs">Coming Soon</Badge>
+                  </CardTitle>
+                  <CardDescription>Developer experience and productivity metrics</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {scorecardMetrics.space.map((metric, idx) => (
+                      <div key={idx} className="p-4 bg-slate-50 rounded-lg text-center">
+                        <p className="text-sm font-medium text-slate-600">{metric.name}</p>
+                        <p className="text-xl font-bold mt-1 text-slate-400">{metric.value}</p>
+                        <p className="text-xs text-slate-400 mt-1">Target: {metric.target}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
           <TabsContent value="velocity" className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
