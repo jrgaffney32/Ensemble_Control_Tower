@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, requests, issues, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, requests, issues, fteSnapshots, initiativeKpis, podPerformance, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus, type FteSnapshotRecord, type InsertFteSnapshot, type InitiativeKpiRecord, type InsertInitiativeKpi, type PodPerformanceRecord, type InsertPodPerformance } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -66,6 +66,13 @@ export interface IStorage {
   getPendingGateForms(): Promise<GateFormRecord[]>;
   approveGateForm(id: string, approvedBy: string): Promise<GateFormRecord | undefined>;
   rejectGateForm(id: string, reason: string, rejectedBy: string): Promise<GateFormRecord | undefined>;
+  
+  bulkUpsertFteSnapshots(data: InsertFteSnapshot[]): Promise<number>;
+  bulkUpsertKpis(data: InsertInitiativeKpi[]): Promise<number>;
+  bulkUpsertPodPerformance(data: InsertPodPerformance[]): Promise<number>;
+  getFteSnapshotsByInitiative(initiativeId: string): Promise<FteSnapshotRecord[]>;
+  getKpisByInitiative(initiativeId: string): Promise<InitiativeKpiRecord[]>;
+  getPodPerformanceByInitiative(initiativeId: string): Promise<PodPerformanceRecord[]>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -574,6 +581,83 @@ class DatabaseStorage implements IStorage {
       .where(eq(gateForms.id, id))
       .returning();
     return form;
+  }
+
+  async bulkUpsertFteSnapshots(data: InsertFteSnapshot[]): Promise<number> {
+    if (data.length === 0) return 0;
+    let count = 0;
+    for (const item of data) {
+      await db
+        .insert(fteSnapshots)
+        .values(item)
+        .onConflictDoUpdate({
+          target: fteSnapshots.id,
+          set: {
+            fteCommitted: item.fteCommitted,
+            fteActual: item.fteActual,
+            notes: item.notes,
+            updatedAt: new Date(),
+          },
+        });
+      count++;
+    }
+    return count;
+  }
+
+  async bulkUpsertKpis(data: InsertInitiativeKpi[]): Promise<number> {
+    if (data.length === 0) return 0;
+    let count = 0;
+    for (const item of data) {
+      await db
+        .insert(initiativeKpis)
+        .values(item)
+        .onConflictDoUpdate({
+          target: initiativeKpis.id,
+          set: {
+            targetValue: item.targetValue,
+            actualValue: item.actualValue,
+            status: item.status,
+            notes: item.notes,
+            updatedAt: new Date(),
+          },
+        });
+      count++;
+    }
+    return count;
+  }
+
+  async bulkUpsertPodPerformance(data: InsertPodPerformance[]): Promise<number> {
+    if (data.length === 0) return 0;
+    let count = 0;
+    for (const item of data) {
+      await db
+        .insert(podPerformance)
+        .values(item)
+        .onConflictDoUpdate({
+          target: podPerformance.id,
+          set: {
+            velocity: item.velocity,
+            qualityScore: item.qualityScore,
+            backlogHealth: item.backlogHealth,
+            notes: item.notes,
+            updatedAt: new Date(),
+          },
+        });
+      count++;
+    }
+    return count;
+  }
+
+  async getFteSnapshotsByInitiative(initiativeId: string): Promise<FteSnapshotRecord[]> {
+    return await db.select().from(fteSnapshots).where(eq(fteSnapshots.initiativeId, initiativeId));
+  }
+
+  async getKpisByInitiative(initiativeId: string): Promise<InitiativeKpiRecord[]> {
+    return await db.select().from(initiativeKpis).where(eq(initiativeKpis.initiativeId, initiativeId));
+  }
+
+  async getPodPerformanceByInitiative(initiativeId: string): Promise<PodPerformanceRecord[]> {
+    return await db.select().from(podPerformance).where(eq(podPerformance.initiativeId, initiativeId));
   }
 }
 
