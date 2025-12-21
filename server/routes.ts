@@ -1,9 +1,11 @@
 import type { Express, RequestHandler } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import type { AppUserRole } from "@shared/schema";
+import type { AppUserRole, KpiStatus } from "@shared/schema";
 import { registerUserSchema, loginUserSchema } from "@shared/schema";
 import bcrypt from "bcryptjs";
+import multer from "multer";
+import * as XLSX from "xlsx";
 
 const MASTER_PASSWORD = "ENSB101$$";
 
@@ -286,6 +288,234 @@ export async function registerRoutes(
       console.error("Error fetching pending users:", error);
       res.status(500).json({ message: "Failed to fetch pending users" });
     }
+  });
+
+  // Excel import for FTE, KPIs, and Pod Performance
+  const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          file.mimetype === 'application/vnd.ms-excel') {
+        cb(null, true);
+      } else {
+        cb(new Error('Only Excel files are allowed'));
+      }
+    }
+  });
+
+  app.post("/api/admin/import-metrics", isSessionAuthenticated, requireAppRole('control_tower'), upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      const results = {
+        fte: { processed: 0, errors: [] as string[] },
+        kpis: { processed: 0, errors: [] as string[] },
+        podPerformance: { processed: 0, errors: [] as string[] },
+      };
+
+      // Get all initiative IDs for validation
+      const allInitiatives = await storage.getAllInitiatives();
+      const initiativeIds = new Set(allInitiatives.map(i => i.id));
+
+      // Process FTE sheet
+      if (workbook.SheetNames.includes('FTE')) {
+        const sheet = workbook.Sheets['FTE'];
+        const data = XLSX.utils.sheet_to_json(sheet) as any[];
+        const fteData = [];
+        
+        for (let i = 0; i < data.length; i++) {
+          const row = data[i];
+          const initiativeId = String(row['InitiativeID'] || row['initiativeId'] || '');
+          
+          if (!initiativeId) {
+            results.fte.errors.push(`Row ${i + 2}: Missing InitiativeID`);
+            continue;
+          }
+          
+          if (!initiativeIds.has(initiativeId)) {
+            results.fte.errors.push(`Row ${i + 2}: Initiative ${initiativeId} not found`);
+            continue;
+          }
+
+          const snapshotDate = row['SnapshotDate'] || row['snapshotDate'];
+          let parsedDate: Date;
+          if (typeof snapshotDate === 'number') {
+            parsedDate = new Date((snapshotDate - 25569) * 86400 * 1000);
+          } else if (snapshotDate) {
+            parsedDate = new Date(snapshotDate);
+          } else {
+            parsedDate = new Date();
+          }
+
+          fteData.push({
+            id: `fte-${initiativeId}-${parsedDate.toISOString().split('T')[0]}`,
+            initiativeId,
+            snapshotDate: parsedDate,
+            fteCommitted: Number(row['FTECommitted'] || row['fteCommitted'] || 0),
+            fteActual: Number(row['FTEActual'] || row['fteActual'] || 0),
+            notes: String(row['Notes'] || row['notes'] || ''),
+          });
+        }
+        
+        if (fteData.length > 0) {
+          results.fte.processed = await storage.bulkUpsertFteSnapshots(fteData);
+        }
+      }
+
+      // Process KPIs sheet
+      if (workbook.SheetNames.includes('KPIs')) {
+        const sheet = workbook.Sheets['KPIs'];
+        const data = XLSX.utils.sheet_to_json(sheet) as any[];
+        const kpiData = [];
+        
+        for (let i = 0; i < data.length; i++) {
+          const row = data[i];
+          const initiativeId = String(row['InitiativeID'] || row['initiativeId'] || '');
+          
+          if (!initiativeId) {
+            results.kpis.errors.push(`Row ${i + 2}: Missing InitiativeID`);
+            continue;
+          }
+          
+          if (!initiativeIds.has(initiativeId)) {
+            results.kpis.errors.push(`Row ${i + 2}: Initiative ${initiativeId} not found`);
+            continue;
+          }
+
+          const kpiKey = String(row['KPIKey'] || row['kpiKey'] || '');
+          if (!kpiKey) {
+            results.kpis.errors.push(`Row ${i + 2}: Missing KPIKey`);
+            continue;
+          }
+
+          const parseExcelDate = (val: any): Date => {
+            if (typeof val === 'number') {
+              return new Date((val - 25569) * 86400 * 1000);
+            }
+            return val ? new Date(val) : new Date();
+          };
+
+          const periodStart = parseExcelDate(row['PeriodStart'] || row['periodStart']);
+          const periodEnd = parseExcelDate(row['PeriodEnd'] || row['periodEnd']);
+          
+          const statusRaw = String(row['Status'] || row['status'] || 'green').toLowerCase();
+          const validStatuses: KpiStatus[] = ['green', 'yellow', 'red', 'offtrack'];
+          const status = validStatuses.includes(statusRaw as KpiStatus) ? statusRaw as KpiStatus : 'green';
+
+          kpiData.push({
+            id: `kpi-${initiativeId}-${kpiKey}-${periodStart.toISOString().split('T')[0]}`,
+            initiativeId,
+            kpiKey,
+            periodStart,
+            periodEnd,
+            targetValue: Number(row['TargetValue'] || row['targetValue'] || 0),
+            actualValue: Number(row['ActualValue'] || row['actualValue'] || 0),
+            status,
+            notes: String(row['Notes'] || row['notes'] || ''),
+          });
+        }
+        
+        if (kpiData.length > 0) {
+          results.kpis.processed = await storage.bulkUpsertKpis(kpiData);
+        }
+      }
+
+      // Process PodPerformance sheet
+      if (workbook.SheetNames.includes('PodPerformance')) {
+        const sheet = workbook.Sheets['PodPerformance'];
+        const data = XLSX.utils.sheet_to_json(sheet) as any[];
+        const podData = [];
+        
+        for (let i = 0; i < data.length; i++) {
+          const row = data[i];
+          const initiativeId = String(row['InitiativeID'] || row['initiativeId'] || '');
+          
+          if (!initiativeId) {
+            results.podPerformance.errors.push(`Row ${i + 2}: Missing InitiativeID`);
+            continue;
+          }
+          
+          if (!initiativeIds.has(initiativeId)) {
+            results.podPerformance.errors.push(`Row ${i + 2}: Initiative ${initiativeId} not found`);
+            continue;
+          }
+
+          const podName = String(row['PodName'] || row['podName'] || '');
+          if (!podName) {
+            results.podPerformance.errors.push(`Row ${i + 2}: Missing PodName`);
+            continue;
+          }
+
+          const parseExcelDate = (val: any): Date => {
+            if (typeof val === 'number') {
+              return new Date((val - 25569) * 86400 * 1000);
+            }
+            return val ? new Date(val) : new Date();
+          };
+
+          const periodStart = parseExcelDate(row['PeriodStart'] || row['periodStart']);
+          const periodEnd = parseExcelDate(row['PeriodEnd'] || row['periodEnd']);
+
+          podData.push({
+            id: `pod-${initiativeId}-${podName}-${periodStart.toISOString().split('T')[0]}`,
+            initiativeId,
+            podName,
+            periodStart,
+            periodEnd,
+            velocity: Number(row['Velocity'] || row['velocity'] || 0),
+            qualityScore: Number(row['QualityScore'] || row['qualityScore'] || 0),
+            backlogHealth: Number(row['BacklogHealth'] || row['backlogHealth'] || 0),
+            notes: String(row['Notes'] || row['notes'] || ''),
+          });
+        }
+        
+        if (podData.length > 0) {
+          results.podPerformance.processed = await storage.bulkUpsertPodPerformance(podData);
+        }
+      }
+
+      const totalProcessed = results.fte.processed + results.kpis.processed + results.podPerformance.processed;
+      const totalErrors = results.fte.errors.length + results.kpis.errors.length + results.podPerformance.errors.length;
+
+      res.json({
+        success: true,
+        message: `Imported ${totalProcessed} records${totalErrors > 0 ? ` with ${totalErrors} errors` : ''}`,
+        results,
+      });
+    } catch (error) {
+      console.error("Error importing metrics:", error);
+      res.status(500).json({ message: "Failed to import metrics" });
+    }
+  });
+
+  // Download import template
+  app.get("/api/admin/import-template", isSessionAuthenticated, requireAppRole('control_tower'), (req, res) => {
+    const workbook = XLSX.utils.book_new();
+    
+    // FTE sheet
+    const fteHeaders = [['InitiativeID', 'SnapshotDate', 'FTECommitted', 'FTEActual', 'Notes']];
+    const fteSheet = XLSX.utils.aoa_to_sheet(fteHeaders);
+    XLSX.utils.book_append_sheet(workbook, fteSheet, 'FTE');
+    
+    // KPIs sheet
+    const kpiHeaders = [['InitiativeID', 'KPIKey', 'PeriodStart', 'PeriodEnd', 'TargetValue', 'ActualValue', 'Status', 'Notes']];
+    const kpiSheet = XLSX.utils.aoa_to_sheet(kpiHeaders);
+    XLSX.utils.book_append_sheet(workbook, kpiSheet, 'KPIs');
+    
+    // PodPerformance sheet
+    const podHeaders = [['InitiativeID', 'PodName', 'PeriodStart', 'PeriodEnd', 'Velocity', 'QualityScore', 'BacklogHealth', 'Notes']];
+    const podSheet = XLSX.utils.aoa_to_sheet(podHeaders);
+    XLSX.utils.book_append_sheet(workbook, podSheet, 'PodPerformance');
+    
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    
+    res.setHeader('Content-Disposition', 'attachment; filename=import-template.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(buffer);
   });
 
   app.get("/api/initiatives/:initiativeId/status", isSessionAuthenticated, async (req, res) => {
