@@ -119,6 +119,10 @@ export default function DemandCapacity() {
     <AppLayout title="Demand vs. Capacity">
       <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
         
+        <div className="flex justify-end">
+          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="bg-white p-4 rounded-xl border shadow-sm">
             <div className="flex items-center gap-2 mb-2">

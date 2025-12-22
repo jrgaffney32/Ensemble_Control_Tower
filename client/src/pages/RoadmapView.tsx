@@ -166,6 +166,10 @@ export default function RoadmapView() {
     <AppLayout title="Roadmap" headerActions={headerActions}>
       <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
         
+        <div className="flex justify-end">
+          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+        </div>
+        
         <div className="flex items-center gap-6 bg-white p-4 rounded-xl border shadow-sm">
           <span className="text-sm font-semibold text-muted-foreground">Legend:</span>
           <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /><span className="text-sm">Shipped</span></div>

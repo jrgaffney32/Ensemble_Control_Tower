@@ -111,6 +111,9 @@ export default function FinancialsPage() {
   return (
     <AppLayout title="Cost & Benefit Financials" subtitle="Consolidated view of all initiative and capability financials">
       <div className="space-y-6">
+        <div className="flex justify-end">
+          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="pt-4">

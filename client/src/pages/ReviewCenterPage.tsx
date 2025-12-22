@@ -199,9 +199,12 @@ export default function ReviewCenterPage() {
             <h1 className="text-2xl font-bold font-heading">Review Center</h1>
             <p className="text-sm text-muted-foreground">Review and approve pending items across all initiatives</p>
           </div>
-          <Badge variant="outline" className="text-lg px-4 py-2">
-            {counts.total} Pending Items
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+            <Badge variant="outline" className="text-lg px-4 py-2">
+              {counts.total} Pending Items
+            </Badge>
+          </div>
         </div>
 
         <div className="grid grid-cols-4 gap-4">

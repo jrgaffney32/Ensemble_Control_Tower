@@ -107,6 +107,10 @@ export default function ValueStreamPriorities() {
     <AppLayout title="Value Stream Priorities">
       <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
         
+        <div className="flex justify-end">
+          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+        </div>
+        
         <div className="grid grid-cols-6 gap-4">
           {(['Shipped', 'Now', 'Next', 'Later', 'New', 'Kill'] as PriorityCategory[]).map(cat => {
             const count = groupedInitiatives.filter(i => i.priorityCategory === cat).length;

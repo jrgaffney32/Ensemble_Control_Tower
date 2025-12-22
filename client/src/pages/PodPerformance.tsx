@@ -165,9 +165,12 @@ export default function PodPerformance() {
               {pods.find(p => p.id === selectedPod)?.members} team members
             </p>
           </div>
-          <Badge className="bg-green-500 text-sm px-3 py-1">
-            DORA Score: High Performer
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+            <Badge className="bg-green-500 text-sm px-3 py-1">
+              DORA Score: High Performer
+            </Badge>
+          </div>
         </div>
 
         <div className="grid grid-cols-4 gap-4">

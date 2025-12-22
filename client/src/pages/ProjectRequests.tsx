@@ -146,6 +146,10 @@ export default function ProjectRequests() {
     <AppLayout title="Project Requests">
       <div className="p-8 space-y-6 bg-slate-50/50 min-h-[calc(100vh-64px)]">
         
+        <div className="flex justify-end">
+          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">Illustrative Data</Badge>
+        </div>
+        
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'projects' | 'priorities')} className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="projects" className="gap-2">
