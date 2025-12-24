@@ -269,3 +269,42 @@ export const insertPodPerformanceSchema = createInsertSchema(podPerformance).omi
 
 export type InsertPodPerformance = z.infer<typeof insertPodPerformanceSchema>;
 export type PodPerformanceRecord = typeof podPerformance.$inferSelect;
+
+// Inquiries - Control Tower sends inquiries to STO leaders
+export type InquiryStatus = 'open' | 'pending' | 'closed';
+
+export const inquiries = pgTable("inquiries", {
+  id: varchar("id").primaryKey(),
+  initiativeId: varchar("initiative_id").notNull(),
+  fromUserId: varchar("from_user_id").notNull(),
+  toUserId: varchar("to_user_id"),
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").$type<InquiryStatus>().notNull().default('open'),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertInquirySchema = createInsertSchema(inquiries).omit({
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertInquiry = z.infer<typeof insertInquirySchema>;
+export type InquiryRecord = typeof inquiries.$inferSelect;
+
+// Inquiry Responses - STO leaders respond to inquiries
+export const inquiryResponses = pgTable("inquiry_responses", {
+  id: varchar("id").primaryKey(),
+  inquiryId: varchar("inquiry_id").notNull(),
+  fromUserId: varchar("from_user_id").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertInquiryResponseSchema = createInsertSchema(inquiryResponses).omit({
+  createdAt: true,
+});
+
+export type InsertInquiryResponse = z.infer<typeof insertInquiryResponseSchema>;
+export type InquiryResponseRecord = typeof inquiryResponses.$inferSelect;

@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, requests, issues, fteSnapshots, initiativeKpis, podPerformance, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus, type FteSnapshotRecord, type InsertFteSnapshot, type InitiativeKpiRecord, type InsertInitiativeKpi, type PodPerformanceRecord, type InsertPodPerformance } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, requests, issues, fteSnapshots, initiativeKpis, podPerformance, inquiries, inquiryResponses, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus, type FteSnapshotRecord, type InsertFteSnapshot, type InitiativeKpiRecord, type InsertInitiativeKpi, type PodPerformanceRecord, type InsertPodPerformance, type InquiryRecord, type InsertInquiry, type InquiryStatus, type InquiryResponseRecord, type InsertInquiryResponse } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -74,6 +74,18 @@ export interface IStorage {
   getFteSnapshotsByInitiative(initiativeId: string): Promise<FteSnapshotRecord[]>;
   getKpisByInitiative(initiativeId: string): Promise<InitiativeKpiRecord[]>;
   getPodPerformanceByInitiative(initiativeId: string): Promise<PodPerformanceRecord[]>;
+  
+  // Inquiries
+  getAllInquiries(): Promise<InquiryRecord[]>;
+  getOpenInquiries(): Promise<InquiryRecord[]>;
+  getInquiry(id: string): Promise<InquiryRecord | undefined>;
+  getInquiriesByInitiative(initiativeId: string): Promise<InquiryRecord[]>;
+  createInquiry(data: InsertInquiry): Promise<InquiryRecord>;
+  updateInquiryStatus(id: string, status: InquiryStatus): Promise<InquiryRecord | undefined>;
+  
+  // Inquiry Responses
+  getResponsesByInquiry(inquiryId: string): Promise<InquiryResponseRecord[]>;
+  createInquiryResponse(data: InsertInquiryResponse): Promise<InquiryResponseRecord>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -664,6 +676,52 @@ class DatabaseStorage implements IStorage {
 
   async getPodPerformanceByInitiative(initiativeId: string): Promise<PodPerformanceRecord[]> {
     return await db.select().from(podPerformance).where(eq(podPerformance.initiativeId, initiativeId));
+  }
+
+  // Inquiries
+  async getAllInquiries(): Promise<InquiryRecord[]> {
+    return await db.select().from(inquiries);
+  }
+
+  async getOpenInquiries(): Promise<InquiryRecord[]> {
+    return await db.select().from(inquiries).where(
+      sql`${inquiries.status} != 'closed'`
+    );
+  }
+
+  async getInquiry(id: string): Promise<InquiryRecord | undefined> {
+    const [inquiry] = await db.select().from(inquiries).where(eq(inquiries.id, id));
+    return inquiry;
+  }
+
+  async getInquiriesByInitiative(initiativeId: string): Promise<InquiryRecord[]> {
+    return await db.select().from(inquiries).where(eq(inquiries.initiativeId, initiativeId));
+  }
+
+  async createInquiry(data: InsertInquiry): Promise<InquiryRecord> {
+    const [inquiry] = await db.insert(inquiries).values(data).returning();
+    return inquiry;
+  }
+
+  async updateInquiryStatus(id: string, status: InquiryStatus): Promise<InquiryRecord | undefined> {
+    const [inquiry] = await db
+      .update(inquiries)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(inquiries.id, id))
+      .returning();
+    return inquiry;
+  }
+
+  // Inquiry Responses
+  async getResponsesByInquiry(inquiryId: string): Promise<InquiryResponseRecord[]> {
+    return await db.select().from(inquiryResponses).where(eq(inquiryResponses.inquiryId, inquiryId));
+  }
+
+  async createInquiryResponse(data: InsertInquiryResponse): Promise<InquiryResponseRecord> {
+    const [response] = await db.insert(inquiryResponses).values(data).returning();
+    // Update inquiry status to pending when a response is added
+    await db.update(inquiries).set({ status: 'pending', updatedAt: new Date() }).where(eq(inquiries.id, data.inquiryId));
+    return response;
   }
 }
 
