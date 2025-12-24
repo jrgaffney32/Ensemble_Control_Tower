@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Users, UserCheck, Clock } from "lucide-react";
+import { Users, UserCheck, Clock, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type User = {
   id: string;
@@ -22,6 +23,7 @@ type User = {
 export default function UserManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [deleteDialog, setDeleteDialog] = useState<User | null>(null);
 
   const { data: users = [], isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
@@ -29,6 +31,36 @@ export default function UserManagement() {
 
   const { data: pendingUsers = [] } = useQuery<User[]>({
     queryKey: ["/api/admin/pending-users"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to delete user");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-users"] });
+      toast({
+        title: "User Deleted",
+        description: "User has been removed from the system",
+      });
+      setDeleteDialog(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete user",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateRoleMutation = useMutation({
@@ -226,19 +258,30 @@ export default function UserManagement() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Select
-                              value={user.role || undefined}
-                              onValueChange={(value) => updateRoleMutation.mutate({ userId: user.id, role: value })}
-                            >
-                              <SelectTrigger className="w-48" data-testid={`select-role-${user.id}`}>
-                                <SelectValue placeholder="Change role..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="control_tower">Control Tower Admin</SelectItem>
-                                <SelectItem value="sto">STO Contributor</SelectItem>
-                                <SelectItem value="slt">SLT View-Only</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <div className="flex items-center gap-2">
+                              <Select
+                                value={user.role || undefined}
+                                onValueChange={(value) => updateRoleMutation.mutate({ userId: user.id, role: value })}
+                              >
+                                <SelectTrigger className="w-40" data-testid={`select-role-${user.id}`}>
+                                  <SelectValue placeholder="Change role..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="control_tower">Control Tower Admin</SelectItem>
+                                  <SelectItem value="sto">STO Contributor</SelectItem>
+                                  <SelectItem value="slt">SLT View-Only</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => setDeleteDialog(user)}
+                                data-testid={`btn-delete-${user.id}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -250,6 +293,29 @@ export default function UserManagement() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      <Dialog open={!!deleteDialog} onOpenChange={(open) => !open && setDeleteDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {deleteDialog?.firstName || deleteDialog?.email}? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialog(null)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => deleteDialog && deleteMutation.mutate(deleteDialog.id)}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete User"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
