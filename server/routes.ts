@@ -1452,6 +1452,12 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Message is required" });
       }
       
+      // Verify the inquiry exists
+      const inquiry = await storage.getInquiry(req.params.inquiryId);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
       const id = `resp-${Date.now()}`;
       const response = await storage.createInquiryResponse({
         id,
@@ -1463,6 +1469,36 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error creating inquiry response:", error);
       res.status(500).json({ message: "Failed to create inquiry response" });
+    }
+  });
+
+  // Allow STO contributors to close inquiries addressed to them
+  app.put("/api/inquiries/:id/close", isSessionAuthenticated, async (req, res) => {
+    try {
+      const inquiry = await storage.getInquiry(req.params.id);
+      if (!inquiry) {
+        return res.status(404).json({ message: "Inquiry not found" });
+      }
+      
+      const user = await storage.getUserById(req.session.userId!);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      // Control Tower can always close, STO can close inquiries addressed to them
+      const canClose = user.role === 'control_tower' || 
+                       inquiry.toUserId === user.id ||
+                       inquiry.fromUserId === user.id;
+      
+      if (!canClose) {
+        return res.status(403).json({ message: "Not authorized to close this inquiry" });
+      }
+      
+      const updated = await storage.updateInquiryStatus(req.params.id, 'closed');
+      res.json(updated);
+    } catch (error) {
+      console.error("Error closing inquiry:", error);
+      res.status(500).json({ message: "Failed to close inquiry" });
     }
   });
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, X, MessageSquare, AlertTriangle, FileText, GitPullRequest, ClipboardList, Loader2 } from "lucide-react";
+import { Check, X, MessageSquare, AlertTriangle, FileText, GitPullRequest, ClipboardList, Loader2, Send, Mail, MailOpen, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { apiRequest } from "@/lib/queryClient";
@@ -59,6 +62,34 @@ type IssueRecord = {
   reportedAt: string | null;
 };
 
+type InquiryRecord = {
+  id: string;
+  initiativeId: string;
+  fromUserId: string;
+  toUserId: string | null;
+  subject: string;
+  message: string;
+  status: 'open' | 'pending' | 'closed';
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+type InquiryResponseRecord = {
+  id: string;
+  inquiryId: string;
+  fromUserId: string;
+  message: string;
+  createdAt: string | null;
+};
+
+type UserRecord = {
+  id: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  role: string | null;
+};
+
 function getInitiativeName(initiativeId: string): string {
   const init = groupedInitiatives.find(i => i.ids.includes(initiativeId));
   return init?.name || initiativeId;
@@ -72,8 +103,12 @@ export default function ReviewCenterPage() {
   const [rejectReason, setRejectReason] = useState("");
   const [resolveDialog, setResolveDialog] = useState<{ id: string; title: string } | null>(null);
   const [resolution, setResolution] = useState("");
+  const [inquiryDialog, setInquiryDialog] = useState(false);
+  const [newInquiry, setNewInquiry] = useState({ initiativeId: "", toUserId: "", subject: "", message: "" });
+  const [selectedInquiry, setSelectedInquiry] = useState<InquiryRecord | null>(null);
+  const [responseMessage, setResponseMessage] = useState("");
 
-  const { data: pendingCounts } = useQuery<{ capabilities: number; requests: number; gateForms: number; issues: number; total: number }>({
+  const { data: pendingCounts } = useQuery<{ capabilities: number; requests: number; gateForms: number; issues: number; inquiries: number; total: number }>({
     queryKey: ["/api/review/pending-counts"],
   });
 
@@ -91,6 +126,55 @@ export default function ReviewCenterPage() {
 
   const { data: issues = [], isLoading: loadingIssues } = useQuery<IssueRecord[]>({
     queryKey: ["/api/issues/open"],
+  });
+
+  const { data: allInquiries = [], isLoading: loadingInquiries } = useQuery<InquiryRecord[]>({
+    queryKey: ["/api/inquiries"],
+  });
+
+  const { data: users = [] } = useQuery<UserRecord[]>({
+    queryKey: ["/api/users"],
+  });
+
+  const { data: inquiryResponses = [] } = useQuery<InquiryResponseRecord[]>({
+    queryKey: ["/api/inquiries", selectedInquiry?.id, "responses"],
+    queryFn: async () => {
+      if (!selectedInquiry) return [];
+      const res = await fetch(`/api/inquiries/${selectedInquiry.id}/responses`, { credentials: 'include' });
+      return res.json();
+    },
+    enabled: !!selectedInquiry,
+  });
+
+  const createInquiryMutation = useMutation({
+    mutationFn: async (data: { initiativeId: string; toUserId?: string; subject: string; message: string }) => {
+      await apiRequest("POST", "/api/inquiries", data);
+    },
+    onSuccess: () => {
+      toast({ title: "Inquiry Sent", description: "Your inquiry has been sent." });
+      setInquiryDialog(false);
+      setNewInquiry({ initiativeId: "", toUserId: "", subject: "", message: "" });
+      queryClient.invalidateQueries({ queryKey: ["/api/inquiries"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/review/pending-counts"] });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to send inquiry.", variant: "destructive" });
+    },
+  });
+
+  const updateInquiryStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      await apiRequest("PUT", `/api/inquiries/${id}/status`, { status });
+    },
+    onSuccess: () => {
+      toast({ title: "Updated", description: "Inquiry status updated." });
+      queryClient.invalidateQueries({ queryKey: ["/api/inquiries"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/review/pending-counts"] });
+      setSelectedInquiry(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to update status.", variant: "destructive" });
+    },
   });
 
   const approveMutation = useMutation({
@@ -189,7 +273,33 @@ export default function ReviewCenterPage() {
     resolveMutation.mutate({ id: resolveDialog.id, resolution });
   };
 
-  const counts = pendingCounts || { capabilities: 0, requests: 0, gateForms: 0, issues: 0, total: 0 };
+  const counts = pendingCounts || { capabilities: 0, requests: 0, gateForms: 0, issues: 0, inquiries: 0, total: 0 };
+  const openInquiries = allInquiries.filter(i => i.status !== 'closed');
+  
+  const getUserName = (userId: string | null) => {
+    if (!userId) return "Unassigned";
+    const user = users.find(u => u.id === userId);
+    if (!user) return userId;
+    return user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email;
+  };
+
+  const getInquiryStatusIcon = (status: string) => {
+    switch (status) {
+      case 'open': return <MailOpen className="w-4 h-4 text-blue-600" />;
+      case 'pending': return <Mail className="w-4 h-4 text-amber-600" />;
+      case 'closed': return <MailCheck className="w-4 h-4 text-green-600" />;
+      default: return <Mail className="w-4 h-4" />;
+    }
+  };
+
+  const getInquiryStatusBadge = (status: string) => {
+    switch (status) {
+      case 'open': return <Badge variant="default" className="bg-blue-100 text-blue-700 hover:bg-blue-100">Open</Badge>;
+      case 'pending': return <Badge variant="default" className="bg-amber-100 text-amber-700 hover:bg-amber-100">Pending Response</Badge>;
+      case 'closed': return <Badge variant="secondary">Closed</Badge>;
+      default: return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
 
   return (
     <AppLayout title="Review Center">
@@ -207,7 +317,7 @@ export default function ReviewCenterPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           <Card className="cursor-pointer hover:border-blue-300 transition-colors" onClick={() => setActiveTab("capabilities")}>
             <CardContent className="pt-4">
               <div className="flex items-center justify-between">
@@ -252,6 +362,17 @@ export default function ReviewCenterPage() {
               </div>
             </CardContent>
           </Card>
+          <Card className="cursor-pointer hover:border-teal-300 transition-colors" onClick={() => setActiveTab("inquiries")}>
+            <CardContent className="pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-teal-600" />
+                  <span className="font-medium">Inquiries</span>
+                </div>
+                <Badge variant={openInquiries.length > 0 ? "default" : "secondary"}>{openInquiries.length}</Badge>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -260,6 +381,7 @@ export default function ReviewCenterPage() {
             <TabsTrigger value="requests">Requests ({counts.requests})</TabsTrigger>
             <TabsTrigger value="gateForms">Gate Changes ({counts.gateForms})</TabsTrigger>
             <TabsTrigger value="issues">Issues ({counts.issues})</TabsTrigger>
+            <TabsTrigger value="inquiries">Inquiries ({openInquiries.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="capabilities" className="mt-4">
@@ -476,6 +598,73 @@ export default function ReviewCenterPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="inquiries" className="mt-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-base">Inquiries to STO Leaders</CardTitle>
+                <Button onClick={() => setInquiryDialog(true)} data-testid="button-new-inquiry">
+                  <Send className="w-4 h-4 mr-2" /> New Inquiry
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {loadingInquiries ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                ) : allInquiries.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No inquiries yet</p>
+                ) : (
+                  <div className="space-y-3">
+                    {allInquiries.map((inquiry) => (
+                      <div
+                        key={inquiry.id}
+                        className="flex items-center justify-between p-4 border rounded-lg bg-white cursor-pointer hover:border-teal-200"
+                        onClick={() => setSelectedInquiry(inquiry)}
+                        data-testid={`inquiry-row-${inquiry.id}`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            {getInquiryStatusIcon(inquiry.status)}
+                            <span className="font-medium">{inquiry.subject}</span>
+                          </div>
+                          <div className="text-sm text-muted-foreground">{getInitiativeName(inquiry.initiativeId)}</div>
+                          <div className="text-sm text-slate-600 mt-1 line-clamp-1">{inquiry.message}</div>
+                          <div className="flex gap-2 mt-2 items-center">
+                            {getInquiryStatusBadge(inquiry.status)}
+                            <span className="text-xs text-muted-foreground">
+                              To: {getUserName(inquiry.toUserId)}
+                            </span>
+                            {inquiry.createdAt && (
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(inquiry.createdAt).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          {inquiry.status !== 'closed' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-green-600 hover:bg-green-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateInquiryStatusMutation.mutate({ id: inquiry.id, status: 'closed' });
+                              }}
+                              data-testid={`button-close-inquiry-${inquiry.id}`}
+                            >
+                              <MailCheck className="w-4 h-4 mr-1" /> Close
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
         <Dialog open={!!rejectDialog} onOpenChange={() => { setRejectDialog(null); setRejectReason(""); }}>
@@ -543,6 +732,165 @@ export default function ReviewCenterPage() {
                 Mark Resolved
               </Button>
             </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={inquiryDialog} onOpenChange={() => { setInquiryDialog(false); setNewInquiry({ initiativeId: "", toUserId: "", subject: "", message: "" }); }}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Send New Inquiry</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Initiative</Label>
+                <Select
+                  value={newInquiry.initiativeId}
+                  onValueChange={(value) => setNewInquiry({ ...newInquiry, initiativeId: value })}
+                >
+                  <SelectTrigger data-testid="select-initiative">
+                    <SelectValue placeholder="Select an initiative" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {groupedInitiatives.map((init) => (
+                      <SelectItem key={init.ids[0]} value={init.ids[0]}>{init.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>To (STO Leader)</Label>
+                <Select
+                  value={newInquiry.toUserId}
+                  onValueChange={(value) => setNewInquiry({ ...newInquiry, toUserId: value })}
+                >
+                  <SelectTrigger data-testid="select-to-user">
+                    <SelectValue placeholder="Select recipient (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.filter(u => u.role === 'sto_contributor').map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Subject</Label>
+                <Input
+                  value={newInquiry.subject}
+                  onChange={(e) => setNewInquiry({ ...newInquiry, subject: e.target.value })}
+                  placeholder="Brief subject of the inquiry"
+                  data-testid="input-inquiry-subject"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Message</Label>
+                <Textarea
+                  value={newInquiry.message}
+                  onChange={(e) => setNewInquiry({ ...newInquiry, message: e.target.value })}
+                  placeholder="Detailed inquiry message..."
+                  rows={4}
+                  data-testid="input-inquiry-message"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => { setInquiryDialog(false); setNewInquiry({ initiativeId: "", toUserId: "", subject: "", message: "" }); }}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => createInquiryMutation.mutate({
+                  initiativeId: newInquiry.initiativeId,
+                  toUserId: newInquiry.toUserId || undefined,
+                  subject: newInquiry.subject,
+                  message: newInquiry.message,
+                })}
+                disabled={!newInquiry.initiativeId || !newInquiry.subject.trim() || !newInquiry.message.trim() || createInquiryMutation.isPending}
+                data-testid="button-send-inquiry"
+              >
+                <Send className="w-4 h-4 mr-2" /> Send Inquiry
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={!!selectedInquiry} onOpenChange={() => { setSelectedInquiry(null); setResponseMessage(""); }}>
+          <DialogContent className="max-w-2xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {selectedInquiry && getInquiryStatusIcon(selectedInquiry.status)}
+                {selectedInquiry?.subject}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedInquiry && (
+              <div className="space-y-4">
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">From Control Tower</span>
+                    {selectedInquiry.createdAt && (
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(selectedInquiry.createdAt).toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm">{selectedInquiry.message}</p>
+                  <div className="mt-2 flex gap-2 items-center">
+                    {getInquiryStatusBadge(selectedInquiry.status)}
+                    <span className="text-xs text-muted-foreground">
+                      Initiative: {getInitiativeName(selectedInquiry.initiativeId)}
+                    </span>
+                  </div>
+                </div>
+
+                {inquiryResponses.length > 0 && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">Responses</Label>
+                    <ScrollArea className="max-h-[200px]">
+                      <div className="space-y-2">
+                        {inquiryResponses.map((resp) => (
+                          <div key={resp.id} className="p-3 bg-teal-50 rounded-lg border border-teal-100">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-medium text-teal-800">
+                                {getUserName(resp.fromUserId)}
+                              </span>
+                              {resp.createdAt && (
+                                <span className="text-xs text-muted-foreground">
+                                  {new Date(resp.createdAt).toLocaleString()}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm">{resp.message}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-4 border-t">
+                  {selectedInquiry.status === 'open' && (
+                    <Button
+                      variant="outline"
+                      onClick={() => updateInquiryStatusMutation.mutate({ id: selectedInquiry.id, status: 'pending' })}
+                    >
+                      Mark Pending
+                    </Button>
+                  )}
+                  {selectedInquiry.status !== 'closed' && (
+                    <Button
+                      className="bg-green-600 hover:bg-green-700"
+                      onClick={() => updateInquiryStatusMutation.mutate({ id: selectedInquiry.id, status: 'closed' })}
+                    >
+                      <MailCheck className="w-4 h-4 mr-2" /> Close Inquiry
+                    </Button>
+                  )}
+                  <Button variant="outline" onClick={() => { setSelectedInquiry(null); setResponseMessage(""); }}>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>

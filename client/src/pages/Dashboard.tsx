@@ -14,6 +14,9 @@ const sortByLGate = (a: GroupedInitiative, b: GroupedInitiative) => {
   return LGATE_ORDER.indexOf(a.lGate) - LGATE_ORDER.indexOf(b.lGate);
 };
 
+// Filter out rejected projects from dashboard statistics
+const activeInitiatives = groupedInitiatives.filter(i => i.lGate !== 'Rejected');
+
 const mockPendingItems: Record<string, { issues: number; requests: number; gateChanges: number }> = {};
 groupedInitiatives.forEach((init, idx) => {
   mockPendingItems[init.ids[0]] = {
@@ -46,21 +49,23 @@ export default function Dashboard() {
   }, []);
 
   const stats = useMemo(() => {
-    const totalBudget = groupedInitiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
-    const totalBenefit = groupedInitiatives.reduce((sum, i) => sum + i.targetedBenefit, 0);
-    const newProjects = groupedInitiatives.filter(i => i.lGate === 'L0').length;
-    const backlogProjects = groupedInitiatives.filter(i => ['L1', 'L2'].includes(i.lGate)).length;
-    const activeProjects = groupedInitiatives.filter(i => ['L3', 'L4', 'L5'].includes(i.lGate)).length;
-    const shippedProjects = groupedInitiatives.filter(i => i.lGate === 'L6').length;
+    // Use activeInitiatives (excluding rejected) for dashboard stats
+    const totalBudget = activeInitiatives.reduce((sum, i) => sum + i.budgetedCost, 0);
+    const totalBenefit = activeInitiatives.reduce((sum, i) => sum + i.targetedBenefit, 0);
+    const newProjects = activeInitiatives.filter(i => i.lGate === 'L0').length;
+    const backlogProjects = activeInitiatives.filter(i => ['L1', 'L2'].includes(i.lGate)).length;
+    const activeProjects = activeInitiatives.filter(i => ['L3', 'L4', 'L5'].includes(i.lGate)).length;
+    const shippedProjects = activeInitiatives.filter(i => i.lGate === 'L6').length;
+    const rejectedProjects = groupedInitiatives.filter(i => i.lGate === 'Rejected').length;
     
     const byValueStream: Record<string, number> = {};
     const byLGate: Record<string, number> = {};
-    groupedInitiatives.forEach(i => {
+    activeInitiatives.forEach(i => {
       byValueStream[i.valueStream] = (byValueStream[i.valueStream] || 0) + 1;
       byLGate[i.lGate] = (byLGate[i.lGate] || 0) + 1;
     });
     
-    return { totalBudget, totalBenefit, newProjects, backlogProjects, activeProjects, shippedProjects, byValueStream, byLGate };
+    return { totalBudget, totalBenefit, newProjects, backlogProjects, activeProjects, shippedProjects, rejectedProjects, byValueStream, byLGate };
   }, []);
 
   const filteredInitiatives = useMemo(() => {
@@ -87,7 +92,7 @@ export default function Dashboard() {
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Budgeted Cost</p>
               <p className="text-2xl font-bold text-slate-700 font-mono">{formatCurrency(stats.totalBudget)}</p>
               <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
-                <span>{groupedInitiatives.length} initiatives</span>
+                <span>{activeInitiatives.length} active initiatives</span>
               </div>
             </div>
             <div className="bg-white p-4 rounded-lg border border-slate-200">

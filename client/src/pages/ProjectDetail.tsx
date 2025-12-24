@@ -81,6 +81,17 @@ interface CapabilityFeedback {
   rejectionReason?: string;
 }
 
+interface InquiryFeedback {
+  id: string;
+  initiativeId: string;
+  fromUserId: string;
+  toUserId: string | null;
+  subject: string;
+  message: string;
+  status: 'open' | 'pending' | 'closed';
+  createdAt: string | null;
+}
+
 function ControlTowerFeedback({ projectId }: { projectId: string }) {
   const { data: requests = [] } = useQuery<RequestRecord[]>({
     queryKey: ['/api/requests'],
@@ -103,6 +114,15 @@ function ControlTowerFeedback({ projectId }: { projectId: string }) {
     queryKey: ['/api/initiatives', projectId, 'capabilities'],
     queryFn: async () => {
       const res = await fetch(`/api/initiatives/${projectId}/capabilities`, { credentials: 'include' });
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  const { data: inquiries = [] } = useQuery<InquiryFeedback[]>({
+    queryKey: ['/api/initiatives', projectId, 'inquiries'],
+    queryFn: async () => {
+      const res = await fetch(`/api/initiatives/${projectId}/inquiries`, { credentials: 'include' });
       if (!res.ok) return [];
       return res.json();
     },
@@ -153,7 +173,16 @@ function ControlTowerFeedback({ projectId }: { projectId: string }) {
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const hasFeedback = projectRequests.length > 0 || projectIssues.length > 0 || reviewedGateForms.length > 0 || reviewedCapabilities.length > 0;
+  const hasFeedback = projectRequests.length > 0 || projectIssues.length > 0 || reviewedGateForms.length > 0 || reviewedCapabilities.length > 0 || inquiries.length > 0;
+  
+  const getInquiryStatusBadge = (status: string) => {
+    switch (status) {
+      case 'open': return <Badge className="bg-blue-500 text-xs">Open</Badge>;
+      case 'pending': return <Badge className="bg-amber-500 text-xs">Pending</Badge>;
+      case 'closed': return <Badge variant="secondary" className="text-xs">Closed</Badge>;
+      default: return <Badge variant="outline" className="text-xs">{status}</Badge>;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -312,6 +341,42 @@ function ControlTowerFeedback({ projectId }: { projectId: string }) {
                         {issue.resolvedAt && (
                           <p className="text-xs text-muted-foreground mt-2">
                             Resolved on {formatDate(issue.resolvedAt)}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {inquiries.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Control Tower Inquiries
+                  </h4>
+                  <div className="space-y-3">
+                    {inquiries.map(inquiry => (
+                      <div key={inquiry.id} className="p-4 bg-slate-50 rounded-lg border">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-2">
+                            {inquiry.status === 'closed' ? (
+                              <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            ) : inquiry.status === 'pending' ? (
+                              <Clock className="w-4 h-4 text-amber-600" />
+                            ) : (
+                              <MessageCircle className="w-4 h-4 text-blue-600" />
+                            )}
+                            <span className="font-medium">{inquiry.subject}</span>
+                          </div>
+                          {getInquiryStatusBadge(inquiry.status)}
+                        </div>
+                        <div className="mt-3 p-3 bg-teal-50 rounded border border-teal-100">
+                          <p className="text-sm text-teal-800">{inquiry.message}</p>
+                        </div>
+                        {inquiry.createdAt && (
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Sent on {formatDate(inquiry.createdAt)}
                           </p>
                         )}
                       </div>
