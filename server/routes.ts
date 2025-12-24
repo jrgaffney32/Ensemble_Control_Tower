@@ -1321,11 +1321,12 @@ export async function registerRoutes(
   // Summary endpoint for pending counts
   app.get("/api/review/pending-counts", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
     try {
-      const [capabilities, reqs, gateForms, issuesList] = await Promise.all([
+      const [capabilities, reqs, gateForms, issuesList, openInquiries] = await Promise.all([
         storage.getPendingCapabilities(),
         storage.getPendingRequests(),
         storage.getPendingGateForms(),
         storage.getOpenIssues(),
+        storage.getOpenInquiries(),
       ]);
       
       res.json({
@@ -1333,11 +1334,135 @@ export async function registerRoutes(
         requests: reqs.length,
         gateForms: gateForms.length,
         issues: issuesList.length,
-        total: capabilities.length + reqs.length + gateForms.length + issuesList.length,
+        inquiries: openInquiries.length,
+        total: capabilities.length + reqs.length + gateForms.length + issuesList.length + openInquiries.length,
       });
     } catch (error) {
       console.error("Error fetching pending counts:", error);
       res.status(500).json({ message: "Failed to fetch pending counts" });
+    }
+  });
+
+  // Inquiry routes - Control Tower can send inquiries to STO leaders
+  app.get("/api/inquiries", isSessionAuthenticated, async (req, res) => {
+    try {
+      const user = await storage.getUserById(req.session.userId!);
+      if (!user) return res.status(401).json({ message: "User not found" });
+      
+      // Control Tower sees all, STO sees only their inquiries
+      let inquiries;
+      if (user.role === 'control_tower') {
+        inquiries = await storage.getAllInquiries();
+      } else {
+        inquiries = await storage.getAllInquiries();
+        inquiries = inquiries.filter(i => i.toUserId === user.id);
+      }
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+
+  app.get("/api/inquiries/open", isSessionAuthenticated, async (req, res) => {
+    try {
+      const inquiries = await storage.getOpenInquiries();
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching open inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch open inquiries" });
+    }
+  });
+
+  app.get("/api/inquiries/:id", isSessionAuthenticated, async (req, res) => {
+    try {
+      const inquiry = await storage.getInquiry(req.params.id);
+      if (!inquiry) return res.status(404).json({ message: "Inquiry not found" });
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Error fetching inquiry:", error);
+      res.status(500).json({ message: "Failed to fetch inquiry" });
+    }
+  });
+
+  app.get("/api/initiatives/:initiativeId/inquiries", isSessionAuthenticated, async (req, res) => {
+    try {
+      const inquiries = await storage.getInquiriesByInitiative(req.params.initiativeId);
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching initiative inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch initiative inquiries" });
+    }
+  });
+
+  app.post("/api/inquiries", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { initiativeId, toUserId, subject, message } = req.body;
+      if (!initiativeId || !subject || !message) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      const id = `inq-${Date.now()}`;
+      const inquiry = await storage.createInquiry({
+        id,
+        initiativeId,
+        fromUserId: req.session.userId!,
+        toUserId: toUserId || null,
+        subject,
+        message,
+        status: 'open',
+      });
+      res.status(201).json(inquiry);
+    } catch (error) {
+      console.error("Error creating inquiry:", error);
+      res.status(500).json({ message: "Failed to create inquiry" });
+    }
+  });
+
+  app.put("/api/inquiries/:id/status", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { status } = req.body;
+      if (!status || !['open', 'pending', 'closed'].includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      const inquiry = await storage.updateInquiryStatus(req.params.id, status);
+      if (!inquiry) return res.status(404).json({ message: "Inquiry not found" });
+      res.json(inquiry);
+    } catch (error) {
+      console.error("Error updating inquiry status:", error);
+      res.status(500).json({ message: "Failed to update inquiry status" });
+    }
+  });
+
+  // Inquiry responses - STO can respond to inquiries
+  app.get("/api/inquiries/:inquiryId/responses", isSessionAuthenticated, async (req, res) => {
+    try {
+      const responses = await storage.getResponsesByInquiry(req.params.inquiryId);
+      res.json(responses);
+    } catch (error) {
+      console.error("Error fetching inquiry responses:", error);
+      res.status(500).json({ message: "Failed to fetch inquiry responses" });
+    }
+  });
+
+  app.post("/api/inquiries/:inquiryId/responses", isSessionAuthenticated, async (req, res) => {
+    try {
+      const { message } = req.body;
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+      
+      const id = `resp-${Date.now()}`;
+      const response = await storage.createInquiryResponse({
+        id,
+        inquiryId: req.params.inquiryId,
+        fromUserId: req.session.userId!,
+        message,
+      });
+      res.status(201).json(response);
+    } catch (error) {
+      console.error("Error creating inquiry response:", error);
+      res.status(500).json({ message: "Failed to create inquiry response" });
     }
   });
 
