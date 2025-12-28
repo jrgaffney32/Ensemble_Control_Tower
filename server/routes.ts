@@ -1502,5 +1502,136 @@ export async function registerRoutes(
     }
   });
 
+  // Import master list from Excel - Control Tower only
+  app.post("/api/import/master-list", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { filePath } = req.body;
+      if (!filePath) {
+        return res.status(400).json({ message: "File path required" });
+      }
+      
+      const workbook = XLSX.readFile(filePath);
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(firstSheet);
+      
+      // Collect unique initiatives
+      const initiativeMap = new Map<string, {
+        name: string;
+        valueStream: string;
+        lGate: string;
+        priorityCategory: string;
+        fundingLane: string;
+      }>();
+      
+      const capabilitiesList: {
+        id: string;
+        initiativeId: string;
+        name: string;
+        healthStatus: string;
+        approvalStatus: string;
+        startDate: Date | null;
+        endDate: Date | null;
+        estimatedEffort: number;
+      }[] = [];
+      
+      for (const row of data as any[]) {
+        const initiativeName = row['Initiative name'] || '';
+        const initiativeId = initiativeName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        
+        if (initiativeName && !initiativeMap.has(initiativeId)) {
+          const priorityCalc = row['Now/Next/Later Calculated'] || 'New';
+          let priorityCategory = 'New';
+          if (priorityCalc === 'Now') priorityCategory = 'Now';
+          else if (priorityCalc === 'Next') priorityCategory = 'Next';
+          else if (priorityCalc === 'Later') priorityCategory = 'Later';
+          else if (priorityCalc === 'Kill') priorityCategory = 'Later';
+          
+          initiativeMap.set(initiativeId, {
+            name: initiativeName,
+            valueStream: row['Value Stream'] || 'Platform',
+            lGate: row['Initiative LGate'] || 'L0',
+            priorityCategory,
+            fundingLane: row['Funding Lane'] || 'Strategic',
+          });
+        }
+        
+        // Create capability
+        const capabilityId = row['Capability reference #'] || `cap-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const capabilityName = row['Capability Name'] || '';
+        const capabilityStatus = row['Capability status Aha'] || '';
+        const capabilityLGate = row['Capability LGate'] || 'L0';
+        
+        // Map Aha status to health status
+        let healthStatus = 'green';
+        if (capabilityStatus === 'At Risk' || capabilityStatus === 'Blocked') healthStatus = 'red';
+        else if (capabilityStatus === 'Validating') healthStatus = 'yellow';
+        
+        // Map status to approval status
+        let approvalStatus = 'draft';
+        if (capabilityStatus === 'Shipped') approvalStatus = 'approved';
+        else if (capabilityStatus === 'Validating' || capabilityStatus === 'Building') approvalStatus = 'submitted';
+        
+        // Parse dates
+        let startDate: Date | null = null;
+        let endDate: Date | null = null;
+        if (row['Capability start date']) {
+          startDate = new Date(row['Capability start date']);
+        }
+        if (row['Capability end date']) {
+          endDate = new Date(row['Capability end date']);
+        }
+        
+        // Map size to effort
+        let estimatedEffort = 5;
+        const size = row['Size'] || '';
+        if (size === 'XL' || size === 'Extra Large') estimatedEffort = 13;
+        else if (size === 'Large') estimatedEffort = 8;
+        else if (size === 'Medium') estimatedEffort = 5;
+        else if (size === 'Small') estimatedEffort = 3;
+        
+        if (capabilityName) {
+          capabilitiesList.push({
+            id: capabilityId,
+            initiativeId,
+            name: capabilityName,
+            healthStatus,
+            approvalStatus,
+            startDate,
+            endDate,
+            estimatedEffort,
+          });
+        }
+      }
+      
+      // Clear existing data and import new
+      await storage.clearAllData();
+      
+      // Insert initiatives
+      const initiativesData = Array.from(initiativeMap.entries()).map(([id, init], index) => ({
+        id,
+        name: init.name,
+        valueStream: init.valueStream,
+        lGate: init.lGate,
+        priorityCategory: init.priorityCategory as any,
+        priorityRank: index + 1,
+        budgetedCost: 0,
+        targetedBenefit: 0,
+        costCenter: init.fundingLane,
+      }));
+      
+      await storage.seedInitiatives(initiativesData);
+      await storage.seedCapabilities(capabilitiesList as any);
+      
+      res.json({
+        success: true,
+        initiatives: initiativesData.length,
+        capabilities: capabilitiesList.length,
+      });
+    } catch (error) {
+      console.error("Error importing master list:", error);
+      res.status(500).json({ message: "Failed to import master list" });
+    }
+  });
+
   return httpServer;
 }

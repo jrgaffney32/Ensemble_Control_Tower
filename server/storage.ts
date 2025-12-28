@@ -46,6 +46,8 @@ export interface IStorage {
   approveCapability(id: string, approvedBy: string): Promise<CapabilityRecord | undefined>;
   rejectCapability(id: string, rejectionReason: string): Promise<CapabilityRecord | undefined>;
   getPendingCapabilities(): Promise<CapabilityRecord[]>;
+  seedCapabilities(data: InsertCapability[]): Promise<void>;
+  clearAllData(): Promise<void>;
   
   getAllRequests(): Promise<RequestRecord[]>;
   getRequest(id: string): Promise<RequestRecord | undefined>;
@@ -432,6 +434,43 @@ class DatabaseStorage implements IStorage {
 
   async getPendingCapabilities(): Promise<CapabilityRecord[]> {
     return await db.select().from(capabilities).where(eq(capabilities.approvalStatus, 'submitted'));
+  }
+
+  async seedCapabilities(data: InsertCapability[]): Promise<void> {
+    for (const cap of data) {
+      await db
+        .insert(capabilities)
+        .values(cap)
+        .onConflictDoUpdate({
+          target: capabilities.id,
+          set: {
+            initiativeId: cap.initiativeId,
+            name: cap.name,
+            description: cap.description,
+            healthStatus: cap.healthStatus,
+            approvalStatus: cap.approvalStatus,
+            estimatedEffort: cap.estimatedEffort,
+            startDate: cap.startDate,
+            endDate: cap.endDate,
+            updatedAt: sql`NOW()`,
+          },
+        });
+    }
+  }
+
+  async clearAllData(): Promise<void> {
+    await db.delete(inquiryResponses);
+    await db.delete(inquiries);
+    await db.delete(issues);
+    await db.delete(requests);
+    await db.delete(capabilities);
+    await db.delete(milestones);
+    await db.delete(fteSnapshots);
+    await db.delete(initiativeKpis);
+    await db.delete(podPerformance);
+    await db.delete(gateForms);
+    await db.delete(initiativeStatuses);
+    await db.delete(initiatives);
   }
 
   async requestCapabilityChanges(id: string, changeReason: string): Promise<CapabilityRecord | undefined> {
