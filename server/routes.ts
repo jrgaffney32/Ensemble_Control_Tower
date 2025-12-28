@@ -924,6 +924,100 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/initiatives", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const data = req.body;
+      const initiative = await storage.createInitiative({
+        id: data.id,
+        name: data.name,
+        valueStream: data.valueStream || 'Patient Access',
+        lGate: data.lGate || 'L0',
+        priorityCategory: data.priorityCategory || 'New',
+        priorityRank: data.priorityRank || 0,
+        budgetedCost: data.budgetedCost || 0,
+        targetedBenefit: data.targetedBenefit || 0,
+        costCenter: data.costCenter || '',
+        milestones: data.milestones || '[]',
+      });
+      res.json(initiative);
+    } catch (error) {
+      console.error("Error creating initiative:", error);
+      res.status(500).json({ message: "Failed to create initiative" });
+    }
+  });
+
+  app.delete("/api/initiatives/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteInitiative(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Initiative not found" });
+      }
+      res.json({ success: true, message: "Initiative deleted" });
+    } catch (error) {
+      console.error("Error deleting initiative:", error);
+      res.status(500).json({ message: "Failed to delete initiative" });
+    }
+  });
+
+  // Capability CRUD routes
+  app.get("/api/capabilities", isSessionAuthenticated, async (req, res) => {
+    try {
+      const allCapabilities = await storage.getAllCapabilities();
+      res.json(allCapabilities);
+    } catch (error) {
+      console.error("Error fetching capabilities:", error);
+      res.status(500).json({ message: "Failed to fetch capabilities" });
+    }
+  });
+
+  app.post("/api/capabilities", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const data = req.body;
+      const capability = await storage.createCapability({
+        id: data.id,
+        name: data.name,
+        initiativeId: data.initiativeId,
+        lGate: data.lGate || 'L0',
+        priorityCategory: data.priorityCategory || 'New',
+        status: data.status || 'planned',
+      });
+      res.json(capability);
+    } catch (error) {
+      console.error("Error creating capability:", error);
+      res.status(500).json({ message: "Failed to create capability" });
+    }
+  });
+
+  app.put("/api/capabilities/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const capability = await storage.updateCapability(id, data);
+      if (!capability) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      res.json(capability);
+    } catch (error) {
+      console.error("Error updating capability:", error);
+      res.status(500).json({ message: "Failed to update capability" });
+    }
+  });
+
+  app.delete("/api/capabilities/:id", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
+    try {
+      const { id } = req.params;
+      const deleted = await storage.deleteCapability(id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Capability not found" });
+      }
+      res.json({ success: true, message: "Capability deleted" });
+    } catch (error) {
+      console.error("Error deleting capability:", error);
+      res.status(500).json({ message: "Failed to delete capability" });
+    }
+  });
+
   // Milestone CRUD routes - Control Tower only
   app.get("/api/milestones", isSessionAuthenticated, requireAppRole('control_tower'), async (req, res) => {
     try {

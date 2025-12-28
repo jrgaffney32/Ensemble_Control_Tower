@@ -24,8 +24,10 @@ export interface IStorage {
   
   getAllInitiatives(): Promise<InitiativeRecord[]>;
   getInitiative(id: string): Promise<InitiativeRecord | undefined>;
+  createInitiative(data: InsertInitiative): Promise<InitiativeRecord>;
   upsertInitiative(data: InsertInitiative): Promise<InitiativeRecord>;
   updateInitiative(id: string, data: Partial<InsertInitiative>): Promise<InitiativeRecord | undefined>;
+  deleteInitiative(id: string): Promise<boolean>;
   bulkUpdateInitiatives(updates: { id: string; data: Partial<InsertInitiative> }[]): Promise<void>;
   seedInitiatives(data: InsertInitiative[]): Promise<void>;
   
@@ -269,6 +271,14 @@ class DatabaseStorage implements IStorage {
     return init;
   }
 
+  async createInitiative(data: InsertInitiative): Promise<InitiativeRecord> {
+    const [init] = await db
+      .insert(initiatives)
+      .values(data)
+      .returning();
+    return init;
+  }
+
   async upsertInitiative(data: InsertInitiative): Promise<InitiativeRecord> {
     const [init] = await db
       .insert(initiatives)
@@ -290,6 +300,15 @@ class DatabaseStorage implements IStorage {
       })
       .returning();
     return init;
+  }
+
+  async deleteInitiative(id: string): Promise<boolean> {
+    await db.delete(capabilities).where(eq(capabilities.initiativeId, id));
+    await db.delete(milestones).where(eq(milestones.initiativeId, id));
+    await db.delete(initiativeStatuses).where(eq(initiativeStatuses.initiativeId, id));
+    await db.delete(gateForms).where(eq(gateForms.initiativeId, id));
+    const result = await db.delete(initiatives).where(eq(initiatives.id, id)).returning();
+    return result.length > 0;
   }
 
   async updateInitiative(id: string, data: Partial<InsertInitiative>): Promise<InitiativeRecord | undefined> {
