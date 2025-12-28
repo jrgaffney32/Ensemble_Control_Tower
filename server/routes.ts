@@ -626,15 +626,29 @@ export async function registerRoutes(
     }
   });
 
-  // Download artifact
-  app.get("/api/artifacts/:id/download", isSessionAuthenticated, async (req, res) => {
+  // Serve uploaded artifacts as static files
+  const express = await import('express');
+  app.use('/uploads', express.default.static('./uploads'));
+  
+  // Get artifact metadata by ID
+  app.get("/api/artifacts/:id", isSessionAuthenticated, async (req, res) => {
     try {
-      const artifacts = await storage.getArtifactsByGateForm(req.params.id);
-      // This is a simplified version - in production you'd query by artifact ID
+      // Search for the artifact across all gate forms
+      const allGateForms = await storage.getPendingGateForms();
+      for (const form of allGateForms) {
+        const artifacts = await storage.getArtifactsByGateForm(form.id);
+        const artifact = artifacts.find(a => a.id === req.params.id);
+        if (artifact) {
+          return res.json({
+            ...artifact,
+            downloadUrl: `/uploads/artifacts/${artifact.filename}`,
+          });
+        }
+      }
       res.status(404).json({ message: "Artifact not found" });
     } catch (error) {
-      console.error("Error downloading artifact:", error);
-      res.status(500).json({ message: "Failed to download artifact" });
+      console.error("Error fetching artifact:", error);
+      res.status(500).json({ message: "Failed to fetch artifact" });
     }
   });
 
