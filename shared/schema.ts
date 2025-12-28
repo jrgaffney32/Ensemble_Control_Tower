@@ -41,7 +41,7 @@ export const insertInitiativeStatusSchema = createInsertSchema(initiativeStatuse
 export type InsertInitiativeStatus = z.infer<typeof insertInitiativeStatusSchema>;
 export type InitiativeStatusRecord = typeof initiativeStatuses.$inferSelect;
 
-export type FormStatus = 'not_started' | 'draft' | 'submitted' | 'approved' | 'change_requested';
+export type FormStatus = 'not_started' | 'draft' | 'submitted' | 'approved' | 'rejected' | 'change_requested';
 
 export const gateForms = pgTable("gate_forms", {
   id: varchar("id").primaryKey(),
@@ -53,6 +53,9 @@ export const gateForms = pgTable("gate_forms", {
   submittedAt: timestamp("submitted_at"),
   approvedBy: varchar("approved_by"),
   approvedAt: timestamp("approved_at"),
+  rejectionReason: text("rejection_reason"),
+  rejectedBy: varchar("rejected_by"),
+  rejectedAt: timestamp("rejected_at"),
   changeRequestReason: text("change_request_reason"),
   changeRequestedBy: varchar("change_requested_by"),
   changeRequestedAt: timestamp("change_requested_at"),
@@ -67,6 +70,112 @@ export const insertGateFormSchema = createInsertSchema(gateForms).omit({
 
 export type InsertGateForm = z.infer<typeof insertGateFormSchema>;
 export type GateFormRecord = typeof gateForms.$inferSelect;
+
+export type ArtifactCategory = 'requirements' | 'design' | 'uat_results' | 'compliance' | 'sign_off' | 'evidence' | 'other';
+
+export const gateFormArtifacts = pgTable("gate_form_artifacts", {
+  id: varchar("id").primaryKey(),
+  gateFormId: varchar("gate_form_id").notNull(),
+  initiativeId: varchar("initiative_id").notNull(),
+  gate: text("gate").notNull(),
+  filename: text("filename").notNull(),
+  originalName: text("original_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  category: text("category").$type<ArtifactCategory>().notNull().default('other'),
+  uploadedBy: varchar("uploaded_by"),
+  uploadedAt: timestamp("uploaded_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertGateFormArtifactSchema = createInsertSchema(gateFormArtifacts).omit({
+  createdAt: true,
+});
+
+export type InsertGateFormArtifact = z.infer<typeof insertGateFormArtifactSchema>;
+export type GateFormArtifactRecord = typeof gateFormArtifacts.$inferSelect;
+
+export const GATE_DEFINITIONS = {
+  L0: {
+    name: 'Problem Definition',
+    description: 'Define the problem and initial scope',
+    formFields: [
+      { key: 'problemStatement', label: 'Problem Statement', type: 'textarea', required: true },
+      { key: 'businessCase', label: 'Business Case', type: 'textarea', required: true },
+      { key: 'targetBenefit', label: 'Target Benefit ($)', type: 'number', required: true },
+      { key: 'estimatedEffort', label: 'Estimated Effort (weeks)', type: 'number', required: false },
+    ],
+    requiredArtifacts: [],
+    optionalArtifacts: ['requirements'],
+  },
+  L1: {
+    name: 'Feasibility & Compliance',
+    description: 'Assess feasibility and compliance requirements',
+    formFields: [
+      { key: 'feasibilityAssessment', label: 'Feasibility Assessment', type: 'textarea', required: true },
+      { key: 'complianceRequirements', label: 'Compliance Requirements', type: 'textarea', required: true },
+      { key: 'riskAssessment', label: 'Risk Assessment', type: 'textarea', required: true },
+      { key: 'resourceRequirements', label: 'Resource Requirements', type: 'textarea', required: false },
+    ],
+    requiredArtifacts: ['compliance'],
+    optionalArtifacts: ['requirements'],
+  },
+  L2: {
+    name: 'Design & Architecture',
+    description: 'Complete design and architecture review',
+    formFields: [
+      { key: 'solutionDesign', label: 'Solution Design Summary', type: 'textarea', required: true },
+      { key: 'technicalApproach', label: 'Technical Approach', type: 'textarea', required: true },
+      { key: 'integrationPoints', label: 'Integration Points', type: 'textarea', required: true },
+    ],
+    requiredArtifacts: ['design', 'requirements'],
+    optionalArtifacts: ['compliance'],
+  },
+  L3: {
+    name: 'Build & Development',
+    description: 'Development complete and ready for testing',
+    formFields: [
+      { key: 'developmentSummary', label: 'Development Summary', type: 'textarea', required: true },
+      { key: 'testingPlan', label: 'Testing Plan', type: 'textarea', required: true },
+      { key: 'knownIssues', label: 'Known Issues', type: 'textarea', required: false },
+    ],
+    requiredArtifacts: ['design'],
+    optionalArtifacts: ['evidence'],
+  },
+  L4: {
+    name: 'Validation & UAT',
+    description: 'User acceptance testing and validation',
+    formFields: [
+      { key: 'uatSummary', label: 'UAT Summary', type: 'textarea', required: true },
+      { key: 'defectsResolved', label: 'Defects Resolved', type: 'textarea', required: true },
+      { key: 'userApproval', label: 'User Approval Status', type: 'select', required: true, options: ['Approved', 'Conditionally Approved', 'Pending'] },
+    ],
+    requiredArtifacts: ['uat_results'],
+    optionalArtifacts: ['evidence', 'sign_off'],
+  },
+  L5: {
+    name: 'Deployment & Go-Live',
+    description: 'Production deployment and go-live',
+    formFields: [
+      { key: 'deploymentPlan', label: 'Deployment Plan', type: 'textarea', required: true },
+      { key: 'rollbackPlan', label: 'Rollback Plan', type: 'textarea', required: true },
+      { key: 'goLiveDate', label: 'Go-Live Date', type: 'date', required: true },
+    ],
+    requiredArtifacts: ['sign_off', 'uat_results'],
+    optionalArtifacts: ['evidence'],
+  },
+  L6: {
+    name: 'Benefit Realization',
+    description: 'Measure and verify expected benefits',
+    formFields: [
+      { key: 'actualBenefit', label: 'Actual Benefit Realized ($)', type: 'number', required: true },
+      { key: 'benefitAnalysis', label: 'Benefit Analysis', type: 'textarea', required: true },
+      { key: 'lessonsLearned', label: 'Lessons Learned', type: 'textarea', required: false },
+    ],
+    requiredArtifacts: ['evidence'],
+    optionalArtifacts: ['sign_off'],
+  },
+} as const;
 
 export type PriorityCategory = 'Shipped' | 'Now' | 'Next' | 'Later' | 'New' | 'Kill' | 'Hold for clarification';
 

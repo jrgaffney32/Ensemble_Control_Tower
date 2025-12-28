@@ -1,4 +1,4 @@
-import { userRoles, initiativeStatuses, gateForms, users, initiatives, milestones, capabilities, requests, issues, fteSnapshots, initiativeKpis, podPerformance, inquiries, inquiryResponses, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus, type FteSnapshotRecord, type InsertFteSnapshot, type InitiativeKpiRecord, type InsertInitiativeKpi, type PodPerformanceRecord, type InsertPodPerformance, type InquiryRecord, type InsertInquiry, type InquiryStatus, type InquiryResponseRecord, type InsertInquiryResponse } from "@shared/schema";
+import { userRoles, initiativeStatuses, gateForms, gateFormArtifacts, users, initiatives, milestones, capabilities, requests, issues, fteSnapshots, initiativeKpis, podPerformance, inquiries, inquiryResponses, type UserRole, type UserRoleRecord, type InitiativeStatusRecord, type StatusValue, type GateFormRecord, type FormStatus, type User, type AppUserRole, type UserStatus, type InitiativeRecord, type InsertInitiative, type MilestoneRecord, type InsertMilestone, type CapabilityRecord, type InsertCapability, type CapabilityStatus, type RequestRecord, type InsertRequest, type RequestStatus, type IssueRecord, type InsertIssue, type IssueStatus, type FteSnapshotRecord, type InsertFteSnapshot, type InitiativeKpiRecord, type InsertInitiativeKpi, type PodPerformanceRecord, type InsertPodPerformance, type InquiryRecord, type InsertInquiry, type InquiryStatus, type InquiryResponseRecord, type InsertInquiryResponse, type GateFormArtifactRecord, type InsertGateFormArtifact } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, sql, isNull } from "drizzle-orm";
 
@@ -88,6 +88,12 @@ export interface IStorage {
   // Inquiry Responses
   getResponsesByInquiry(inquiryId: string): Promise<InquiryResponseRecord[]>;
   createInquiryResponse(data: InsertInquiryResponse): Promise<InquiryResponseRecord>;
+  
+  // Gate Form Artifacts
+  getArtifactsByGateForm(gateFormId: string): Promise<GateFormArtifactRecord[]>;
+  getArtifactsByInitiativeGate(initiativeId: string, gate: string): Promise<GateFormArtifactRecord[]>;
+  createArtifact(data: InsertGateFormArtifact): Promise<GateFormArtifactRecord>;
+  deleteArtifact(id: string): Promise<boolean>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -761,6 +767,26 @@ class DatabaseStorage implements IStorage {
     // Update inquiry status to pending when a response is added
     await db.update(inquiries).set({ status: 'pending', updatedAt: new Date() }).where(eq(inquiries.id, data.inquiryId));
     return response;
+  }
+
+  async getArtifactsByGateForm(gateFormId: string): Promise<GateFormArtifactRecord[]> {
+    return await db.select().from(gateFormArtifacts).where(eq(gateFormArtifacts.gateFormId, gateFormId));
+  }
+
+  async getArtifactsByInitiativeGate(initiativeId: string, gate: string): Promise<GateFormArtifactRecord[]> {
+    return await db.select().from(gateFormArtifacts).where(
+      and(eq(gateFormArtifacts.initiativeId, initiativeId), eq(gateFormArtifacts.gate, gate))
+    );
+  }
+
+  async createArtifact(data: InsertGateFormArtifact): Promise<GateFormArtifactRecord> {
+    const [artifact] = await db.insert(gateFormArtifacts).values(data).returning();
+    return artifact;
+  }
+
+  async deleteArtifact(id: string): Promise<boolean> {
+    const result = await db.delete(gateFormArtifacts).where(eq(gateFormArtifacts.id, id));
+    return result.rowCount > 0;
   }
 }
 
