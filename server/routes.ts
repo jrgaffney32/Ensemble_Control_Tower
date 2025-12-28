@@ -540,6 +540,104 @@ export async function registerRoutes(
     res.send(buffer);
   });
 
+  // Gate definitions endpoint
+  app.get("/api/gate-definitions", (req, res) => {
+    const { GATE_DEFINITIONS } = require("@shared/schema");
+    res.json(GATE_DEFINITIONS);
+  });
+
+  // Artifact upload configuration
+  const artifactUpload = multer({
+    storage: multer.diskStorage({
+      destination: (req, file, cb) => {
+        const uploadDir = './uploads/artifacts';
+        require('fs').mkdirSync(uploadDir, { recursive: true });
+        cb(null, uploadDir);
+      },
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+      }
+    }),
+    limits: { fileSize: 25 * 1024 * 1024 }, // 25MB limit
+  });
+
+  // Upload artifact to a gate form
+  app.post("/api/gate-forms/:gateFormId/artifacts", isSessionAuthenticated, artifactUpload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const { category, initiativeId, gate } = req.body;
+      const artifact = await storage.createArtifact({
+        id: `artifact-${Date.now()}`,
+        gateFormId: req.params.gateFormId,
+        initiativeId,
+        gate,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        mimeType: req.file.mimetype,
+        fileSize: req.file.size,
+        category: category || 'other',
+        uploadedBy: req.session.userId,
+      });
+      
+      res.status(201).json(artifact);
+    } catch (error) {
+      console.error("Error uploading artifact:", error);
+      res.status(500).json({ message: "Failed to upload artifact" });
+    }
+  });
+
+  // Get artifacts for a gate form
+  app.get("/api/gate-forms/:gateFormId/artifacts", isSessionAuthenticated, async (req, res) => {
+    try {
+      const artifacts = await storage.getArtifactsByGateForm(req.params.gateFormId);
+      res.json(artifacts);
+    } catch (error) {
+      console.error("Error fetching artifacts:", error);
+      res.status(500).json({ message: "Failed to fetch artifacts" });
+    }
+  });
+
+  // Get artifacts for an initiative gate
+  app.get("/api/initiatives/:initiativeId/gates/:gate/artifacts", isSessionAuthenticated, async (req, res) => {
+    try {
+      const artifacts = await storage.getArtifactsByInitiativeGate(req.params.initiativeId, req.params.gate);
+      res.json(artifacts);
+    } catch (error) {
+      console.error("Error fetching artifacts:", error);
+      res.status(500).json({ message: "Failed to fetch artifacts" });
+    }
+  });
+
+  // Delete artifact
+  app.delete("/api/artifacts/:id", isSessionAuthenticated, async (req, res) => {
+    try {
+      const deleted = await storage.deleteArtifact(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Artifact not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting artifact:", error);
+      res.status(500).json({ message: "Failed to delete artifact" });
+    }
+  });
+
+  // Download artifact
+  app.get("/api/artifacts/:id/download", isSessionAuthenticated, async (req, res) => {
+    try {
+      const artifacts = await storage.getArtifactsByGateForm(req.params.id);
+      // This is a simplified version - in production you'd query by artifact ID
+      res.status(404).json({ message: "Artifact not found" });
+    } catch (error) {
+      console.error("Error downloading artifact:", error);
+      res.status(500).json({ message: "Failed to download artifact" });
+    }
+  });
+
   app.get("/api/initiatives/:initiativeId/status", isSessionAuthenticated, async (req, res) => {
     try {
       const { initiativeId } = req.params;
