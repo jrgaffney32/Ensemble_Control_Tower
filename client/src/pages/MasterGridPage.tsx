@@ -1,10 +1,13 @@
 import { useState, useMemo } from "react";
 import { Link } from "wouter";
-import { Shield, Save, Search, ChevronDown, ChevronUp, Check, X, RefreshCw, Database } from "lucide-react";
+import { Shield, Save, Search, ChevronDown, ChevronUp, Check, X, RefreshCw, Database, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useUserRole } from "@/hooks/use-user-role";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -45,6 +48,19 @@ export default function MasterGridPage() {
   const [pendingChanges, setPendingChanges] = useState<Record<string, Partial<Initiative>>>({});
   const [sortField, setSortField] = useState<keyof Initiative>("priorityRank");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Initiative | null>(null);
+  const [newInitiative, setNewInitiative] = useState({
+    id: '',
+    name: '',
+    valueStream: 'Patient Access',
+    lGate: 'L0',
+    priorityCategory: 'New',
+    priorityRank: 0,
+    budgetedCost: 0,
+    targetedBenefit: 0,
+    costCenter: '',
+  });
 
   const { data: dbInitiatives = [], isLoading, refetch } = useQuery<Initiative[]>({
     queryKey: ["/api/initiatives"],
@@ -131,6 +147,69 @@ export default function MasterGridPage() {
       toast({
         title: "Save Failed",
         description: "Failed to save changes to database.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: typeof newInitiative) => {
+      const res = await fetch("/api/initiatives", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create initiative");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/initiatives"] });
+      setShowAddDialog(false);
+      setNewInitiative({
+        id: '',
+        name: '',
+        valueStream: 'Patient Access',
+        lGate: 'L0',
+        priorityCategory: 'New',
+        priorityRank: 0,
+        budgetedCost: 0,
+        targetedBenefit: 0,
+        costCenter: '',
+      });
+      toast({
+        title: "Initiative Created",
+        description: "New initiative has been added to the database.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Create Failed",
+        description: "Failed to create initiative.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/initiatives/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete initiative");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/initiatives"] });
+      setDeleteTarget(null);
+      toast({
+        title: "Initiative Deleted",
+        description: "Initiative and associated data have been removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete initiative.",
         variant: "destructive",
       });
     },
@@ -363,6 +442,13 @@ export default function MasterGridPage() {
             </Button>
           )}
           <Button 
+            onClick={() => setShowAddDialog(true)}
+            className="bg-green-600 hover:bg-green-700"
+            data-testid="button-add-initiative"
+          >
+            <Plus className="w-4 h-4 mr-2" /> Add Initiative
+          </Button>
+          <Button 
             variant="outline" 
             size="icon"
             onClick={() => refetch()}
@@ -430,6 +516,9 @@ export default function MasterGridPage() {
                 </th>
                 <th className="text-left p-3 font-semibold text-slate-600 cursor-pointer hover:bg-slate-200" onClick={() => handleSort('costCenter')}>
                   Cost Center <SortIcon field="costCenter" />
+                </th>
+                <th className="text-center p-3 font-semibold text-slate-600 w-16">
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -501,12 +590,172 @@ export default function MasterGridPage() {
                   <td className="p-3">
                     <EditableText rowId={init.id} field="costCenter" value={init.costCenter} />
                   </td>
+                  <td className="p-3 text-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => setDeleteTarget(init)}
+                      data-testid={`button-delete-${init.id}`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Initiative</DialogTitle>
+            <DialogDescription>
+              Create a new initiative. Fill in the required fields below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-id" className="text-right">ID</Label>
+              <Input
+                id="init-id"
+                value={newInitiative.id}
+                onChange={(e) => setNewInitiative(prev => ({ ...prev, id: e.target.value }))}
+                className="col-span-3"
+                placeholder="e.g., ACA-101"
+                data-testid="input-new-id"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-name" className="text-right">Name</Label>
+              <Input
+                id="init-name"
+                value={newInitiative.name}
+                onChange={(e) => setNewInitiative(prev => ({ ...prev, name: e.target.value }))}
+                className="col-span-3"
+                placeholder="Initiative name"
+                data-testid="input-new-name"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-vs" className="text-right">Value Stream</Label>
+              <Select
+                value={newInitiative.valueStream}
+                onValueChange={(v) => setNewInitiative(prev => ({ ...prev, valueStream: v }))}
+              >
+                <SelectTrigger className="col-span-3" data-testid="select-new-valuestream">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {valueStreams.map(vs => (
+                    <SelectItem key={vs} value={vs}>{vs}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-lgate" className="text-right">L-Gate</Label>
+              <Select
+                value={newInitiative.lGate}
+                onValueChange={(v) => setNewInitiative(prev => ({ ...prev, lGate: v }))}
+              >
+                <SelectTrigger className="col-span-3" data-testid="select-new-lgate">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LGATE_OPTIONS.map(gate => (
+                    <SelectItem key={gate} value={gate}>{gate}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-priority" className="text-right">Priority</Label>
+              <Select
+                value={newInitiative.priorityCategory}
+                onValueChange={(v) => setNewInitiative(prev => ({ ...prev, priorityCategory: v }))}
+              >
+                <SelectTrigger className="col-span-3" data-testid="select-new-priority">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORITY_OPTIONS.map(p => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-cost" className="text-right">Budget</Label>
+              <Input
+                id="init-cost"
+                type="number"
+                value={newInitiative.budgetedCost}
+                onChange={(e) => setNewInitiative(prev => ({ ...prev, budgetedCost: parseFloat(e.target.value) || 0 }))}
+                className="col-span-3"
+                placeholder="0"
+                data-testid="input-new-budget"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-benefit" className="text-right">Benefit</Label>
+              <Input
+                id="init-benefit"
+                type="number"
+                value={newInitiative.targetedBenefit}
+                onChange={(e) => setNewInitiative(prev => ({ ...prev, targetedBenefit: parseFloat(e.target.value) || 0 }))}
+                className="col-span-3"
+                placeholder="0"
+                data-testid="input-new-benefit"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="init-costcenter" className="text-right">Cost Center</Label>
+              <Input
+                id="init-costcenter"
+                value={newInitiative.costCenter}
+                onChange={(e) => setNewInitiative(prev => ({ ...prev, costCenter: e.target.value }))}
+                className="col-span-3"
+                placeholder="e.g., IT Operations"
+                data-testid="input-new-costcenter"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
+            <Button 
+              onClick={() => createMutation.mutate(newInitiative)}
+              disabled={!newInitiative.id || !newInitiative.name || createMutation.isPending}
+              data-testid="button-confirm-add"
+            >
+              {createMutation.isPending ? "Creating..." : "Create Initiative"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Initiative?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete "{deleteTarget?.name}" ({deleteTarget?.id}) and all associated capabilities, milestones, and gate forms. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700"
+              onClick={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+              data-testid="button-confirm-delete"
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
