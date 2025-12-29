@@ -78,9 +78,12 @@ export function AppLayout({
       <aside className="w-64 bg-[#1e2a3b] text-slate-300 hidden lg:flex flex-col fixed h-full z-10">
         <div className="p-6">
           <Link href="/">
-            <div className="flex flex-col gap-2 text-white mb-8 cursor-pointer hover:opacity-80">
-              <img src="/attached_assets/ensemble-logo-singleline-standard-1738760348662_1765935308200.jpg" alt="Ensemble" className="h-5" />
-              <span className="text-[10px] font-medium opacity-70 tracking-widest uppercase">Control Tower</span>
+            <div className="flex items-center gap-3 text-white mb-8 cursor-pointer hover:opacity-80">
+              <img src="/attached_assets/channels4_profile_1766973647287.jpg" alt="Ensemble" className="h-8 w-8 rounded-full" />
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold">Ensemble</span>
+                <span className="text-[10px] font-medium opacity-70 tracking-widest uppercase">Control Tower</span>
+              </div>
             </div>
           </Link>
           
